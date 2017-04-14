@@ -70,32 +70,8 @@
     <Reference Include="Ensage.Common">
       <HintPath>D:\eViYkMhXe\References\Ensage.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Ensage.SDK">
-      <HintPath>D:\eViYkMhXe\References\Ensage.SDK.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>D:\eViYkMhXe\References\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="PlaySharp.Service">
-      <HintPath>D:\eViYkMhXe\References\PlaySharp.Service.dll</HintPath>
-    </Reference>
-    <Reference Include="PlaySharp.Toolkit">
-      <HintPath>D:\eViYkMhXe\References\PlaySharp.Toolkit.dll</HintPath>
-    </Reference>
     <Reference Include="SharpDX">
       <HintPath>D:\eViYkMhXe\References\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct2D1">
-      <HintPath>D:\eViYkMhXe\References\SharpDX.Direct2D1.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D11">
-      <HintPath>D:\eViYkMhXe\References\SharpDX.Direct3D11.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D9">
-      <HintPath>D:\eViYkMhXe\References\SharpDX.Direct3D9.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.DXGI">
-      <HintPath>D:\eViYkMhXe\References\SharpDX.DXGI.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Mathematics">
       <HintPath>D:\eViYkMhXe\References\SharpDX.Mathematics.dll</HintPath>
