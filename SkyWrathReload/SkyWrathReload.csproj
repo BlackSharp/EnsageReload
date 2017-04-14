@@ -61,51 +61,16 @@
     <Compile Include="Variables.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="clipper_library">
-      <HintPath>D:\eViYkMhXe\References\clipper_library.dll</HintPath>
-    </Reference>
     <Reference Include="Ensage">
-      <HintPath>D:\eViYkMhXe\References\Ensage.dll</HintPath>
+      <HintPath>C:\Users\osman\Desktop\Dota 2\EnsageSharp\References\Ensage.dll</HintPath>
     </Reference>
     <Reference Include="Ensage.Common">
-      <HintPath>D:\eViYkMhXe\References\Ensage.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Ensage.SDK">
-      <HintPath>D:\eViYkMhXe\References\Ensage.SDK.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>D:\eViYkMhXe\References\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="PlaySharp.Service">
-      <HintPath>D:\eViYkMhXe\References\PlaySharp.Service.dll</HintPath>
-    </Reference>
-    <Reference Include="PlaySharp.Toolkit">
-      <HintPath>D:\eViYkMhXe\References\PlaySharp.Toolkit.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX">
-      <HintPath>D:\eViYkMhXe\References\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct2D1">
-      <HintPath>D:\eViYkMhXe\References\SharpDX.Direct2D1.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D11">
-      <HintPath>D:\eViYkMhXe\References\SharpDX.Direct3D11.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D9">
-      <HintPath>D:\eViYkMhXe\References\SharpDX.Direct3D9.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.DXGI">
-      <HintPath>D:\eViYkMhXe\References\SharpDX.DXGI.dll</HintPath>
+      <HintPath>C:\Users\osman\Desktop\Dota 2\EnsageSharp\References\Ensage.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Mathematics">
-      <HintPath>D:\eViYkMhXe\References\SharpDX.Mathematics.dll</HintPath>
+      <HintPath>C:\Users\osman\Desktop\Dota 2\EnsageSharp\References\SharpDX.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\eViYkMhXe\References\System.Collections.Immutable.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Drawing" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -119,6 +84,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\Dota 2\EnsageSharp\References\Ensage.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
