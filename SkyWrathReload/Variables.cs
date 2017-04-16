@@ -2,7 +2,6 @@
 using Ensage;
 using Ensage.Common.Menu;
 using SharpDX;
-
 namespace SkyWrathReload
 {
     internal class Variables

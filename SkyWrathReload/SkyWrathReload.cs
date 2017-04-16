@@ -184,7 +184,7 @@ namespace SkyWrathReload
             iconSize = new Vector2(HUDInfo.GetHpBarSizeY()*2);
 
             if (
-                !Drawing.WorldToScreen(target.Position + new Vector3(0, 0, target.HealthBarOffset/3), out screenPosition))
+                !Drawing.WorldToScreen(target.Position + new Vector3(0, 0, target.HealthBarOffset/3f), out screenPosition))
                 return;
 
             screenPosition += new Vector2(-iconSize.X, 0);
@@ -211,7 +211,7 @@ namespace SkyWrathReload
             switch (ezKillStyle.GetValue<StringList>().SelectedIndex)
             {
                 case 0:
-                    var icoSize = new Vector2((float) (HUDInfo.GetHpBarSizeY()*2));
+                    var icoSize = new Vector2((HUDInfo.GetHpBarSizeY()*2));
                     var icoPos = HUDInfo.GetHPbarPosition(target) - new Vector2(21, 5);
                     switch (IsEzKillable())
                     {
@@ -344,14 +344,14 @@ namespace SkyWrathReload
                 !Menu.Item("magicItems").GetValue<AbilityToggler>().IsEnabled(item.Name))
                 return;
 
-            if (item == ethereal && IsFullDebuffed())
+            if (item.Equals(ethereal) && IsFullDebuffed())
             {
                 item.UseAbility(target);
                 Utils.Sleep(me.NetworkPosition.Distance2D(target.NetworkPosition) / 1200 * 1000, "ebsleep");
                 return;
             }
 
-			if (item == atos)
+			if (item.Equals(atos))
 			{
 				item.UseAbility(target);
 				Utils.Sleep(me.NetworkPosition.Distance2D(target.NetworkPosition) / 1500 * 1000, "atossleep");
