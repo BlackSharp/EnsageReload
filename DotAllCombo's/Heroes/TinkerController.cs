@@ -739,7 +739,8 @@ namespace DotaAllCombo.Heroes
 
 
         }
-        bool CheckRefresh()
+
+        private bool CheckRefresh()
         {
             if ((_ghost != null && _ghost.CanBeCasted() && Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_ghost.Name))
                 || (_soul != null && _soul.CanBeCasted() && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_soul.Name))
@@ -823,7 +824,8 @@ namespace DotaAllCombo.Heroes
         }
 
         private bool _iscreated;
-        void ParticleDraw(EventArgs args)
+
+        private void ParticleDraw(EventArgs args)
         {
             //
             if (!Game.IsInGame || Game.IsWatchingGame)

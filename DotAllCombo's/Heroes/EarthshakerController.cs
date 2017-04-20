@@ -38,7 +38,7 @@ namespace DotaAllCombo.Heroes
 
         private Dictionary<uint, double> _damage = new Dictionary<uint, double>();
 
-        List<Hero> _enemies = new List<Hero>();
+        private List<Hero> _enemies = new List<Hero>();
 
         public void Combo()
         {

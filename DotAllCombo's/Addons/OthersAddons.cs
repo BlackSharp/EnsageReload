@@ -121,7 +121,8 @@ namespace DotaAllCombo.Addons
 				}
 	        }*/
 		}
-		void Drawing_OnDraw(EventArgs args)
+
+	    private void Drawing_OnDraw(EventArgs args)
 		{
 
 			if (Me == null)

@@ -3,7 +3,7 @@ namespace DotaAllCombo.Service
 {
 	using Addons;
     [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
-    class AddonsManager
+    internal class AddonsManager
     {
         public static bool IsLoaded { get; private set; }
 		//private static AutoDodge autoDodge;

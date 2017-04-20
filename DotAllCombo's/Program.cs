@@ -4,7 +4,7 @@ namespace DotaAllCombo
 	internal class Program
     {
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
-        static void Main()
+        private static void Main()
 		{
 
             /*new Thread(delegate () {

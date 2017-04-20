@@ -9,7 +9,7 @@ namespace DotaAllCombo.Service
 	using Debug;
 
     [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
-    class HeroSelector
+    internal class HeroSelector
     {
         public static bool IsSelected { get; set; }
 		public static string HeroName { get; set; }	// Имя текущего героя

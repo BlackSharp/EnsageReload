@@ -8,13 +8,13 @@
 	using Ensage.Common.Extensions;
 	using Ensage.Common;
 
-    static class Toolset
+    internal static class Toolset
 	{
 		private static Hero _me;
 
         public static bool IsFullMagicResist(this Unit source)
         {
-            return UnitExtensions.IsMagicImmune(source)
+            return source.IsMagicImmune()
                 || source.HasModifier("modifier_medusa_stone_gaze_stone")
                 || source.HasModifier("modifier_huskar_life_break_charge")
                 || source.HasModifier("modifier_oracle_fates_edict");

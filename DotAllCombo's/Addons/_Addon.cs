@@ -2,7 +2,7 @@
 
 namespace DotaAllCombo.Addons
 {
-	interface IAddon
+    internal interface IAddon
     {
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
         void Load();

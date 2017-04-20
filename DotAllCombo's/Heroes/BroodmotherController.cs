@@ -581,7 +581,7 @@ namespace DotaAllCombo.Heroes
 			return closestHero;
 		}
 
-		void Drawing_OnEndScene(EventArgs args)
+	    private void Drawing_OnEndScene(EventArgs args)
 		{
 			if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !Game.IsInGame)
 				return;

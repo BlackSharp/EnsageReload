@@ -741,14 +741,14 @@ namespace DotaAllCombo.Heroes
 			}
 			return closestHero;
 		}
-		
-		double GetDistance2D(Vector3 a, Vector3 b)
+
+        private double GetDistance2D(Vector3 a, Vector3 b)
 		{
 			return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
 		}
 
 
-		void CurrentDomain_DomainUnload(object sender, EventArgs args)
+        private void CurrentDomain_DomainUnload(object sender, EventArgs args)
 		{
 			Txt.Dispose();
 			Not.Dispose();
@@ -807,13 +807,13 @@ namespace DotaAllCombo.Heroes
 			*/
 		}
 
-		void Drawing_OnPostReset(EventArgs args)
+        private void Drawing_OnPostReset(EventArgs args)
 		{
 			Txt.OnResetDevice();
 			Not.OnResetDevice();
 		}
 
-		void Drawing_OnPreReset(EventArgs args)
+        private void Drawing_OnPreReset(EventArgs args)
 		{
 			Txt.OnLostDevice();
 			Not.OnLostDevice();

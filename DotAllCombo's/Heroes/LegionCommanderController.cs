@@ -779,7 +779,7 @@ namespace DotaAllCombo.Heroes
 		}
 
 
-		void Drawing_OnEndScene(EventArgs args)
+        private void Drawing_OnEndScene(EventArgs args)
 		{
 			if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !Game.IsInGame)
 				return;
@@ -795,9 +795,9 @@ namespace DotaAllCombo.Heroes
 				}
 			}
 		}
-		
 
-		void CurrentDomain_DomainUnload(object sender, EventArgs e)
+
+        private void CurrentDomain_DomainUnload(object sender, EventArgs e)
 		{
 			_txt.Dispose();
 			_noti.Dispose();
@@ -805,15 +805,14 @@ namespace DotaAllCombo.Heroes
 		}
 
 
-
-		void Drawing_OnPostReset(EventArgs args)
+        private void Drawing_OnPostReset(EventArgs args)
 		{
 			_txt.OnResetDevice();
 			_noti.OnResetDevice();
 			_lines.OnResetDevice();
 		}
 
-		void Drawing_OnPreReset(EventArgs args)
+        private void Drawing_OnPreReset(EventArgs args)
 		{
 			_txt.OnLostDevice();
 			_noti.OnLostDevice();

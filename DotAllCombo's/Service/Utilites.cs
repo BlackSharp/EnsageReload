@@ -4,7 +4,7 @@ namespace DotaAllCombo.Service
 {
 	using System;
 
-	class Utilites
+    internal class Utilites
     {
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
         public static string GetHeroName(string name)
