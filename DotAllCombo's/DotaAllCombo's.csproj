@@ -56,10 +56,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ensage">
-      <HintPath>D:\eViYkMhXe\References\Ensage.dll</HintPath>
+      <HintPath>..\Dota 2\EnsageSharp\References\Ensage.dll</HintPath>
     </Reference>
     <Reference Include="Ensage.Common">
-      <HintPath>D:\eViYkMhXe\References\Ensage.Common.dll</HintPath>
+      <HintPath>..\Dota 2\EnsageSharp\References\Ensage.Common.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.DirectX.AudioVideoPlayback, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <SpecificVersion>False</SpecificVersion>
@@ -67,16 +67,16 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\eViYkMhXe\References\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\Dota 2\EnsageSharp\References\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>D:\eViYkMhXe\References\SharpDX.dll</HintPath>
+      <HintPath>..\Dota 2\EnsageSharp\References\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>D:\eViYkMhXe\References\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>..\Dota 2\EnsageSharp\References\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Mathematics">
-      <HintPath>D:\eViYkMhXe\References\SharpDX.Mathematics.dll</HintPath>
+      <HintPath>..\Dota 2\EnsageSharp\References\SharpDX.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
