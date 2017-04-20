@@ -1,7 +1,8 @@
-﻿using DotaAllCombo.Extensions;
+﻿using Ensage;
 
 namespace DotaAllCombo.Heroes
 {
+    using Service;
     using Service.Debug;
 
     internal class WispController : Variables, IHeroController

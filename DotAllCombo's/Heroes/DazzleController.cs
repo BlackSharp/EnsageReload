@@ -1,8 +1,8 @@
-﻿using DotaAllCombo.Extensions;
+﻿using Ensage;
 
 namespace DotaAllCombo.Heroes
 {
-  
+    using Service;
     using Service.Debug;
 
     internal class DazzleController : Variables, IHeroController

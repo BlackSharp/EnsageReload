@@ -1,6 +1,6 @@
-﻿namespace DotaAllCombo.Extensions
+﻿namespace DotaAllCombo.Service
 {
-    internal class AssemblyExtensions
+	class AssemblyExtensions
 	{
 		private static string _version;
 		private static string _author;

@@ -1,4 +1,4 @@
-﻿using DotaAllCombo.Extensions;
+﻿using System.Diagnostics;
 
 namespace DotaAllCombo.Heroes
 {
@@ -11,142 +11,149 @@ namespace DotaAllCombo.Heroes
 	using Ensage.Common.Extensions;
 	using Ensage.Common.Menu;
 	using SharpDX;
+
+	using Service;
 	using Service.Debug;
 
 	internal class BroodmotherController : Variables, IHeroController
 	{
-		private bool _combokey;
-		private bool _chasekey;
-		private bool _lastHitkey;
-		private Item _mom, _abyssal, _soul, _orchid, _shiva, _halberd, _mjollnir, _satanic, _mail, _bkb, _dagon, _medall, _sheep;
-		private Ability _q, _w, _r;
-		private int _spiderDenies = 65;
-		private int _spiderDmgStatick = 175;
-		private readonly uint[] _spiderQ = { 74, 149, 224, 299 };
-		private int _spiderDmg;
-		private bool _useQ;
-		private Font _txt;
-		private Font _noti;
-		private Line _lines;
+		private bool Combokey;
+		private bool Chasekey;
+		private bool LastHitkey;
+		private Item mom, abyssal, Soul, orchid, shiva, halberd, mjollnir, satanic, mail, bkb, dagon, medall, sheep, cheese;
+		private Ability Q, W, R;
+		private int spiderDenies = 65;
+		private int spiderDmgStatick = 175;
+		private readonly uint[] spiderQ = { 74, 149, 224, 299 };
+		private int spiderDmg;
+		private bool useQ;
+		private Font txt;
+		private Font noti;
+		private Line lines;
 
 		public void Combo()
 		{
 			if (!Menu.Item("enabled").IsActive())
 				return;
-			Me = ObjectManager.LocalHero;
-            E = Toolset.ClosestToMouse(Me);
-            _lastHitkey = Menu.Item("LastHit").GetValue<KeyBind>().Active;
-			_combokey = Game.IsKeyDown(Menu.Item("ComboKey").GetValue<KeyBind>().Key);
-			_chasekey = Game.IsKeyDown(Menu.Item("ChaseKey").GetValue<KeyBind>().Key);
-			_useQ = Menu.Item("useQ").IsActive();
+			me = ObjectManager.LocalHero;
+            e = Toolset.ClosestToMouse(me);
+            LastHitkey = Menu.Item("LastHit").GetValue<KeyBind>().Active;
+			Combokey = Game.IsKeyDown(Menu.Item("ComboKey").GetValue<KeyBind>().Key);
+			Chasekey = Game.IsKeyDown(Menu.Item("ChaseKey").GetValue<KeyBind>().Key);
+			useQ = Menu.Item("useQ").IsActive();
 
-			if (_lastHitkey && !_combokey && !_chasekey && Utils.SleepCheck("combo") && !Game.IsPaused)
+			if (LastHitkey && !Combokey && !Chasekey && Utils.SleepCheck("combo") && !Game.IsPaused)
 			{
 
-				_q = Me.Spellbook.SpellQ;
+				Q = me.Spellbook.SpellQ;
 
-				_soul = Me.FindItem("item_soul_ring");
+				Soul = me.FindItem("item_soul_ring");
 
 
-				var spiderlingsLevel = Me.Spellbook.SpellQ.Level - 1;
+				var spiderlingsLevel = me.Spellbook.SpellQ.Level - 1;
 				
 
-				var enemies = ObjectManager.GetEntities<Hero>().Where(hero => hero.IsAlive && !hero.IsIllusion && hero.IsVisible && hero.Team != Me.Team).ToList();
+				var enemies = ObjectManager.GetEntities<Hero>().Where(hero => hero.IsAlive && !hero.IsIllusion && hero.IsVisible && hero.Team != me.Team).ToList();
 
-				var creeps = ObjectManager.GetEntities<Creep>().Where(creep => (creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Lane || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Siege || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Neutral ||
-				(creep.ClassId == ClassId.CDOTA_Unit_VisageFamiliar && creep.Team != Me.Team) || (creep.ClassId == ClassId.CDOTA_Unit_SpiritBear && creep.Team != Me.Team) || (creep.ClassId == ClassId.CDOTA_BaseNPC_Invoker_Forged_Spirit &&
-				creep.Team != Me.Team) || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep &&
+				var creeps = ObjectManager.GetEntities<Creep>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral ||
+				(creep.ClassID == ClassID.CDOTA_Unit_VisageFamiliar && creep.Team != me.Team) || (creep.ClassID == ClassID.CDOTA_Unit_SpiritBear && creep.Team != me.Team) || (creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit &&
+				creep.Team != me.Team) || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep &&
 				creep.IsAlive && creep.IsVisible && creep.IsSpawned) && creep.Health <= 259).ToList();
 
-				var creepQ = ObjectManager.GetEntities<Creep>().Where(creep => (creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Lane || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Siege || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Neutral ||
-				creep.ClassId == ClassId.CDOTA_Unit_SpiritBear || creep.ClassId == ClassId.CDOTA_BaseNPC_Invoker_Forged_Spirit || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep &&
+				var creepQ = ObjectManager.GetEntities<Creep>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral ||
+				creep.ClassID == ClassID.CDOTA_Unit_SpiritBear || creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep &&
 				creep.IsAlive && creep.IsVisible && creep.IsSpawned)).ToList();
 
-				var list = ObjectManager.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassId == ClassId.CDOTA_Unit_Broodmother_Spiderling).ToList();
+				var Spiderlings = ObjectManager.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling).ToList();
 
 
 				// Creep Q lasthit
-				if (_useQ && _q.CanBeCasted() && Me.IsAlive)
+				if (useQ && Q.CanBeCasted() && me.IsAlive)
 					foreach (var creep in creepQ)
 					{
-						if (creep.Health <= Math.Floor((_spiderQ[spiderlingsLevel]) * (1 - creep.MagicDamageResist)) && creep.Health > 45 && creep.Team != Me.Team)
+						if (creep.Health <= Math.Floor((spiderQ[spiderlingsLevel]) * (1 - creep.MagicDamageResist)) && creep.Health > 45 && creep.Team != me.Team)
 						{
-							if (creep.Position.Distance2D(Me.Position) <= 600 && Utils.SleepCheck("QQQ"))
+							if (creep.Position.Distance2D(me.Position) <= 600 && Utils.SleepCheck("QQQ"))
 							{
-								if (_soul != null && _soul.CanBeCasted() && Me.Health >= 400)
+								if (Soul != null && Soul.CanBeCasted() && me.Health >= 400)
 								{
-									_soul.UseAbility();
+									Soul.UseAbility();
 									Utils.Sleep(300, "QQQ");
 								}
 								else
-									_q.UseAbility(creep);
+									Q.UseAbility(creep);
 								Utils.Sleep(300, "QQQ");
 
 							}
 						}
 					}
 				// Enemy Q lasthit
-				if (_q.CanBeCasted() && Me.IsAlive)
+				if (Q.CanBeCasted() && me.IsAlive)
 				{
 					foreach (var enemy in enemies)
 					{
-						if (enemy.Health <= (_spiderQ[spiderlingsLevel] - enemy.MagicDamageResist) && enemy.Health > 0)
+						if (enemy.Health <= (spiderQ[spiderlingsLevel] - enemy.MagicDamageResist) && enemy.Health > 0)
 						{
-							if (enemy.Position.Distance2D(Me.Position) <= 600 && Utils.SleepCheck("QQQ"))
+							if (enemy.Position.Distance2D(me.Position) <= 600 && Utils.SleepCheck("QQQ"))
 							{
-								if (_soul != null && _soul.CanBeCasted() && Me.Health >= 400)
+								if (Soul != null && Soul.CanBeCasted() && me.Health >= 400)
 								{
-									_soul.UseAbility();
+									Soul.UseAbility();
 									Utils.Sleep(300, "QQQ");
 								}
 								else
-									_q.UseAbility(E);
+									Q.UseAbility(e);
 								Utils.Sleep(300, "QQQ");
 							}
 						}
 					}
 				}
 
-				//var Spiderling = ObjectManager.GetEntities<Unit>().Where(x => x.ClassId == ClassId.CDOTA_Unit_Broodmother_Spiderling && x.IsAlive && x.IsControllable && x.Team == Me.Team).ToList();
-				var count = list.Count();
+				//var Spiderling = ObjectManager.GetEntities<Unit>().Where(x => x.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling && x.IsAlive && x.IsControllable && x.Team == me.Team).ToList();
+				var count = Spiderlings.Count();
 				if (count <= 0)
 					return;
 				// Autodenies
-				for (var s = 0; s < count; ++s)
+				for (int s = 0; s < count; ++s)
 				{
-				    if (list[s].Health <= 0 || list[s].Health > _spiderDenies) continue;
-				    for (var z = 0; z < count; ++z)
-				    {
-				        if (!(list[s].Position.Distance2D(list[z].Position) <= 500) ||
-				            !Utils.SleepCheck(list[z].Handle + "Spiderlings")) continue;
-				        list[z].Attack(list[s]);
-				        Utils.Sleep(350, list[z].Handle + "Spiderlings");
-				    }
+					if (Spiderlings[s].Health > 0 && Spiderlings[s].Health <= spiderDenies)
+					{
+						for (int z = 0; z < count; ++z)
+						{
+							if (Spiderlings[s].Position.Distance2D(Spiderlings[z].Position) <= 500
+								&& Utils.SleepCheck(Spiderlings[z].Handle + "Spiderlings"))
+							{
+								Spiderlings[z].Attack(Spiderlings[s]);
+								Utils.Sleep(350, Spiderlings[z].Handle + "Spiderlings");
+
+							}
+						}
+					}
 				}
 
 				// Auto spider deny and lasthit
 				var countcreep = creeps.Count();
 				if (countcreep>=1)
 				{
-					for (var c = 0; c < countcreep; c++)
+					for (int c = 0; c < countcreep; c++)
 				{
-					for (var s = 0; s < count; s++)
+					for (int s = 0; s < count; s++)
 					{
-						if (creeps[c].Position.Distance2D(list[s].Position) <= 500 &&
-								creeps[c].Team != Me.Team && creeps[c].Health > 0 && creeps[c].Health < Math.Floor(_spiderDmgStatick * (1 - creeps[c].DamageResist))
-								&& Utils.SleepCheck(list[s].Handle + "Spiderling"))
+						if (creeps[c].Position.Distance2D(Spiderlings[s].Position) <= 500 &&
+								creeps[c].Team != me.Team && creeps[c].Health > 0 && creeps[c].Health < Math.Floor(spiderDmgStatick * (1 - creeps[c].DamageResist))
+								&& Utils.SleepCheck(Spiderlings[s].Handle + "Spiderling"))
 							{
 								{
-									list[s].Attack(creeps[c]);
-									Utils.Sleep(350, list[s].Handle + "Spiderling");
+									Spiderlings[s].Attack(creeps[c]);
+									Utils.Sleep(350, Spiderlings[s].Handle + "Spiderling");
 								}
 							}
-							else if (creeps[c].Position.Distance2D(list[s].Position) <= 500 &&
-								creeps[c].Team == Me.Team && creeps[c].Health > 0 && creeps[c].Health < Math.Floor(_spiderDmgStatick * (1 - creeps[c].DamageResist))
-								&& Utils.SleepCheck(list[s].Handle + "Spiderlings"))
+							else if (creeps[c].Position.Distance2D(Spiderlings[s].Position) <= 500 &&
+								creeps[c].Team == me.Team && creeps[c].Health > 0 && creeps[c].Health < Math.Floor(spiderDmgStatick * (1 - creeps[c].DamageResist))
+								&& Utils.SleepCheck(Spiderlings[s].Handle + "Spiderlings"))
 							{
-								list[s].Attack(creeps[c]);
-								Utils.Sleep(350, list[s].Handle + "Spiderlings");
+								Spiderlings[s].Attack(creeps[c]);
+								Utils.Sleep(350, Spiderlings[s].Handle + "Spiderlings");
 							}
 						}
 					}
@@ -156,19 +163,20 @@ namespace DotaAllCombo.Heroes
 				var countenemy = enemies.Count();
 				if (countenemy>=1)
 				{
-				for (var t = 0; t < countenemy; ++t)
+				for (int t = 0; t < countenemy; ++t)
 				{
-					for (var s = 0; s < count; ++s)
+					for (int s = 0; s < count; ++s)
 					{
 						
-							_spiderDmg = list.Count(y => y.Distance2D(enemies[t]) < 800) * list[s].MinimumDamage;
+							spiderDmg = Spiderlings.Count(y => y.Distance2D(enemies[t]) < 800) * Spiderlings[s].MinimumDamage;
 
-					    if (!((enemies[t].Position.Distance2D(list[s].Position)) <= 800) || enemies[t].Team == Me.Team ||
-					        enemies[t].Health <= 0 || !(enemies[t].Health < Math.Floor(_spiderDmg * (1 - enemies[t].DamageResist))) ||
-					        !Utils.SleepCheck(list[t].Handle + "AttackEnemies")) continue;
-					    list[s].Attack(enemies[t]);
-					    Utils.Sleep(350, list[t].Handle + "AttackEnemies");
-					}
+							if ((enemies[t].Position.Distance2D(Spiderlings[s].Position)) <= 800 &&
+								enemies[t].Team != me.Team && enemies[t].Health > 0 && enemies[t].Health < Math.Floor(spiderDmg * (1 - enemies[t].DamageResist)) && Utils.SleepCheck(Spiderlings[t].Handle + "AttackEnemies"))
+							{
+								Spiderlings[s].Attack(enemies[t]);
+								Utils.Sleep(350, Spiderlings[t].Handle + "AttackEnemies");
+							}
+						}
 					}
 				}
 				Utils.Sleep(290, "combo");
@@ -185,7 +193,7 @@ namespace DotaAllCombo.Heroes
 			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
 			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
 
-			var skills = new Dictionary<string, bool>
+			var Skills = new Dictionary<string, bool>
 			{
 				{"broodmother_spin_web",true},
 				{"broodmother_spawn_spiderlings",true},
@@ -193,12 +201,12 @@ namespace DotaAllCombo.Heroes
 			};
 
 			Menu.AddItem(
-				new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(skills)));
+				new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(Skills)));
 			Menu.AddItem(new MenuItem("ComboKey", "Combo Key").SetValue(new KeyBind('D', KeyBindType.Press)));
 			Menu.AddItem(new MenuItem("ChaseKey", "Chase Key").SetValue(new KeyBind('E', KeyBindType.Press)));
 			Menu.AddItem(new MenuItem("LastHit", "LastHitCreeps").SetValue(new KeyBind('F', KeyBindType.Toggle)));
 			Menu.AddItem(new MenuItem("useQ", "Kill creep Q Spell").SetValue(true));
-			Menu.AddItem(new MenuItem("Skills", "Skills: ").SetValue(new AbilityToggler(skills)));
+			Menu.AddItem(new MenuItem("Skills", "Skills: ").SetValue(new AbilityToggler(Skills)));
 
 			Menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
 			Menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
@@ -207,7 +215,7 @@ namespace DotaAllCombo.Heroes
 
 			Console.WriteLine("> This is your Mom# loaded!");
 
-			_txt = new Font(
+			txt = new Font(
 			   Drawing.Direct3DDevice9,
 			   new FontDescription
 			   {
@@ -217,7 +225,7 @@ namespace DotaAllCombo.Heroes
 				   Quality = FontQuality.ClearType
 			   });
 
-			_noti = new Font(
+			noti = new Font(
 			   Drawing.Direct3DDevice9,
 			   new FontDescription
 			   {
@@ -227,7 +235,7 @@ namespace DotaAllCombo.Heroes
 				   Quality = FontQuality.ClearType
 			   });
 
-			_lines = new Line(Drawing.Direct3DDevice9);
+			lines = new Line(Drawing.Direct3DDevice9);
 
 			Drawing.OnPreReset += Drawing_OnPreReset;
 			Drawing.OnPostReset += Drawing_OnPostReset;
@@ -248,327 +256,335 @@ namespace DotaAllCombo.Heroes
 
 		public void Chasing(EventArgs args)
 		{
-			Me = ObjectManager.LocalHero;
-		    if (!_chasekey) return;
-		    var list = ObjectManager.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassId == ClassId.CDOTA_Unit_Broodmother_Spiderling).ToList();
-		    {
-		        var count = list.Count();
-		        if (E != null && E.IsAlive && !E.IsIllusion)
-		        {
-		            for (var t = 0; t < count; ++t)
-		            {
-		                if (!(list[t].Distance2D(E) <= 1000) ||
-		                    !Utils.SleepCheck(list[t].Handle + "MoveAttack")) continue;
-		                list[t].Attack(E);
-		                Utils.Sleep(500, list[t].Handle + "MoveAttack");
-		            }
-		        }
-		        else
-		        {
-		            for (var t = 0; t < count; ++t)
-		            {
-		                if (!Utils.SleepCheck(list[t].Handle + "Move")) continue;
-		                list[t].Move(Game.MousePosition);
-		                Utils.Sleep(500, list[t].Handle + "Move");
-		            }
-		        }
+			me = ObjectManager.LocalHero;
+			if (Chasekey)
+			{
+				var Spiderlings = ObjectManager.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling).ToList();
+				{
+					var count = Spiderlings.Count();
+					if (e != null && e.IsAlive && !e.IsIllusion)
+					{
+						for (int t = 0; t < count; ++t)
+						{
+							if (Spiderlings[t].Distance2D(e) <= 1000 && Utils.SleepCheck(Spiderlings[t].Handle + "MoveAttack"))
+							{
+								Spiderlings[t].Attack(e);
+								Utils.Sleep(500, Spiderlings[t].Handle + "MoveAttack");
+							}
+						}
+					}
+					else
+					{
+						for (int t = 0; t < count; ++t)
+						{
+							if (Utils.SleepCheck(Spiderlings[t].Handle + "Move"))
+							{
+								Spiderlings[t].Move(Game.MousePosition);
+								Utils.Sleep(500, Spiderlings[t].Handle + "Move");
+							}
+						}
+					}
 
-		    }
+				}
+			}
 		}
 
 
 		public void ChasingAll(EventArgs args)
 		{
 
-            E = Toolset.ClosestToMouse(Me);
-            if (E == null) return;
-			if (_combokey  && E.IsAlive && !Me.IsVisibleToEnemies)
+            e = Toolset.ClosestToMouse(me);
+            if (e == null) return;
+			if (Combokey  && e.IsAlive && !me.IsVisibleToEnemies)
 			{
 
-				if (Menu.Item("orbwalk").GetValue<bool>() && Me.Distance2D(E) <= 1900)
+				if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
 				{
-					Orbwalking.Orbwalk(E, 0, 1600, true, true);
+					Orbwalking.Orbwalk(e, 0, 1600, true, true);
 				}
 			}
-		    if (!_combokey || !E.IsAlive || !Me.IsVisibleToEnemies) return;
-		    var list = ObjectManager.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassId == ClassId.CDOTA_Unit_Broodmother_Spiderling).ToList();
-		    var count = list.Count();
-		    for (int s = 0; s < count; ++s)
-		    {
-		        if (list[s].Distance2D(E) <= 1500 && Utils.SleepCheck(list[s].Handle + "Spiderlings"))
-		        {
-		            list[s].Attack(E);
-		            Utils.Sleep(500, list[s].Handle + "Spiderlings");
-		        }
-		    }
-		    for (int s = 0; s < count; ++s)
-		    {
-		        if (list[s].Distance2D(E) >= 1500 && Utils.SleepCheck(list[s].Handle + "Spiderlings"))
-		        {
-		            list[s].Move(Game.MousePosition);
-		            Utils.Sleep(500, list[s].Handle + "Spiderlings");
-		        }
-		    }
+			if (Combokey && e.IsAlive && me.IsVisibleToEnemies)
+			{
+
+				var Spiderlings = ObjectManager.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling).ToList();
+				var count = Spiderlings.Count();
+				for (int s = 0; s < count; ++s)
+				{
+					if (Spiderlings[s].Distance2D(e) <= 1500 && Utils.SleepCheck(Spiderlings[s].Handle + "Spiderlings"))
+					{
+						Spiderlings[s].Attack(e);
+						Utils.Sleep(500, Spiderlings[s].Handle + "Spiderlings");
+					}
+				}
+				for (int s = 0; s < count; ++s)
+				{
+					if (Spiderlings[s].Distance2D(e) >= 1500 && Utils.SleepCheck(Spiderlings[s].Handle + "Spiderlings"))
+					{
+						Spiderlings[s].Move(Game.MousePosition);
+						Utils.Sleep(500, Spiderlings[s].Handle + "Spiderlings");
+					}
+				}
 
 
-		    var linkens = E.IsLinkensProtected();
-		    if (E.IsAlive && !E.IsIllusion && Me.Distance2D(E) <= 1000)
-		    {
+			    var linkens = e.IsLinkensProtected();
+				if (e.IsAlive && !e.IsIllusion && me.Distance2D(e) <= 1000)
+				{
 					
-		        _q = Me.Spellbook.SpellQ;
+						Q = me.Spellbook.SpellQ;
 					
-		        _w = Me.Spellbook.SpellW;
+						W = me.Spellbook.SpellW;
 					
-		        _r = Me.Spellbook.SpellR;
+						R = me.Spellbook.SpellR;
 
-		        // Item
+					// Item
 
-		        _sheep = E.ClassId == ClassId.CDOTA_Unit_Hero_Tidehunter ? null : Me.FindItem("item_sheepstick");
+					sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
 
-		        Me.FindItem("item_cheese");
+					cheese = me.FindItem("item_cheese");
 
-		        _orchid = Me.FindItem("item_orchid") ?? Me.FindItem("item_bloodthorn");
+					orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn");
 
-		        _soul = Me.FindItem("item_soul_ring");
+					Soul = me.FindItem("item_soul_ring");
 
-		        _shiva = Me.FindItem("item_shivas_guard");
+					shiva = me.FindItem("item_shivas_guard");
 
-		        _dagon = Me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
+					dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
 
-		        _mom = Me.FindItem("item_mask_of_madness");
+					mom = me.FindItem("item_mask_of_madness");
 
-		        _abyssal = Me.FindItem("item_abyssal_blade");
+					abyssal = me.FindItem("item_abyssal_blade");
 
-		        _mjollnir = Me.FindItem("item_mjollnir");
+					mjollnir = me.FindItem("item_mjollnir");
 
-		        _halberd = Me.FindItem("item_heavens_halberd");
+					halberd = me.FindItem("item_heavens_halberd");
 
-		        _mail = Me.FindItem("item_blade_mail");
+					mail = me.FindItem("item_blade_mail");
 
-		        _bkb = Me.FindItem("item_black_king_bar");
+					bkb = me.FindItem("item_black_king_bar");
 
-		        _medall = Me.FindItem("item_medallion_of_courage") ?? Me.FindItem("item_solar_crest");
+					medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
 
-		        _satanic = Me.FindItem("item_satanic");
+					satanic = me.FindItem("item_satanic");
 
-		        if ( // Q Skill
-		            _q != null &&
-		            _q.CanBeCasted() &&
-		            Me.CanCast()
-		            && Me.IsVisibleToEnemies &&
-		            !E.IsMagicImmune()
-		            && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_q.Name)
-		            && Me.Distance2D(E) <= 600
-		            && Utils.SleepCheck("Q")
-		        )
+					if ( // Q Skill
+						   Q != null &&
+						   Q.CanBeCasted() &&
+						   me.CanCast()
+						&& me.IsVisibleToEnemies &&
+						   !e.IsMagicImmune()
+						   && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
+						   && me.Distance2D(e) <= 600
+						   && Utils.SleepCheck("Q")
+						   )
 
-		        {
-		            _q.UseAbility(E);
-		            Utils.Sleep(250, "Q");
-		        } // Q Skill end
-
-
+					{
+						Q.UseAbility(e);
+						Utils.Sleep(250, "Q");
+					} // Q Skill end
 
 
-		        if (//R Skill
-		            _r != null &&
-		            _r.CanBeCasted() &&
-		            Me.CanCast() &&
-		            Me.Distance2D(E) <= 350
-		            && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_r.Name)
-		            && Utils.SleepCheck("R")
-		        )
-		        {
-		            _r.UseAbility();
-		            Utils.Sleep(250, "R");
-		        } // R Skill end
 
 
-		        if ( // orchid
-		            _orchid != null &&
-		            _orchid.CanBeCasted() &&
-		            Me.CanCast() &&
-		            !E.IsMagicImmune() &&
-		            !linkens &&
-		            Utils.SleepCheck("orchid")
-		            && Me.IsVisibleToEnemies
-		            && Me.Distance2D(E) <= 1000
-		        )
-		        {
-		            _orchid.UseAbility(E);
-		            Utils.Sleep(250, "orchid");
-		        } // orchid Item end
-
-		        if ( // sheep
-		            _sheep != null
-		            && Me.IsVisibleToEnemies &&
-		            _sheep.CanBeCasted() &&
-		            Me.CanCast() &&
-		            !E.IsMagicImmune() &&
-		            !linkens &&
-		            Utils.SleepCheck("sheep") &&
-		            Me.Distance2D(E) <= 600
-		        )
-		        {
-		            _sheep.UseAbility(E);
-		            Utils.Sleep(250, "sheep");
-		        } // sheep Item end
-
-		        if (// Soul Item 
-		            _soul != null
-		            && _q!=null 
-		            && _q.CanBeCasted()
-		            && Me.Health >= (Me.MaximumHealth * 0.6)
-		            && Me.Mana <= _q.ManaCost
-		            && _soul.CanBeCasted())
-		        {
-		            _soul.UseAbility();
-		        } // Soul Item end
-
-		        if (// Shiva Item
-		            _shiva != null
-		            && Me.IsVisibleToEnemies &&
-		            _shiva.CanBeCasted() &&
-		            Me.CanCast() &&
-		            !E.IsMagicImmune() &&
-		            Utils.SleepCheck("shiva") &&
-		            Me.Distance2D(E) <= 600
-		        )
-		        {
-		            _shiva.UseAbility();
-		            Utils.Sleep(250, "shiva");
-		        } // Shiva Item end
-
-		        if (// MOM
-		            _mom != null &&
-		            _mom.CanBeCasted() &&
-		            Me.CanCast() &&
-		            Utils.SleepCheck("mom") &&
-		            Me.Distance2D(E) <= 700
-		        )
-		        {
-		            _mom.UseAbility();
-		            Utils.Sleep(250, "mom");
-		        } // MOM Item end
-
-		        if ( // Medall
-		            _medall != null
-		            && Me.IsVisibleToEnemies &&
-		            _medall.CanBeCasted() &&
-
-		            Utils.SleepCheck("Medall") &&
-		            Me.Distance2D(E) <= 500
-		        )
-		        {
-		            _medall.UseAbility(E);
-		            Utils.Sleep(250, "Medall");
-		        } // Medall Item end
-
-		        if ( // Abyssal Blade
-		            _abyssal != null
-		            && Me.IsVisibleToEnemies &&
-		            _abyssal.CanBeCasted() &&
-		            Me.CanCast() &&
-		            !E.IsMagicImmune() &&
-		            Utils.SleepCheck("abyssal") &&
-		            Me.Distance2D(E) <= 400
-		        )
-		        {
-		            _abyssal.UseAbility(E);
-		            Utils.Sleep(250, "abyssal");
-		        } // Abyssal Item end
-
-		        if ( // Hellbard
-		            _halberd != null
-		            && Me.IsVisibleToEnemies &&
-		            _halberd.CanBeCasted() &&
-		            Me.CanCast() &&
-		            !E.IsMagicImmune() &&
-		            Utils.SleepCheck("halberd") &&
-		            Me.Distance2D(E) <= 700
-		        )
-		        {
-		            _halberd.UseAbility(E);
-		            Utils.Sleep(250, "halberd");
-		        } // Hellbard Item end
-
-		        if ( // Mjollnir
-		            _mjollnir != null
-		            && Me.IsVisibleToEnemies &&
-		            _mjollnir.CanBeCasted() &&
-		            Me.CanCast() &&
-		            !E.IsMagicImmune() &&
-		            Utils.SleepCheck("mjollnir") &&
-		            Me.Distance2D(E) <= 600
-		        )
-		        {
-		            _mjollnir.UseAbility(Me);
-		            Utils.Sleep(250, "mjollnir");
-		        } // Mjollnir Item end
-		        var v =
-		            ObjectManager.GetEntities<Hero>()
-		                .Where(x => x.Team != Me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion)
-		                .ToList();
-		        if (_mail != null && _mail.CanBeCasted() && (v.Count(x => x.Distance2D(Me) <= 650) >=
-		                                                   (Menu.Item("Heelm").GetValue<Slider>().Value))
-		            && Utils.SleepCheck("mail"))
-		        {
-		            _mail.UseAbility();
-		            Utils.Sleep(100, "mail");
-		        }
-		        if (_bkb != null && _bkb.CanBeCasted() && (v.Count(x => x.Distance2D(Me) <= 650) >=
-		                                                 (Menu.Item("Heel").GetValue<Slider>().Value))
-		            && Utils.SleepCheck("bkb"))
-		        {
-		            _bkb.UseAbility();
-		            Utils.Sleep(100, "bkb");
-		        }
-		        if (// Dagon
-		            _dagon != null &&
-		            _dagon.CanBeCasted() &&
-		            Me.CanCast() &&
-		            !E.IsMagicImmune() &&
-		            Utils.SleepCheck("dagon")
-		        )
-		        {
-		            _dagon.UseAbility(E);
-		            Utils.Sleep(250, "dagon");
-		        } // Dagon Item end
+					if (//R Skill
+						R != null &&
+						R.CanBeCasted() &&
+						me.CanCast() &&
+						me.Distance2D(e) <= 350
+						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
+						&& Utils.SleepCheck("R")
+						)
+					{
+						R.UseAbility();
+						Utils.Sleep(250, "R");
+					} // R Skill end
 
 
-		        if (// Satanic 
-		            _satanic != null 
-		            && Me.Health <= (Me.MaximumHealth * 0.3)
-		            && _satanic.CanBeCasted() 
-		            && Me.Distance2D(E) <= 300
-		            && Utils.SleepCheck("Satanic")
-		        )
-		        {
-		            _satanic.UseAbility();
-		            Utils.Sleep(250, "Satanic");
-		        } // Satanic Item end
+					if ( // orchid
+						orchid != null &&
+						orchid.CanBeCasted() &&
+						me.CanCast() &&
+						!e.IsMagicImmune() &&
+						!linkens &&
+						Utils.SleepCheck("orchid")
+						&& me.IsVisibleToEnemies
+						&& me.Distance2D(e) <= 1000
+						)
+					{
+						orchid.UseAbility(e);
+						Utils.Sleep(250, "orchid");
+					} // orchid Item end
 
-		        if (Menu.Item("orbwalk").GetValue<bool>() && Me.Distance2D(E) <= 1900)
-		        {
-		            Orbwalking.Orbwalk(E, 0, 1600, true, true);
-		        }
+					if ( // sheep
+						sheep != null
+						&& me.IsVisibleToEnemies &&
+						sheep.CanBeCasted() &&
+						me.CanCast() &&
+						!e.IsMagicImmune() &&
+						!linkens &&
+						Utils.SleepCheck("sheep") &&
+						me.Distance2D(e) <= 600
+						)
+					{
+						sheep.UseAbility(e);
+						Utils.Sleep(250, "sheep");
+					} // sheep Item end
+
+					if (// Soul Item 
+						Soul != null
+                        && Q!=null 
+                        && Q.CanBeCasted()
+                        && me.Health >= (me.MaximumHealth * 0.6)
+                        && me.Mana <= Q.ManaCost
+                        && Soul.CanBeCasted())
+					{
+						Soul.UseAbility();
+					} // Soul Item end
+
+					if (// Shiva Item
+						shiva != null
+						&& me.IsVisibleToEnemies &&
+						shiva.CanBeCasted() &&
+						me.CanCast() &&
+						!e.IsMagicImmune() &&
+						Utils.SleepCheck("shiva") &&
+						me.Distance2D(e) <= 600
+						)
+					{
+						shiva.UseAbility();
+						Utils.Sleep(250, "shiva");
+					} // Shiva Item end
+
+					if (// MOM
+						mom != null &&
+						mom.CanBeCasted() &&
+						me.CanCast() &&
+						Utils.SleepCheck("mom") &&
+						me.Distance2D(e) <= 700
+						)
+					{
+						mom.UseAbility();
+						Utils.Sleep(250, "mom");
+					} // MOM Item end
+
+					if ( // Medall
+						medall != null
+						&& me.IsVisibleToEnemies &&
+						medall.CanBeCasted() &&
+
+						Utils.SleepCheck("Medall") &&
+						me.Distance2D(e) <= 500
+						)
+					{
+						medall.UseAbility(e);
+						Utils.Sleep(250, "Medall");
+					} // Medall Item end
+
+					if ( // Abyssal Blade
+						abyssal != null
+						&& me.IsVisibleToEnemies &&
+						abyssal.CanBeCasted() &&
+						me.CanCast() &&
+						!e.IsMagicImmune() &&
+						Utils.SleepCheck("abyssal") &&
+						me.Distance2D(e) <= 400
+						)
+					{
+						abyssal.UseAbility(e);
+						Utils.Sleep(250, "abyssal");
+					} // Abyssal Item end
+
+					if ( // Hellbard
+						halberd != null
+						&& me.IsVisibleToEnemies &&
+						halberd.CanBeCasted() &&
+						me.CanCast() &&
+						!e.IsMagicImmune() &&
+						Utils.SleepCheck("halberd") &&
+						me.Distance2D(e) <= 700
+						)
+					{
+						halberd.UseAbility(e);
+						Utils.Sleep(250, "halberd");
+					} // Hellbard Item end
+
+					if ( // Mjollnir
+						mjollnir != null
+						&& me.IsVisibleToEnemies &&
+						mjollnir.CanBeCasted() &&
+						me.CanCast() &&
+						!e.IsMagicImmune() &&
+						Utils.SleepCheck("mjollnir") &&
+						me.Distance2D(e) <= 600
+					   )
+					{
+						mjollnir.UseAbility(me);
+						Utils.Sleep(250, "mjollnir");
+					} // Mjollnir Item end
+					var v =
+			   ObjectManager.GetEntities<Hero>()
+				   .Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion)
+				   .ToList();
+					if (mail != null && mail.CanBeCasted() && (v.Count(x => x.Distance2D(me) <= 650) >=
+														   (Menu.Item("Heelm").GetValue<Slider>().Value))
+					&& Utils.SleepCheck("mail"))
+					{
+						mail.UseAbility();
+						Utils.Sleep(100, "mail");
+					}
+					if (bkb != null && bkb.CanBeCasted() && (v.Count(x => x.Distance2D(me) <= 650) >=
+															 (Menu.Item("Heel").GetValue<Slider>().Value))
+						&& Utils.SleepCheck("bkb"))
+					{
+						bkb.UseAbility();
+						Utils.Sleep(100, "bkb");
+					}
+					if (// Dagon
+						dagon != null &&
+						dagon.CanBeCasted() &&
+						me.CanCast() &&
+                        !e.IsMagicImmune() &&
+						Utils.SleepCheck("dagon")
+					   )
+					{
+						dagon.UseAbility(e);
+						Utils.Sleep(250, "dagon");
+					} // Dagon Item end
 
 
-		        /***************************************WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW**********************************/
+					if (// Satanic 
+						satanic != null 
+                        && me.Health <= (me.MaximumHealth * 0.3)
+                        && satanic.CanBeCasted() 
+                        && me.Distance2D(e) <= 300
+						&& Utils.SleepCheck("Satanic")
+						)
+					{
+						satanic.UseAbility();
+						Utils.Sleep(250, "Satanic");
+					} // Satanic Item end
 
-		        var web =
-		            ObjectManager.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_broodmother_web").ToList();
-		        var spinWeb = GetClosestToWeb(web, Me);
-		        if (_w != null && _w.CanBeCasted() && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_w.Name))
-		        {
-		            if ((Me.Distance2D(spinWeb) >= 900 && E.Distance2D(spinWeb) >= 900) && Me.Distance2D(E) <= 800 && Utils.SleepCheck(spinWeb.Handle + "SpideWeb"))
-		            {
-		                _w.UseAbility(E.Predict(1100));
-		                Utils.Sleep(300, spinWeb.Handle + "SpideWeb");
-		            }
-		        }
-		    }
-		    /***************************************WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW**********************************/
+					if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+					{
+						Orbwalking.Orbwalk(e, 0, 1600, true, true);
+					}
+
+
+					/***************************************WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW**********************************/
+
+					var Web =
+				ObjectManager.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_broodmother_web").ToList();
+					var SpinWeb = GetClosestToWeb(Web, me);
+					if (W != null && W.CanBeCasted() && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
+					{
+						if ((me.Distance2D(SpinWeb) >= 900 && e.Distance2D(SpinWeb) >= 900) && me.Distance2D(e) <= 800 && Utils.SleepCheck(SpinWeb.Handle + "SpideWeb"))
+						{
+							W.UseAbility(e.Predict(1100));
+							Utils.Sleep(300, SpinWeb.Handle + "SpideWeb");
+						}
+					}
+				}
+				/***************************************WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW**********************************/
+			}
 		}
 
 		private Unit GetClosestToWeb(List<Unit> units, Hero x)
@@ -581,77 +597,81 @@ namespace DotaAllCombo.Heroes
 			return closestHero;
 		}
 
-	    private void Drawing_OnEndScene(EventArgs args)
+		void Drawing_OnEndScene(EventArgs args)
 		{
 			if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !Game.IsInGame)
 				return;
 
-			if (!_useQ)
+			if (!useQ)
 			{
 				DrawBox(2, 490, 90, 20, 1, new ColorBGRA(0, 0, 90, 70));
 				DrawFilledBox(2, 490, 90, 20, new ColorBGRA(0, 0, 0, 90));
-				DrawShadowText("  Q DISABLE", 4, 490, Color.Gold, _txt);
+				DrawShadowText("  Q DISABLE", 4, 490, Color.Gold, txt);
 			}
 
-			if (_combokey)
+			if (Combokey)
 			{
 				DrawBox(2, 530, 132, 20, 1, new ColorBGRA(0, 0, 90, 70));
 				DrawFilledBox(2, 530, 132, 20, new ColorBGRA(0, 0, 0, 90));
-				DrawShadowText("BroodMother: Active!", 4, 530, Color.Gold, _txt);
+				DrawShadowText("BroodMother: Active!", 4, 530, Color.Gold, txt);
 			}
-			if (_chasekey)
+			if (Chasekey)
 			{
 				DrawBox(2, 530, 120, 20, 1, new ColorBGRA(0, 0, 30, 70));
 				DrawFilledBox(2, 530, 120, 20, new ColorBGRA(0, 0, 0, 90));
-				DrawShadowText("Spiderling: Active!", 4, 530, Color.Gold, _txt);
+				DrawShadowText("Spiderling: Active!", 4, 530, Color.Gold, txt);
 			}
-			if (_lastHitkey)
+			if (LastHitkey)
 			{
 				DrawBox(2, 510, 120, 20, 1, new ColorBGRA(0, 0, 90, 70));
 				DrawFilledBox(2, 510, 120, 20, new ColorBGRA(0, 0, 0, 90));
-				DrawShadowText("LastHit Active", 4, 510, Color.Gold, _txt);
+				DrawShadowText("LastHit Active", 4, 510, Color.Gold, txt);
 			}
 		}
 
 
-	    private void CurrentDomain_DomainUnload(object sender, EventArgs e)
+
+
+
+		void CurrentDomain_DomainUnload(object sender, EventArgs e)
 		{
-			_txt.Dispose();
-			_noti.Dispose();
-			_lines.Dispose();
+			txt.Dispose();
+			noti.Dispose();
+			lines.Dispose();
 		}
 
 
-	    private void Drawing_OnPostReset(EventArgs args)
+
+		void Drawing_OnPostReset(EventArgs args)
 		{
-			_txt.OnResetDevice();
-			_noti.OnResetDevice();
-			_lines.OnResetDevice();
+			txt.OnResetDevice();
+			noti.OnResetDevice();
+			lines.OnResetDevice();
 		}
 
-	    private void Drawing_OnPreReset(EventArgs args)
+		void Drawing_OnPreReset(EventArgs args)
 		{
-			_txt.OnLostDevice();
-			_noti.OnLostDevice();
-			_lines.OnLostDevice();
+			txt.OnLostDevice();
+			noti.OnLostDevice();
+			lines.OnLostDevice();
 		}
 
 		public void DrawFilledBox(float x, float y, float w, float h, Color color)
 		{
 			var vLine = new Vector2[2];
 
-			_lines.GLLines = true;
-			_lines.Antialias = false;
-			_lines.Width = w;
+			lines.GLLines = true;
+			lines.Antialias = false;
+			lines.Width = w;
 
 			vLine[0].X = x + w / 2;
 			vLine[0].Y = y;
 			vLine[1].X = x + w / 2;
 			vLine[1].Y = y + h;
 
-			_lines.Begin();
-			_lines.Draw(vLine, color);
-			_lines.End();
+			lines.Begin();
+			lines.Draw(vLine, color);
+			lines.End();
 		}
 
 		public void DrawBox(float x, float y, float w, float h, float px, Color color)

@@ -4,8 +4,8 @@
 	using Ensage;
 	using Ensage.Common;
 	using Debug;
-
-    internal class Bootstrap
+	using System.Threading;
+	class Bootstrap
 	{
 		//private const uint LEN_THREADS = 2;
 

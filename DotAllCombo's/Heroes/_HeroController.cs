@@ -6,15 +6,15 @@ namespace DotaAllCombo.Heroes
 	using Ensage.Common.Menu;
 
     [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
-    internal class Variables
+    class Variables
 	{
-		protected Hero E;
-		public Hero Me;
+		protected Hero e;
+		public Hero me;
 		public Menu Menu;
 	    public bool Active, CastW, CastE, Push, CastQ;
 	}
 
-    internal interface IHeroController
+	interface IHeroController
 	{
 		void Combo();
 		void OnLoadEvent();

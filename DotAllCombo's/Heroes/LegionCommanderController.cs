@@ -1,6 +1,4 @@
-﻿using DotaAllCombo.Extensions;
-
-namespace DotaAllCombo.Heroes
+﻿namespace DotaAllCombo.Heroes
 {
     using System;
     using System.Collections.Generic;
@@ -11,45 +9,49 @@ namespace DotaAllCombo.Heroes
     using Ensage.Common.Menu;
     using SharpDX;
 	using SharpDX.Direct3D9;
+	using Service;
+	using Service.Debug;
 
-    internal class LegionCommanderController : Variables, IHeroController
+	internal class LegionCommanderController : Variables, IHeroController
     {
-        private readonly Menu _items = new Menu("Items", "Items");
-        private readonly Menu _skills = new Menu("Skills", "Skills");
-        private Ability _r, _w, _q;
-		private double _damage;
+        private readonly Menu items = new Menu("Items", "Items");
+        private readonly Menu skills = new Menu("Skills", "Skills");
+        private Ability R, W, Q;
+		private double damage;
 
-		private Font _txt;
-		private Font _noti;
-		private Line _lines;
-		private Item _blink, _armlet, _blademail, _bkb, _abyssal, _mjollnir, _halberd, _medallion, _madness, _urn, 
-            _satanic, _solar, _dust, _sentry, _mango, _arcane, _buckler, _crimson, _lotusorb, _cheese, _stick, 
-            _soul, _force, _cyclone, _sheep, _orchid, _atos;
+		private Font txt;
+		private Font noti;
+		private Line lines;
+		private Item blink, armlet, blademail, bkb, abyssal, mjollnir, halberd, medallion, madness, urn, 
+            satanic, solar, dust, sentry, mango, arcane, buckler, crimson, lotusorb, cheese, stick, 
+            soul, force, cyclone, sheep, orchid, atos;
 		private Unit GetLowestToQ(List<Hero> units, Unit z)
 		{
 
-			_q = Me.Spellbook.SpellQ;
+			Q = me.Spellbook.SpellQ;
 			int[] qDmg = { 40, 80, 120, 160 };
 			int[] creepsDmg = { 14, 16, 18, 20 };
 			int[] enemyDmg = { 20, 40, 60, 80 };
-		    double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
+			int enemiesCount;
+			int creepsECount;
+            double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
             double[] bloodrage = { 0, 1.15, 1.2, 1.25, 1.3 };
             double[] soul = { 0, 1.2, 1.3, 1.4, 1.5 };
             foreach (var v in units.Where(x => !x.IsMagicImmune()))
 			{
-				var creepsECount = ObjectManager.GetEntities<Unit>().Where(creep =>
-				    (creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Lane
-				     || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Siege
-				     || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Neutral
-				     || creep.ClassId == ClassId.CDOTA_Unit_Broodmother_Spiderling
-				     || creep.ClassId == ClassId.CDOTA_Unit_SpiritBear
-				     || creep.ClassId == ClassId.CDOTA_BaseNPC_Invoker_Forged_Spirit
-				     || creep.ClassId == ClassId.CDOTA_BaseNPC_Warlock_Golem
-				     || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep) &&
-				    creep.IsAlive && creep.Team != Me.Team && creep.IsVisible && v.Distance2D(creep) <= 330 &&
-				    creep.IsSpawned).ToList().Count();
-				var enemiesCount = ObjectManager.GetEntities<Hero>().Where(x =>
-				    x.Team != Me.Team && x.IsAlive && x.IsVisible && v.Distance2D(x) <= 330).ToList().Count();
+				creepsECount = ObjectManager.GetEntities<Unit>().Where(creep =>
+					(creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
+					 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
+					 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
+					 || creep.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling
+					 || creep.ClassID == ClassID.CDOTA_Unit_SpiritBear
+					 || creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
+					 || creep.ClassID == ClassID.CDOTA_BaseNPC_Warlock_Golem
+					 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep) &&
+					creep.IsAlive && creep.Team != me.Team && creep.IsVisible && v.Distance2D(creep) <= 330 &&
+					creep.IsSpawned).ToList().Count();
+				enemiesCount = ObjectManager.GetEntities<Hero>().Where(x =>
+					x.Team != me.Team && x.IsAlive && x.IsVisible && v.Distance2D(x) <= 330).ToList().Count();
 				if (enemiesCount == 0)
 				{
 					enemiesCount = 0;
@@ -58,37 +60,37 @@ namespace DotaAllCombo.Heroes
 				{
 					creepsECount = 0;
 				}
-				_damage = ((creepsECount * creepsDmg[_q.Level - 1] + enemiesCount * enemyDmg[_q.Level - 1]) +
-							 qDmg[_q.Level - 1]) * (1 - v.MagicDamageResist);
+				damage = ((creepsECount * creepsDmg[Q.Level - 1] + enemiesCount * enemyDmg[Q.Level - 1]) +
+							 qDmg[Q.Level - 1]) * (1 - v.MagicDamageResist);
 				
 				if (v.NetworkName == "CDOTA_Unit_Hero_Spectre" && v.Spellbook.Spell3.Level > 0)
 				{
-					_damage =
-						Math.Floor((((creepsECount * creepsDmg[_q.Level - 1] + enemiesCount * enemyDmg[_q.Level - 1]) +
-							 qDmg[_q.Level - 1]) *
+					damage =
+						Math.Floor((((creepsECount * creepsDmg[Q.Level - 1] + enemiesCount * enemyDmg[Q.Level - 1]) +
+							 qDmg[Q.Level - 1]) *
 								   (1 - (0.10 + v.Spellbook.Spell3.Level * 0.04))) * (1 - v.MagicDamageResist));
 				}
 				
 				if (v.NetworkName == "CDOTA_Unit_Hero_Tusk" &&
 					v.Spellbook.SpellW.CooldownLength - 3 > v.Spellbook.SpellQ.Cooldown)
-					_damage = 0;
+					damage = 0;
 
 				var rum = v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb");
-				if (rum) _damage = _damage * 0.5;
+				if (rum) damage = damage * 0.5;
 				var mom = v.HasModifier("modifier_item_mask_of_madness_berserk");
-				if (mom) _damage = _damage * 1.3;
+				if (mom) damage = damage * 1.3;
 
-				var spellamplymult = 1 + (Me.TotalIntelligence / 16 / 100);
+				var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
 
                 if (v.HasModifier("modifier_bloodseeker_bloodrage"))
                 {
                     var blood =
                         ObjectManager.GetEntities<Hero>()
-                            .FirstOrDefault(x => x.ClassId == ClassId.CDOTA_Unit_Hero_Bloodseeker);
+                            .FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Hero_Bloodseeker);
                     if (blood != null)
-                        _damage = _damage * bloodrage[blood.Spellbook.Spell1.Level];
+                        damage = damage * bloodrage[blood.Spellbook.Spell1.Level];
                     else
-                        _damage = _damage * 1.4;
+                        damage = damage * 1.4;
                 }
 
 
@@ -96,9 +98,9 @@ namespace DotaAllCombo.Heroes
                 {
                     var chen =
                         ObjectManager.GetEntities<Hero>()
-                            .FirstOrDefault(x => x.Team == Me.Team && x.ClassId == ClassId.CDOTA_Unit_Hero_Chen);
+                            .FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Chen);
                     if (chen != null)
-                        _damage = _damage * penitence[chen.Spellbook.Spell1.Level];
+                        damage = damage * penitence[chen.Spellbook.Spell1.Level];
                 }
 
 
@@ -106,14 +108,14 @@ namespace DotaAllCombo.Heroes
                 {
                     var demon =
                         ObjectManager.GetEntities<Hero>()
-                            .FirstOrDefault(x => x.Team == Me.Team && x.ClassId == ClassId.CDOTA_Unit_Hero_Shadow_Demon);
+                            .FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon);
                     if (demon != null)
-                        _damage = _damage * soul[demon.Spellbook.Spell2.Level];
+                        damage = damage * soul[demon.Spellbook.Spell2.Level];
                 }
-                _damage = _damage * spellamplymult;
+                damage = damage * spellamplymult;
 				//Console.WriteLine(damage);
 
-				if (_damage >= v.Health && z.Distance2D(v) <= _q.GetCastRange())
+				if (damage >= v.Health && z.Distance2D(v) <= Q.GetCastRange())
 					return v;
 			}
 			return null;
@@ -122,260 +124,260 @@ namespace DotaAllCombo.Heroes
 		{
 			if (!Game.IsInGame || Game.IsPaused || Game.IsWatchingGame)
 				return;
-			_q = Me.Spellbook.SpellQ;
+			Q = me.Spellbook.SpellQ;
 			Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
-			if (Menu.Item("steal").IsActive() && !Me.HasModifier("modifier_legion_commander_duel") && _q != null && _q.CanBeCasted())
+			if (Menu.Item("steal").IsActive() && !me.HasModifier("modifier_legion_commander_duel") && Q != null && Q.CanBeCasted())
 			{
-				if (!Me.IsAlive) return;
+				if (!me.IsAlive) return;
 				var v =
 				   ObjectManager.GetEntities<Hero>()
-					   .Where(x => x.Team != Me.Team && x.IsAlive && x.Distance2D(Me) <= _q.GetCastRange() && !x.IsIllusion)
+					   .Where(x => x.Team != me.Team && x.IsAlive && x.Distance2D(me) <= Q.GetCastRange() && !x.IsIllusion)
 					   .ToList();
-				var dmg = GetLowestToQ(v, Me);
+				var dmg = GetLowestToQ(v, me);
 				
-				if (dmg != null && Utils.SleepCheck("Q") && (Menu.Item("-dmg").IsActive() && !_r.CanBeCasted() || !Menu.Item("-dmg").IsActive()))
+				if (dmg != null && Utils.SleepCheck("Q") && (Menu.Item("-dmg").IsActive() && !R.CanBeCasted() || !Menu.Item("-dmg").IsActive()))
 				{
-					_q.UseAbility(dmg.Position);
+					Q.UseAbility(dmg.Position);
 					Utils.Sleep(150, "Q");
 				}
 			}
 			if (Active && !Game.IsChatOpen)
             {
-                _r = Me.Spellbook.SpellR;
-                _w = Me.Spellbook.SpellW;
-                _blink = Me.FindItem("item_blink");
-                _armlet = Me.FindItem("item_armlet");
-                _blademail = Me.FindItem("item_blade_mail");
-                _bkb = Me.FindItem("item_black_king_bar");
-                _abyssal = Me.FindItem("item_abyssal_blade");
-                _mjollnir = Me.FindItem("item_mjollnir");
-                _halberd = Me.FindItem("item_heavens_halberd");
-                _medallion = Me.FindItem("item_medallion_of_courage");
-                _madness = Me.FindItem("item_mask_of_madness");
-                _urn = Me.FindItem("item_urn_of_shadows");
-                _satanic = Me.FindItem("item_satanic");
-                _solar = Me.FindItem("item_solar_crest");
-				_orchid = Me.FindItem("item_orchid") ?? Me.FindItem("item_bloodthorn");
-				_dust = Me.FindItem("item_dust");
-                _sentry = Me.FindItem("item_ward_sentry");
-                _mango = Me.FindItem("item_enchanted_mango");
-                _arcane = Me.FindItem("item_arcane_boots");
-                _buckler = Me.FindItem("item_buckler");
-                _crimson = Me.FindItem("item_crimson_guard");
-                _lotusorb = Me.FindItem("item_lotus_orb");
-                _cheese = Me.FindItem("item_cheese");
-                _stick = Me.FindItem("item_magic_stick") ?? Me.FindItem("item_magic_wand");
-                _soul = Me.FindItem("item_soul_ring");
-                _force = Me.FindItem("item_force_staff");
-                _cyclone = Me.FindItem("item_cyclone");
-                _sheep = Me.FindItem("item_sheepstick");
-                _atos = Me.FindItem("item_rod_of_atos");
-                E = Toolset.ClosestToMouse(Me);
+                R = me.Spellbook.SpellR;
+                W = me.Spellbook.SpellW;
+                blink = me.FindItem("item_blink");
+                armlet = me.FindItem("item_armlet");
+                blademail = me.FindItem("item_blade_mail");
+                bkb = me.FindItem("item_black_king_bar");
+                abyssal = me.FindItem("item_abyssal_blade");
+                mjollnir = me.FindItem("item_mjollnir");
+                halberd = me.FindItem("item_heavens_halberd");
+                medallion = me.FindItem("item_medallion_of_courage");
+                madness = me.FindItem("item_mask_of_madness");
+                urn = me.FindItem("item_urn_of_shadows");
+                satanic = me.FindItem("item_satanic");
+                solar = me.FindItem("item_solar_crest");
+				orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn");
+				dust = me.FindItem("item_dust");
+                sentry = me.FindItem("item_ward_sentry");
+                mango = me.FindItem("item_enchanted_mango");
+                arcane = me.FindItem("item_arcane_boots");
+                buckler = me.FindItem("item_buckler");
+                crimson = me.FindItem("item_crimson_guard");
+                lotusorb = me.FindItem("item_lotus_orb");
+                cheese = me.FindItem("item_cheese");
+                stick = me.FindItem("item_magic_stick") ?? me.FindItem("item_magic_wand");
+                soul = me.FindItem("item_soul_ring");
+                force = me.FindItem("item_force_staff");
+                cyclone = me.FindItem("item_cyclone");
+                sheep = me.FindItem("item_sheepstick");
+                atos = me.FindItem("item_rod_of_atos");
+                e = Toolset.ClosestToMouse(me);
 
-                float angle = Me.FindAngleBetween(E.Position, true);
-                Vector3 pos = new Vector3((float)(E.Position.X - 55 * Math.Cos(angle)), (float)(E.Position.Y - 55 * Math.Sin(angle)), 0);
-                if (E != null && E.IsAlive  && !E.IsInvul() &&
-					(_blink != null ? Me.Distance2D(pos) <= 1180 : Me.Distance2D(E) <= 600))
+                float angle = me.FindAngleBetween(e.Position, true);
+                Vector3 pos = new Vector3((float)(e.Position.X - 55 * Math.Cos(angle)), (float)(e.Position.Y - 55 * Math.Sin(angle)), 0);
+                if (e != null && e.IsAlive  && !e.IsInvul() &&
+					(blink != null ? me.Distance2D(pos) <= 1180 : me.Distance2D(e) <= 600))
 				{
-					if (Me.CanAttack() && Me.CanCast())
+					if (me.CanAttack() && me.CanCast())
 					{
-						if (CanInvisCrit(Me))
-							Me.Attack(E);
+						if (CanInvisCrit(me))
+							me.Attack(e);
 						else
 						{
 						    uint manacost = 0;
-						    if (Me.IsAlive)
+						    if (me.IsAlive)
 						    {
-						        if (_blademail != null && _blademail.Cooldown <= 0 &&
-						            Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_blademail.Name))
-						            manacost += _blademail.ManaCost;
-						        if (_abyssal != null && _abyssal.Cooldown <= 0 &&
-						            Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_abyssal.Name))
-						            manacost += _abyssal.ManaCost;
-						        if (_mjollnir != null && _mjollnir.Cooldown <= 0 &&
-						            Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_mjollnir.Name))
-						            manacost += _mjollnir.ManaCost;
-						        if (_halberd != null && _halberd.Cooldown <= 0 &&
-						            Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(_halberd.Name))
-						            manacost += _halberd.ManaCost;
-						        if (_madness != null && _madness.Cooldown <= 0 &&
-						            Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_madness.Name))
-						            manacost += _madness.ManaCost;
-						        if (_lotusorb != null && _lotusorb.Cooldown <= 0 &&
-						            Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_lotusorb.Name))
-						            manacost += _lotusorb.ManaCost;
-						        if (_buckler != null && _buckler.Cooldown <= 0 &&
-						            Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(_buckler.Name))
-						            manacost += _buckler.ManaCost;
-						        if (_crimson != null && _crimson.Cooldown <= 0 &&
-						            Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(_crimson.Name))
-						            manacost += _crimson.ManaCost;
-						        if (_force != null && _force.Cooldown <= 0 &&
-						            Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(_force.Name))
-						            manacost += _force.ManaCost;
-						        if (_cyclone != null && _cyclone.CanBeCasted() &&
-						            Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(_cyclone.Name))
-						            manacost += _cyclone.ManaCost;
-						        if (_sheep != null && _sheep.Cooldown <= 0 &&
-						            Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(_sheep.Name))
-						            manacost += _sheep.ManaCost;
-						        if (_w.Cooldown <= 0 && _w.Level > 0 &&
-						            Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_w.Name))
-						            manacost += _w.ManaCost;
-						        if (_r.Cooldown <= 0 && _r.Level > 0)
-						            manacost += _w.ManaCost;
+						        if (blademail != null && blademail.Cooldown <= 0 &&
+						            Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(blademail.Name))
+						            manacost += blademail.ManaCost;
+						        if (abyssal != null && abyssal.Cooldown <= 0 &&
+						            Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(abyssal.Name))
+						            manacost += abyssal.ManaCost;
+						        if (mjollnir != null && mjollnir.Cooldown <= 0 &&
+						            Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mjollnir.Name))
+						            manacost += mjollnir.ManaCost;
+						        if (halberd != null && halberd.Cooldown <= 0 &&
+						            Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(halberd.Name))
+						            manacost += halberd.ManaCost;
+						        if (madness != null && madness.Cooldown <= 0 &&
+						            Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(madness.Name))
+						            manacost += madness.ManaCost;
+						        if (lotusorb != null && lotusorb.Cooldown <= 0 &&
+						            Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(lotusorb.Name))
+						            manacost += lotusorb.ManaCost;
+						        if (buckler != null && buckler.Cooldown <= 0 &&
+						            Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(buckler.Name))
+						            manacost += buckler.ManaCost;
+						        if (crimson != null && crimson.Cooldown <= 0 &&
+						            Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(crimson.Name))
+						            manacost += crimson.ManaCost;
+						        if (force != null && force.Cooldown <= 0 &&
+						            Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(force.Name))
+						            manacost += force.ManaCost;
+						        if (cyclone != null && cyclone.CanBeCasted() &&
+						            Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(cyclone.Name))
+						            manacost += cyclone.ManaCost;
+						        if (sheep != null && sheep.Cooldown <= 0 &&
+						            Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(sheep.Name))
+						            manacost += sheep.ManaCost;
+						        if (W.Cooldown <= 0 && W.Level > 0 &&
+						            Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
+						            manacost += W.ManaCost;
+						        if (R.Cooldown <= 0 && R.Level > 0)
+						            manacost += W.ManaCost;
 						    }
-						    if (manacost > Me.Mana)
+						    if (manacost > me.Mana)
 						    {
-						        if (_mango.CanBeCasted() && _mango != null &&
-						            Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(_mango.Name) &&
+						        if (mango.CanBeCasted() && mango != null &&
+						            Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(mango.Name) &&
 						            Utils.SleepCheck("Mango"))
 						        {
-						            _mango.UseAbility();
+						            mango.UseAbility();
 						            Utils.Sleep(Game.Ping, "Mango");
 						        }
-						        if (_arcane.CanBeCasted() && _arcane != null &&
-						            Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(_arcane.Name) &&
+						        if (arcane.CanBeCasted() && arcane != null &&
+						            Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(arcane.Name) &&
 						            Utils.SleepCheck("Arcane"))
 						        {
-						            _arcane.UseAbility();
+						            arcane.UseAbility();
 						            Utils.Sleep(Game.Ping, "Arcane");
 						        }
-						        if (_stick.CanBeCasted() && _stick != null &&
-						            Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_stick.Name) &&
+						        if (stick.CanBeCasted() && stick != null &&
+						            Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(stick.Name) &&
 						            Utils.SleepCheck("stick"))
 						        {
-						            _stick.UseAbility();
+						            stick.UseAbility();
 						            Utils.Sleep(Game.Ping, "stick");
 						        }
-						        if ((_cheese.CanBeCasted() && _cheese != null &&
-						             Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(_cheese.Name) &&
-						             Me.Health <= Me.MaximumHealth * 0.5) ||
-						            Me.Health <= Me.MaximumHealth * 0.30 && Utils.SleepCheck("Cheese"))
+						        if ((cheese.CanBeCasted() && cheese != null &&
+						             Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(cheese.Name) &&
+						             me.Health <= me.MaximumHealth * 0.5) ||
+						            me.Health <= me.MaximumHealth * 0.30 && Utils.SleepCheck("Cheese"))
 						        {
-						            _cheese.UseAbility();
+						            cheese.UseAbility();
 						            Utils.Sleep(Game.Ping, "Cheese");
 						        }
-						        if (_soul.CanBeCasted() && _soul != null &&
-						            Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(_soul.Name) &&
+						        if (soul.CanBeCasted() && soul != null &&
+						            Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(soul.Name) &&
 						            Utils.SleepCheck("soul"))
 						        {
-						            _soul.UseAbility();
+						            soul.UseAbility();
 						            Utils.Sleep(Game.Ping, "soul");
 						        }
 						    }
-						    if (E.IsLinkensProtected())
+						    if (e.IsLinkensProtected())
 							{
-								if ((_cyclone.CanBeCasted() || _force.CanBeCasted() || _halberd.CanBeCasted() ||
-									 _sheep.CanBeCasted() || _abyssal.CanBeCasted() || _atos.CanBeCasted() ) && Utils.SleepCheck("Combo2"))
+								if ((cyclone.CanBeCasted() || force.CanBeCasted() || halberd.CanBeCasted() ||
+									 sheep.CanBeCasted() || abyssal.CanBeCasted() || atos.CanBeCasted() ) && Utils.SleepCheck("Combo2"))
 								{
-									if (_blademail != null && _blademail.Cooldown <= 0 &&
+									if (blademail != null && blademail.Cooldown <= 0 &&
 										Menu.Item("Item")
 											.GetValue<AbilityToggler>()
-											.IsEnabled(_blademail.Name) && Me.Mana - _blademail.ManaCost >= 75)
-										_blademail.UseAbility();
-									if (_satanic != null && _satanic.Cooldown <= 0 && Me.Health <= Me.MaximumHealth * 0.5 &&
-										Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_satanic.Name))
-										_satanic.UseAbility();
-									if (_crimson != null && _crimson.Cooldown <= 0 &&
-										Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(_crimson.Name))
-										_crimson.UseAbility();
-									if (_buckler != null && _buckler.Cooldown <= 0 &&
-										Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(_buckler.Name) &&
-										Me.Mana - _buckler.ManaCost >= 75)
-										_buckler.UseAbility();
-									if (_lotusorb != null && _lotusorb.Cooldown <= 0 &&
-										Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_lotusorb.Name) &&
-										Me.Mana - _lotusorb.ManaCost >= 75)
-										_lotusorb.UseAbility(Me);
-									if (_mjollnir != null && _mjollnir.Cooldown <= 0 &&
-										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_mjollnir.Name) &&
-										Me.Mana - _mjollnir.ManaCost >= 75)
-										_mjollnir.UseAbility(Me);
-									if (_armlet != null && !_armlet.IsToggled &&
-										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_armlet.Name) &&
+											.IsEnabled(blademail.Name) && me.Mana - blademail.ManaCost >= 75)
+										blademail.UseAbility();
+									if (satanic != null && satanic.Cooldown <= 0 && me.Health <= me.MaximumHealth * 0.5 &&
+										Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(satanic.Name))
+										satanic.UseAbility();
+									if (crimson != null && crimson.Cooldown <= 0 &&
+										Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(crimson.Name))
+										crimson.UseAbility();
+									if (buckler != null && buckler.Cooldown <= 0 &&
+										Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(buckler.Name) &&
+										me.Mana - buckler.ManaCost >= 75)
+										buckler.UseAbility();
+									if (lotusorb != null && lotusorb.Cooldown <= 0 &&
+										Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(lotusorb.Name) &&
+										me.Mana - lotusorb.ManaCost >= 75)
+										lotusorb.UseAbility(me);
+									if (mjollnir != null && mjollnir.Cooldown <= 0 &&
+										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mjollnir.Name) &&
+										me.Mana - mjollnir.ManaCost >= 75)
+										mjollnir.UseAbility(me);
+									if (armlet != null && !armlet.IsToggled &&
+										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(armlet.Name) &&
 										Utils.SleepCheck("armlet"))
 									{
-										_armlet.ToggleAbility();
+										armlet.ToggleAbility();
 										Utils.Sleep(300, "armlet");
 									}
-									if (_madness != null && _madness.Cooldown <= 0 &&
-										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_madness.Name) &&
-										Me.Mana - _madness.ManaCost >= 75)
-										_madness.UseAbility();
-									if (_w != null && _w.Level > 0 && _w.Cooldown <= 0 &&
-										Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_w.Name) &&
-										!Me.IsMagicImmune() && Me.Mana - _w.ManaCost >= 75)
-										_w.UseAbility(Me);
-									if (_bkb != null && _bkb.Cooldown <= 0 &&
-										Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_bkb.Name) && Menu.Item("BKB").GetValue<KeyBind>().Active 
-										&& !Game.IsChatOpen && (!_w.CanBeCasted() || _w == null))
-										_bkb.UseAbility();
-									if (_blink != null && _blink.Cooldown <= 0 && Me.Distance2D(pos) <= 1180 &&
-										Me.Distance2D(E) >= 200 &&
-										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_blink.Name))
-										_blink.UseAbility(pos);
-									if (_urn != null && _urn.CurrentCharges > 0 &&
-										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_urn.Name))
-										_urn.UseAbility(E);
-									if (_solar != null && _solar.CanBeCasted() &&
-										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_solar.Name))
-										_solar.UseAbility(E);
-									if (_medallion != null && _medallion.CanBeCasted() &&
-										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_medallion.Name))
-										_medallion.UseAbility(E);
-                                    if (_atos != null && _atos.CanBeCasted() &&
+									if (madness != null && madness.Cooldown <= 0 &&
+										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(madness.Name) &&
+										me.Mana - madness.ManaCost >= 75)
+										madness.UseAbility();
+									if (W != null && W.Level > 0 && W.Cooldown <= 0 &&
+										Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name) &&
+										!me.IsMagicImmune() && me.Mana - W.ManaCost >= 75)
+										W.UseAbility(me);
+									if (bkb != null && bkb.Cooldown <= 0 &&
+										Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(bkb.Name) && Menu.Item("BKB").GetValue<KeyBind>().Active 
+										&& !Game.IsChatOpen && (!W.CanBeCasted() || W == null))
+										bkb.UseAbility();
+									if (blink != null && blink.Cooldown <= 0 && me.Distance2D(pos) <= 1180 &&
+										me.Distance2D(e) >= 200 &&
+										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
+										blink.UseAbility(pos);
+									if (urn != null && urn.CurrentCharges > 0 &&
+										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(urn.Name))
+										urn.UseAbility(e);
+									if (solar != null && solar.CanBeCasted() &&
+										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(solar.Name))
+										solar.UseAbility(e);
+									if (medallion != null && medallion.CanBeCasted() &&
+										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(medallion.Name))
+										medallion.UseAbility(e);
+                                    if (atos != null && atos.CanBeCasted() &&
                                               Utils.SleepCheck("atos") &&
                                               Menu.Item("Items")
                                                   .GetValue<AbilityToggler>()
-                                                  .IsEnabled(_atos.Name) && Me.Mana - _atos.ManaCost >= 75)
+                                                  .IsEnabled(atos.Name) && me.Mana - atos.ManaCost >= 75)
                                     {
-                                        _atos.UseAbility(E);
+                                        atos.UseAbility(e);
                                         Utils.Sleep(100, "atos");
                                     }
-                                    else if (_cyclone != null && _cyclone.CanBeCasted() &&
+                                    else if (cyclone != null && cyclone.CanBeCasted() &&
 										Utils.SleepCheck("CycloneRemoveLinkens") &&
 										Menu.Item("Link")
 											.GetValue<AbilityToggler>()
-											.IsEnabled(_cyclone.Name) && Me.Mana - _cyclone.ManaCost >= 75)
+											.IsEnabled(cyclone.Name) && me.Mana - cyclone.ManaCost >= 75)
 									{
-										_cyclone.UseAbility(E);
+										cyclone.UseAbility(e);
 										Utils.Sleep(100, "CycloneRemoveLinkens");
 									}
-									else if (_force != null && _force.CanBeCasted() &&
+									else if (force != null && force.CanBeCasted() &&
 											 Utils.SleepCheck("ForceRemoveLinkens") &&
 											 Menu.Item("Link")
 												 .GetValue<AbilityToggler>()
-												 .IsEnabled(_force.Name) && Me.Mana - _force.ManaCost >= 75)
+												 .IsEnabled(force.Name) && me.Mana - force.ManaCost >= 75)
 									{
-										_force.UseAbility(E);
+										force.UseAbility(e);
 										Utils.Sleep(100, "ForceRemoveLinkens");
 									}
-									else if (_halberd != null && _halberd.CanBeCasted() &&
+									else if (halberd != null && halberd.CanBeCasted() &&
 											 Utils.SleepCheck("halberdLinkens") &&
 											 Menu.Item("Link")
 												 .GetValue<AbilityToggler>()
-												 .IsEnabled(_halberd.Name) && Me.Mana - _halberd.ManaCost >= 75)
+												 .IsEnabled(halberd.Name) && me.Mana - halberd.ManaCost >= 75)
 									{
-										_halberd.UseAbility(E);
+										halberd.UseAbility(e);
 										Utils.Sleep(100, "halberdLinkens");
 									}
-									else if (_sheep != null && _sheep.CanBeCasted() &&
+									else if (sheep != null && sheep.CanBeCasted() &&
 											 Utils.SleepCheck("sheepLinkens") &&
 											 Menu.Item("Link")
 												 .GetValue<AbilityToggler>()
-												 .IsEnabled(_sheep.Name) && Me.Mana - _sheep.ManaCost >= 75)
+												 .IsEnabled(sheep.Name) && me.Mana - sheep.ManaCost >= 75)
 									{
-										_sheep.UseAbility(E);
+										sheep.UseAbility(e);
 										Utils.Sleep(100, "sheepLinkens");
 									}
-									else if (_abyssal != null && _abyssal.CanBeCasted() &&
+									else if (abyssal != null && abyssal.CanBeCasted() &&
 											 Utils.SleepCheck("abyssal") &&
 											 Menu.Item("Items")
 												 .GetValue<AbilityToggler>()
-												 .IsEnabled(_abyssal.Name) && Me.Mana - _abyssal.ManaCost >= 75)
+												 .IsEnabled(abyssal.Name) && me.Mana - abyssal.ManaCost >= 75)
 									{
-										_abyssal.UseAbility(E);
+										abyssal.UseAbility(e);
 										Utils.Sleep(100, "abyssal");
 									}
 									Utils.Sleep(200, "Combo2");
@@ -383,24 +385,24 @@ namespace DotaAllCombo.Heroes
 							}
 							else
 							{
-								if (UsedInvis(E))
+								if (UsedInvis(e))
 								{
-									if (Me.Distance2D(E) <= 500)
+									if (me.Distance2D(e) <= 500)
 									{
-										if (_dust != null && _dust.CanBeCasted() && Utils.SleepCheck("dust") &&
-											_dust != null &&
-											Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(_dust.Name))
+										if (dust != null && dust.CanBeCasted() && Utils.SleepCheck("dust") &&
+											dust != null &&
+											Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(dust.Name))
 										{
-											_dust.UseAbility();
+											dust.UseAbility();
 											Utils.Sleep(100, "dust");
 										}
-										else if (_sentry != null && _sentry.CanBeCasted() && Utils.SleepCheck("sentry") &&
-												 _sentry != null &&
+										else if (sentry != null && sentry.CanBeCasted() && Utils.SleepCheck("sentry") &&
+												 sentry != null &&
 												 Menu.Item("Items3")
 													 .GetValue<AbilityToggler>()
-													 .IsEnabled(_sentry.Name))
+													 .IsEnabled(sentry.Name))
 										{
-											_sentry.UseAbility(Me.Position);
+											sentry.UseAbility(me.Position);
 											Utils.Sleep(100, "sentry");
 										}
 									}
@@ -408,111 +410,111 @@ namespace DotaAllCombo.Heroes
 								uint elsecount = 1;
 								if (Utils.SleepCheck("combo"))
 								{
-									if (_blademail != null && _blademail.Cooldown <= 0 &&
+									if (blademail != null && blademail.Cooldown <= 0 &&
 										Menu.Item("Item")
 											.GetValue<AbilityToggler>()
-											.IsEnabled(_blademail.Name) && Me.Mana - _blademail.ManaCost >= 75)
-										_blademail.UseAbility();
+											.IsEnabled(blademail.Name) && me.Mana - blademail.ManaCost >= 75)
+										blademail.UseAbility();
 									else
 										elsecount += 1;
-									if (_satanic != null && _satanic.Cooldown <= 0 && Me.Health <= Me.MaximumHealth * 0.5 &&
-										Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_satanic.Name))
-										_satanic.UseAbility();
+									if (satanic != null && satanic.Cooldown <= 0 && me.Health <= me.MaximumHealth * 0.5 &&
+										Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(satanic.Name))
+										satanic.UseAbility();
 									else
 										elsecount += 1;
-									if (_crimson != null && _crimson.Cooldown <= 0 &&
-										Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(_crimson.Name))
-										_crimson.UseAbility();
+									if (crimson != null && crimson.Cooldown <= 0 &&
+										Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(crimson.Name))
+										crimson.UseAbility();
 									else
 										elsecount += 1;
-									if (_buckler != null && _buckler.Cooldown <= 0 &&
-										Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(_buckler.Name) &&
-										Me.Mana - _buckler.ManaCost >= 75)
-										_buckler.UseAbility();
+									if (buckler != null && buckler.Cooldown <= 0 &&
+										Menu.Item("Items3").GetValue<AbilityToggler>().IsEnabled(buckler.Name) &&
+										me.Mana - buckler.ManaCost >= 75)
+										buckler.UseAbility();
 									else
 										elsecount += 1;
-									if (_lotusorb != null && _lotusorb.Cooldown <= 0 &&
-										Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_lotusorb.Name) &&
-										Me.Mana - _lotusorb.ManaCost >= 75)
-										_lotusorb.UseAbility(Me);
+									if (lotusorb != null && lotusorb.Cooldown <= 0 &&
+										Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(lotusorb.Name) &&
+										me.Mana - lotusorb.ManaCost >= 75)
+										lotusorb.UseAbility(me);
 									else
 										elsecount += 1;
-									if (_mjollnir != null && _mjollnir.Cooldown <= 0 &&
-										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_mjollnir.Name) &&
-										Me.Mana - _mjollnir.ManaCost >= 75)
-										_mjollnir.UseAbility(Me);
+									if (mjollnir != null && mjollnir.Cooldown <= 0 &&
+										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mjollnir.Name) &&
+										me.Mana - mjollnir.ManaCost >= 75)
+										mjollnir.UseAbility(me);
 									else
 										elsecount += 1;
-									if (_armlet != null && !_armlet.IsToggled &&
-										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_armlet.Name) &&
+									if (armlet != null && !armlet.IsToggled &&
+										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(armlet.Name) &&
 										Utils.SleepCheck("armlet"))
 									{
-										_armlet.ToggleAbility();
+										armlet.ToggleAbility();
 										Utils.Sleep(300, "armlet");
 									}
 									else
 										elsecount += 1;
-									if (_madness != null && _madness.Cooldown <= 0 &&
-										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_madness.Name) &&
-										Me.Mana - _madness.ManaCost >= 75)
-										_madness.UseAbility();
+									if (madness != null && madness.Cooldown <= 0 &&
+										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(madness.Name) &&
+										me.Mana - madness.ManaCost >= 75)
+										madness.UseAbility();
 									else
 										elsecount += 1;
-									if (_w != null && _w.Level > 0 && _w.Cooldown <= 0 &&
-										Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_w.Name) &&
-										!Me.IsMagicImmune() && Me.Mana - _w.ManaCost >= 75)
-										_w.UseAbility(Me);
+									if (W != null && W.Level > 0 && W.Cooldown <= 0 &&
+										Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name) &&
+										!me.IsMagicImmune() && me.Mana - W.ManaCost >= 75)
+										W.UseAbility(me);
 									else
 										elsecount += 1;
-									if (_bkb != null && _bkb.Cooldown <= 0 &&
-										Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_bkb.Name)
+									if (bkb != null && bkb.Cooldown <= 0 &&
+										Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(bkb.Name)
 										&& Menu.Item("BKB").GetValue<KeyBind>().Active 
-										&& (!_w.CanBeCasted() || _w == null))
-										_bkb.UseAbility();
+										&& (!W.CanBeCasted() || W == null))
+										bkb.UseAbility();
 									else
 										elsecount += 1;
-									if (_blink != null && _blink.Cooldown <= 0 && Me.Distance2D(pos) <= 1180 &&
-										Me.Distance2D(E) >= 200 &&
-										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_blink.Name))
-										_blink.UseAbility(pos);
+									if (blink != null && blink.Cooldown <= 0 && me.Distance2D(pos) <= 1180 &&
+										me.Distance2D(e) >= 200 &&
+										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
+										blink.UseAbility(pos);
 									else
 										elsecount += 1;
-									if (_abyssal != null && _abyssal.Cooldown <= 0 &&
-										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_abyssal.Name) &&
-										Me.Mana - _abyssal.ManaCost >= 75)
-										_abyssal.UseAbility(E);
+									if (abyssal != null && abyssal.Cooldown <= 0 &&
+										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(abyssal.Name) &&
+										me.Mana - abyssal.ManaCost >= 75)
+										abyssal.UseAbility(e);
 									else
 										elsecount += 1;
-									if (_urn != null && _urn.CurrentCharges > 0 &&
-										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_urn.Name))
-										_urn.UseAbility(E);
+									if (urn != null && urn.CurrentCharges > 0 &&
+										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(urn.Name))
+										urn.UseAbility(e);
 									else
 										elsecount += 1;
-									if (_solar != null && _solar.CanBeCasted() &&
-										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_solar.Name))
-										_solar.UseAbility(E);
+									if (solar != null && solar.CanBeCasted() &&
+										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(solar.Name))
+										solar.UseAbility(e);
 									else
 										elsecount += 1;
-									if (_medallion != null && _medallion.CanBeCasted() &&
-										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_medallion.Name))
-										_medallion.UseAbility(E);
+									if (medallion != null && medallion.CanBeCasted() &&
+										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(medallion.Name))
+										medallion.UseAbility(e);
 									else
 										elsecount += 1;
-									if (_orchid != null && _orchid.CanBeCasted() &&
-										 Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_orchid.Name))
-										_orchid.UseAbility(E);
+									if (orchid != null && orchid.CanBeCasted() &&
+										 Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(orchid.Name))
+										orchid.UseAbility(e);
 									else
 										elsecount += 1;
-									if (_r != null && _r.Cooldown <= 0 && !E.IsLinkensProtected() &&
-										!E.HasModifier("modifier_abaddon_borrowed_time") &&
+									if (R != null && R.Cooldown <= 0 && !e.IsLinkensProtected() &&
+										!e.HasModifier("modifier_abaddon_borrowed_time") &&
 										Utils.SleepCheck("R") && elsecount == 17)
 									{
-										_r.UseAbility(E);
+										R.UseAbility(e);
 										Utils.Sleep(100, "R");
 									}
-									else if (Menu.Item("orbwalk").GetValue<bool>() && Me.Distance2D(E) <= 1900)
+									else if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
 									{
-										Orbwalking.Orbwalk(E, 0, 1600, true, true);
+										Orbwalking.Orbwalk(e, 0, 1600, true, true);
 									}
 									Utils.Sleep(150, "combo");
 								}
@@ -520,9 +522,9 @@ namespace DotaAllCombo.Heroes
 						}
 					}
 				}
-				if (Me.Distance2D(E) <= 1470 && Me.Distance2D(E) >= 350 && Utils.SleepCheck("Move"))
+				if (me.Distance2D(e) <= 1470 && me.Distance2D(e) >= 350 && Utils.SleepCheck("Move"))
 				{
-					Me.Move(E.Position);
+					me.Move(e.Position);
 					Utils.Sleep(150, "Move");
 				}
 			}
@@ -535,7 +537,7 @@ namespace DotaAllCombo.Heroes
 			}
 			if (Menu.Item("dmg").IsActive())
 			{
-				_q = Me.Spellbook.SpellQ;
+				Q = me.Spellbook.SpellQ;
 				int[] qDmg = {40, 80, 120, 160};
 				int[] creepsDmg = {14, 16, 18, 20};
 				int[] enemyDmg = {20, 40, 60, 80};
@@ -546,19 +548,19 @@ namespace DotaAllCombo.Heroes
                 double[] soul = { 0, 1.2, 1.3, 1.4, 1.5 };
                 var units =
 					ObjectManager.GetEntities<Hero>()
-						.Where(x => x.Team != Me.Team && x.IsAlive && !x.IsIllusion)
+						.Where(x => x.Team != me.Team && x.IsAlive && !x.IsIllusion)
 						.ToList();
 				foreach (var v in units.Where(x => !x.IsMagicImmune()))
 				{
 					creepsECount = ObjectManager.GetEntities<Unit>().Where(creep =>
-						(creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Lane
-						 || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Siege
-						 || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Neutral
-						 || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep) &&
-						creep.IsAlive && creep.Team != Me.Team && creep.IsVisible && v.Distance2D(creep) <= 330 &&
+						(creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
+						 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
+						 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
+						 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep) &&
+						creep.IsAlive && creep.Team != me.Team && creep.IsVisible && v.Distance2D(creep) <= 330 &&
 						creep.IsSpawned).ToList().Count();
 					enemiesCount = ObjectManager.GetEntities<Hero>().Where(x =>
-						x.Team != Me.Team && x.IsAlive && x.IsVisible && v.Distance2D(x) <= 330 && !x.IsIllusion).ToList().Count();
+						x.Team != me.Team && x.IsAlive && x.IsVisible && v.Distance2D(x) <= 330 && !x.IsIllusion).ToList().Count();
 					if (enemiesCount == 0)
 						enemiesCount = 0;
 					if (creepsECount == 0)
@@ -567,33 +569,33 @@ namespace DotaAllCombo.Heroes
 					var screenPos = HUDInfo.GetHPbarPosition(v);
 					if (!OnScreen(v.Position)) continue;
 
-                    _damage = ((creepsECount * creepsDmg[_q.Level - 1] + enemiesCount * enemyDmg[_q.Level - 1]) +
-                              qDmg[_q.Level - 1]) * (1 - v.MagicDamageResist);
+                    damage = ((creepsECount * creepsDmg[Q.Level - 1] + enemiesCount * enemyDmg[Q.Level - 1]) +
+                              qDmg[Q.Level - 1]) * (1 - v.MagicDamageResist);
 
                     if (v.NetworkName == "CDOTA_Unit_Hero_Spectre" && v.Spellbook.Spell3.Level > 0)
                     {
-                        _damage =
-                            Math.Floor((((creepsECount * creepsDmg[_q.Level - 1] + enemiesCount * enemyDmg[_q.Level - 1]) +
-                                         qDmg[_q.Level - 1]) *
+                        damage =
+                            Math.Floor((((creepsECount * creepsDmg[Q.Level - 1] + enemiesCount * enemyDmg[Q.Level - 1]) +
+                                         qDmg[Q.Level - 1]) *
                                         (1 - (0.10 + v.Spellbook.Spell3.Level * 0.04))) * (1 - v.MagicDamageResist));
                     }
                     if (v.NetworkName == "CDOTA_Unit_Hero_SkeletonKing" &&
                         v.Spellbook.SpellR.CanBeCasted())
-                        _damage = 0;
+                        damage = 0;
                     var rum = v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb");
-                    if (rum) _damage = _damage * 0.5;
+                    if (rum) damage = damage * 0.5;
                     var mom = v.HasModifier("modifier_item_mask_of_madness_berserk");
-                    if (mom) _damage = _damage * 1.3;
-                    var spellamplymult = 1 + (Me.TotalIntelligence / 16 / 100);
+                    if (mom) damage = damage * 1.3;
+                    var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
                     if (v.HasModifier("modifier_bloodseeker_bloodrage"))
                     {
                         var blood =
                             ObjectManager.GetEntities<Hero>()
-                                .FirstOrDefault(x => x.ClassId == ClassId.CDOTA_Unit_Hero_Bloodseeker);
+                                .FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Hero_Bloodseeker);
                         if (blood != null)
-                            _damage = _damage * bloodrage[blood.Spellbook.Spell1.Level];
+                            damage = damage * bloodrage[blood.Spellbook.Spell1.Level];
                         else
-                            _damage = _damage * 1.4;
+                            damage = damage * 1.4;
                     }
 
 
@@ -601,9 +603,9 @@ namespace DotaAllCombo.Heroes
                     {
                         var chen =
                             ObjectManager.GetEntities<Hero>()
-                                .FirstOrDefault(x => x.Team == Me.Team && x.ClassId == ClassId.CDOTA_Unit_Hero_Chen);
+                                .FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Chen);
                         if (chen != null)
-                            _damage = _damage * penitence[chen.Spellbook.Spell1.Level];
+                            damage = damage * penitence[chen.Spellbook.Spell1.Level];
                     }
 
 
@@ -611,14 +613,14 @@ namespace DotaAllCombo.Heroes
                     {
                         var demon =
                             ObjectManager.GetEntities<Hero>()
-                                .FirstOrDefault(x => x.Team == Me.Team && x.ClassId == ClassId.CDOTA_Unit_Hero_Shadow_Demon);
+                                .FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon);
                         if (demon != null)
-                            _damage = _damage * soul[demon.Spellbook.Spell2.Level];
+                            damage = damage * soul[demon.Spellbook.Spell2.Level];
                     }
-                    _damage = _damage * spellamplymult;
+                    damage = damage * spellamplymult;
                     
-                    var canKill = v.Health <= _damage;
-                    var text = canKill ? "Yes: " + Math.Floor(_damage) : "No: " + Math.Floor(_damage);
+                    var canKill = v.Health <= damage;
+                    var text = canKill ? "Yes: " + Math.Floor(damage) : "No: " + Math.Floor(damage);
 					var size = new Vector2(18, 18);
 					var textSize = Drawing.MeasureText(text, "Arial", size, FontFlags.AntiAlias);
 					var position = new Vector2(screenPos.X - textSize.X + 91, screenPos.Y + 62);
@@ -652,9 +654,9 @@ namespace DotaAllCombo.Heroes
 			Menu.AddItem(new MenuItem("keyBind", "ComboKey").SetValue(new KeyBind('D', KeyBindType.Press)));
 			Menu.AddItem(
 				new MenuItem("BKB", "Black King Bar").SetValue(new KeyBind('F', KeyBindType.Toggle)));
-            Menu.AddSubMenu(_items);
-            Menu.AddSubMenu(_skills);
-            _items.AddItem(
+            Menu.AddSubMenu(items);
+            Menu.AddSubMenu(skills);
+            items.AddItem(
 				new MenuItem("Items", "Items").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
 				    {"item_blink", true},
@@ -666,7 +668,7 @@ namespace DotaAllCombo.Heroes
 				    {"item_urn_of_shadows", true},
 				    {"item_solar_crest", true}
 				})));
-            _items.AddItem(
+            items.AddItem(
 				new MenuItem("Item", "Items").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
 
@@ -679,7 +681,7 @@ namespace DotaAllCombo.Heroes
 				    {"item_magic_stick", true},
 				    {"item_magic_wand", true}
 				})));
-			_items.AddItem(
+			items.AddItem(
 				new MenuItem("Items3", "Items").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
 					{"item_dust", true},
@@ -691,7 +693,7 @@ namespace DotaAllCombo.Heroes
 					{"item_cheese", true},
 					{"item_soul_ring", true}
 				})));
-			_items.AddItem(
+			items.AddItem(
 				new MenuItem("Link", "Auto triggre Linken").SetValue(
 					new AbilityToggler(new Dictionary<string, bool>
 					{
@@ -701,15 +703,15 @@ namespace DotaAllCombo.Heroes
                         {"item_cyclone", true},
 					    {"item_sheepstick", true}
 					})));
-            _skills.AddItem(new MenuItem("steal", "KillSteal Q").SetValue(true));
-			_skills.AddItem(new MenuItem("-dmg", "Dont Use KillSteal if i have Duel").SetValue(true));
-			_skills.AddItem(new MenuItem("dmg", "Show Damage Q Spell").SetValue(true));
-			_skills.AddItem(new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
+            skills.AddItem(new MenuItem("steal", "KillSteal Q").SetValue(true));
+			skills.AddItem(new MenuItem("-dmg", "Dont Use KillSteal if i have Duel").SetValue(true));
+			skills.AddItem(new MenuItem("dmg", "Show Damage Q Spell").SetValue(true));
+			skills.AddItem(new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
 			    {"legion_commander_press_the_attack", true},
 			})));
 
-			_txt = new Font(
+			txt = new Font(
 			   Drawing.Direct3DDevice9,
 			   new FontDescription
 			   {
@@ -719,7 +721,7 @@ namespace DotaAllCombo.Heroes
 				   Quality = FontQuality.ClearType
 			   });
 
-			_noti = new Font(
+			noti = new Font(
 			   Drawing.Direct3DDevice9,
 			   new FontDescription
 			   {
@@ -729,7 +731,7 @@ namespace DotaAllCombo.Heroes
 				   Quality = FontQuality.ClearType
 			   });
 
-			_lines = new Line(Drawing.Direct3DDevice9);
+			lines = new Line(Drawing.Direct3DDevice9);
 
 			Drawing.OnPreReset += Drawing_OnPreReset;
 			Drawing.OnPostReset += Drawing_OnPostReset;
@@ -779,62 +781,63 @@ namespace DotaAllCombo.Heroes
 		}
 
 
-        private void Drawing_OnEndScene(EventArgs args)
+		void Drawing_OnEndScene(EventArgs args)
 		{
 			if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !Game.IsInGame)
 				return;
-			_bkb = Me.FindItem("item_black_king_bar");
-			if (_bkb != null)
+			bkb = me.FindItem("item_black_king_bar");
+			if (bkb != null)
 			{
-				if (!Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_bkb.Name)
+				if (!Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(bkb.Name)
 					|| !Menu.Item("BKB").GetValue<KeyBind>().Active)
 				{
 					DrawBox(2, 490, 90, 20, 1, new ColorBGRA(0, 0, 90, 70));
 					DrawFilledBox(2, 490, 90, 20, new ColorBGRA(0, 0, 0, 90));
-					DrawShadowText(" BKB Disable", 4, 490, Color.Gold, _txt);
+					DrawShadowText(" BKB Disable", 4, 490, Color.Gold, txt);
 				}
 			}
 		}
+		
 
-
-        private void CurrentDomain_DomainUnload(object sender, EventArgs e)
+		void CurrentDomain_DomainUnload(object sender, EventArgs e)
 		{
-			_txt.Dispose();
-			_noti.Dispose();
-			_lines.Dispose();
+			txt.Dispose();
+			noti.Dispose();
+			lines.Dispose();
 		}
 
 
-        private void Drawing_OnPostReset(EventArgs args)
+
+		void Drawing_OnPostReset(EventArgs args)
 		{
-			_txt.OnResetDevice();
-			_noti.OnResetDevice();
-			_lines.OnResetDevice();
+			txt.OnResetDevice();
+			noti.OnResetDevice();
+			lines.OnResetDevice();
 		}
 
-        private void Drawing_OnPreReset(EventArgs args)
+		void Drawing_OnPreReset(EventArgs args)
 		{
-			_txt.OnLostDevice();
-			_noti.OnLostDevice();
-			_lines.OnLostDevice();
+			txt.OnLostDevice();
+			noti.OnLostDevice();
+			lines.OnLostDevice();
 		}
 
 		public void DrawFilledBox(float x, float y, float w, float h, Color color)
 		{
 			var vLine = new Vector2[2];
 
-			_lines.GLLines = true;
-			_lines.Antialias = false;
-			_lines.Width = w;
+			lines.GLLines = true;
+			lines.Antialias = false;
+			lines.Width = w;
 
 			vLine[0].X = x + w / 2;
 			vLine[0].Y = y;
 			vLine[1].X = x + w / 2;
 			vLine[1].Y = y + h;
 
-			_lines.Begin();
-			_lines.Draw(vLine, color);
-			_lines.End();
+			lines.Begin();
+			lines.Draw(vLine, color);
+			lines.End();
 		}
 
 		public void DrawBox(float x, float y, float w, float h, float px, Color color)
