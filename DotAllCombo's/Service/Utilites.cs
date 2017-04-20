@@ -3,18 +3,13 @@
 namespace DotaAllCombo.Service
 {
 	using System;
-	using Ensage;
-	using Ensage.Common;
-	using Ensage.Common.Extensions;
-	using Ensage.Common.Menu;
-	using SharpDX;
 
-	class Utilites
+    internal class Utilites
     {
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
-        public static string GetHeroName(string Name)
+        public static string GetHeroName(string name)
 		{
-			return Name.Split(new [] { "npc_dota_hero_" }, StringSplitOptions.None)[1];
+			return name.Split(new [] { "npc_dota_hero_" }, StringSplitOptions.None)[1];
 		}
 
 		public static string FirstUpper(string str)

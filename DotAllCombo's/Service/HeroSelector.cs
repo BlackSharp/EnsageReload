@@ -1,16 +1,15 @@
 ﻿using System.Security.Permissions;
+using DotaAllCombo.Extensions;
 
 namespace DotaAllCombo.Service
 {
 	using System;
-
 	using Ensage;
 	using Ensage.Common.Menu;
-
 	using Debug;
 
     [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
-    class HeroSelector
+    internal class HeroSelector
     {
         public static bool IsSelected { get; set; }
 		public static string HeroName { get; set; }	// Имя текущего героя
@@ -41,7 +40,7 @@ namespace DotaAllCombo.Service
 			HeroInst = Activator.CreateInstance(HeroClass);
 			
 			// Инициализация героя в его классе
-			HeroClass.GetField("me").SetValue(HeroInst, me);
+			HeroClass.GetField("Me").SetValue(HeroInst, me);
 			
 			// Создаем меню опций персонажа
 			HeroClass.GetField("Menu").SetValue(HeroInst, new Menu(HeroName, "options", false, me.Name, HeroName != null));

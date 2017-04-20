@@ -1,4 +1,7 @@
-﻿namespace DotaAllCombo.Heroes
+﻿using System.Globalization;
+using DotaAllCombo.Extensions;
+
+namespace DotaAllCombo.Heroes
 {
 	using System.Threading.Tasks;
 	using SharpDX;
@@ -9,18 +12,16 @@
 	using Ensage.Common;
 	using Ensage.Common.Extensions;
 	using Ensage.Common.Menu;
-
-	using Service;
 	using Service.Debug;
 
 	internal class WeaverController : Variables, IHeroController
 	{
-		private Ability Q, W, R;
-        private float health;
-        private Item urn, orchid, ethereal, dagon, halberd, blink, mjollnir, abyssal, mom, Shiva, mail, bkb, satanic, medall;
+		private Ability _q, _w, _r;
+        private float _health;
+        private Item _urn, _orchid, _ethereal, _dagon, _halberd, _blink, _mjollnir, _abyssal, _mom, _shiva, _mail, _bkb, _satanic, _medall;
 		
-		private readonly Menu ultME = new Menu("Options Ultimate me", "Ultimate on an Me.");
-		private readonly Menu ultALLY = new Menu("Options Ultimate Ally", "Ultimate on an Ally.");
+		private readonly Menu _ultMe = new Menu("Options Ultimate Me", "Ultimate on an Me.");
+		private readonly Menu _ultAlly = new Menu("Options Ultimate Ally", "Ultimate on an Ally.");
 
 		public void Combo()
 		{
@@ -28,224 +29,224 @@
 
 			Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
 
-			Q = me.Spellbook.SpellQ;
-			R = me.Spellbook.SpellR;
-			W = me.Spellbook.SpellW;
+			_q = Me.Spellbook.SpellQ;
+			_r = Me.Spellbook.SpellR;
+			_w = Me.Spellbook.SpellW;
 
-			mom = me.FindItem("item_mask_of_madness");
-			urn = me.FindItem("item_urn_of_shadows");
-			dagon = me.Inventory.Items.FirstOrDefault(x => x.Name.Contains("item_dagon"));
-			ethereal = me.FindItem("item_ethereal_blade");
-			halberd = me.FindItem("item_heavens_halberd");
-			mjollnir = me.FindItem("item_mjollnir");
-			blink = me.FindItem("item_blink");
-			orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn");
-			abyssal = me.FindItem("item_abyssal_blade");
-			mail = me.FindItem("item_blade_mail");
-			bkb = me.FindItem("item_black_king_bar");
-			satanic = me.FindItem("item_satanic");
-			medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
-			Shiva = me.FindItem("item_shivas_guard");
+			_mom = Me.FindItem("item_mask_of_madness");
+			_urn = Me.FindItem("item_urn_of_shadows");
+			_dagon = Me.Inventory.Items.FirstOrDefault(x => x.Name.Contains("item_dagon"));
+			_ethereal = Me.FindItem("item_ethereal_blade");
+			_halberd = Me.FindItem("item_heavens_halberd");
+			_mjollnir = Me.FindItem("item_mjollnir");
+			_blink = Me.FindItem("item_blink");
+			_orchid = Me.FindItem("item_orchid") ?? Me.FindItem("item_bloodthorn");
+			_abyssal = Me.FindItem("item_abyssal_blade");
+			_mail = Me.FindItem("item_blade_mail");
+			_bkb = Me.FindItem("item_black_king_bar");
+			_satanic = Me.FindItem("item_satanic");
+			_medall = Me.FindItem("item_medallion_of_courage") ?? Me.FindItem("item_solar_crest");
+			_shiva = Me.FindItem("item_shivas_guard");
 			var v =
 				ObjectManager.GetEntities<Hero>()
-					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
+					.Where(x => x.Team != Me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
 					.ToList();
-            e = Toolset.ClosestToMouse(me);
-            if (e == null) return;
+            E = Toolset.ClosestToMouse(Me);
+            if (E == null) return;
 
-			if (Active && me.IsInvisible())
+			if (Active && Me.IsInvisible())
 			{
-				if (me.Distance2D(e) <= 150 && Utils.SleepCheck("Attack") && me.NetworkActivity != NetworkActivity.Attack)
+				if (Me.Distance2D(E) <= 150 && Utils.SleepCheck("Attack") && Me.NetworkActivity != NetworkActivity.Attack)
 				{
-					me.Attack(e);
+					Me.Attack(E);
 					Utils.Sleep(150, "Attack");
 				}
-				else if (me.Distance2D(e) <= 2400 && me.Distance2D(e) >= 130 && me.NetworkActivity != NetworkActivity.Attack && Utils.SleepCheck("Move"))
+				else if (Me.Distance2D(E) <= 2400 && Me.Distance2D(E) >= 130 && Me.NetworkActivity != NetworkActivity.Attack && Utils.SleepCheck("Move"))
 				{
-					me.Move(e.Position);
+					Me.Move(E.Position);
 					Utils.Sleep(150, "Move");
 				}
 			}
-			else if (Active && me.Distance2D(e) <= 1400 && e.IsAlive && !me.IsInvisible())
+			else if (Active && Me.Distance2D(E) <= 1400 && E.IsAlive && !Me.IsInvisible())
 			{
-				if (me.Distance2D(e) >= 400)
+				if (Me.Distance2D(E) >= 400)
 				{
 					if (
-						W != null && W.CanBeCasted() && me.Distance2D(e) <= 1100
-						&& me.CanAttack()
-						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
+						_w != null && _w.CanBeCasted() && Me.Distance2D(E) <= 1100
+						&& Me.CanAttack()
+						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_w.Name)
 						&& Utils.SleepCheck("W")
 						)
 					{
-						W.UseAbility();
+						_w.UseAbility();
 						Utils.Sleep(100, "W");
 					}
 				}
-				if (W != null && W.IsInAbilityPhase || me.HasModifier("modifier_weaver_shukuchi")) return;
+				if (_w != null && _w.IsInAbilityPhase || Me.HasModifier("modifier_weaver_shukuchi")) return;
 
 				if (Menu.Item("orbwalk").GetValue<bool>())
 				{
-					Orbwalking.Orbwalk(e, 0, 1600, true, true);
+					Orbwalking.Orbwalk(E, 0, 1600, true, true);
 				}
 				if (
-					blink != null
-					&& me.CanCast()
-					&& blink.CanBeCasted()
-					&& me.Distance2D(e) < 1190
-					&& me.Distance2D(e) > me.AttackRange - 50
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
+					_blink != null
+					&& Me.CanCast()
+					&& _blink.CanBeCasted()
+					&& Me.Distance2D(E) < 1190
+					&& Me.Distance2D(E) > Me.AttackRange - 50
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_blink.Name)
 					&& Utils.SleepCheck("blink")
 					)
 				{
-					blink.UseAbility(e.Position);
+					_blink.UseAbility(E.Position);
 					Utils.Sleep(250, "blink");
 				}
 				if (
-					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= me.AttackRange + 300
-					&& me.CanAttack()
-					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
+					_q != null && _q.CanBeCasted() && Me.Distance2D(E) <= Me.AttackRange + 300
+					&& Me.CanAttack()
+					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_q.Name)
 					&& Utils.SleepCheck("Q")
 					)
 				{
-					Q.UseAbility(e.Position);
+					_q.UseAbility(E.Position);
 					Utils.Sleep(100, "Q");
 				}
 				if ( // MOM
-				mom != null
-				&& mom.CanBeCasted()
-				&& me.CanCast()
-				&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mom.Name)
+				_mom != null
+				&& _mom.CanBeCasted()
+				&& Me.CanCast()
+				&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_mom.Name)
 				&& Utils.SleepCheck("mom")
-				&& me.Distance2D(e) <= 700
+				&& Me.Distance2D(E) <= 700
 				)
 				{
-					mom.UseAbility();
+					_mom.UseAbility();
 					Utils.Sleep(250, "mom");
 				}
 				if ( // Mjollnir
-					mjollnir != null
-					&& mjollnir.CanBeCasted()
-					&& me.CanCast()
-					&& !e.IsMagicImmune()
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mjollnir.Name)
+					_mjollnir != null
+					&& _mjollnir.CanBeCasted()
+					&& Me.CanCast()
+					&& !E.IsMagicImmune()
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_mjollnir.Name)
 					&& Utils.SleepCheck("mjollnir")
-					&& me.Distance2D(e) <= 900
+					&& Me.Distance2D(E) <= 900
 					)
 				{
-					mjollnir.UseAbility(me);
+					_mjollnir.UseAbility(Me);
 					Utils.Sleep(250, "mjollnir");
 				} // Mjollnir Item end
 				if ( // Medall
-					medall != null
-					&& medall.CanBeCasted()
+					_medall != null
+					&& _medall.CanBeCasted()
 					&& Utils.SleepCheck("Medall")
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(medall.Name)
-					&& me.Distance2D(e) <= 700
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_medall.Name)
+					&& Me.Distance2D(E) <= 700
 					)
 				{
-					medall.UseAbility(e);
+					_medall.UseAbility(E);
 					Utils.Sleep(250, "Medall");
 				} // Medall Item end
 				if ( // orchid
-					orchid != null
-					&& orchid.CanBeCasted()
-					&& me.CanCast()
-					&& !e.IsLinkensProtected()
-					&& !e.IsMagicImmune()
-					&& me.Distance2D(e) <= me.AttackRange + 40
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(orchid.Name)
+					_orchid != null
+					&& _orchid.CanBeCasted()
+					&& Me.CanCast()
+					&& !E.IsLinkensProtected()
+					&& !E.IsMagicImmune()
+					&& Me.Distance2D(E) <= Me.AttackRange + 40
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_orchid.Name)
 					&& Utils.SleepCheck("orchid")
 					)
 				{
-					orchid.UseAbility(e);
+					_orchid.UseAbility(E);
 					Utils.Sleep(250, "orchid");
 				} // orchid Item end
 
-				if (Shiva != null && Shiva.CanBeCasted() && me.Distance2D(e) <= 600
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(Shiva.Name)
-					&& !e.IsMagicImmune() && Utils.SleepCheck("Shiva"))
+				if (_shiva != null && _shiva.CanBeCasted() && Me.Distance2D(E) <= 600
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_shiva.Name)
+					&& !E.IsMagicImmune() && Utils.SleepCheck("Shiva"))
 				{
-					Shiva.UseAbility();
+					_shiva.UseAbility();
 					Utils.Sleep(100, "Shiva");
 				}
 
-				if (ethereal != null && ethereal.CanBeCasted()
-					&& me.Distance2D(e) <= 700 && me.Distance2D(e) <= 400
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name) &&
+				if (_ethereal != null && _ethereal.CanBeCasted()
+					&& Me.Distance2D(E) <= 700 && Me.Distance2D(E) <= 400
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_ethereal.Name) &&
 					Utils.SleepCheck("ethereal"))
 				{
-					ethereal.UseAbility(e);
+					_ethereal.UseAbility(E);
 					Utils.Sleep(100, "ethereal");
 				}
 
-				if (dagon != null
-					&& dagon.CanBeCasted()
-					&& me.Distance2D(e) <= 500
+				if (_dagon != null
+					&& _dagon.CanBeCasted()
+					&& Me.Distance2D(E) <= 500
 					&& Utils.SleepCheck("dagon"))
 				{
-					dagon.UseAbility(e);
+					_dagon.UseAbility(E);
 					Utils.Sleep(100, "dagon");
 				}
 				if ( // Abyssal Blade
-					abyssal != null
-					&& abyssal.CanBeCasted()
-					&& me.CanCast()
-					&& !e.IsStunned()
-					&& !e.IsHexed()
+					_abyssal != null
+					&& _abyssal.CanBeCasted()
+					&& Me.CanCast()
+					&& !E.IsStunned()
+					&& !E.IsHexed()
 					&& Utils.SleepCheck("abyssal")
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(abyssal.Name)
-					&& me.Distance2D(e) <= 400
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_abyssal.Name)
+					&& Me.Distance2D(E) <= 400
 					)
 				{
-					abyssal.UseAbility(e);
+					_abyssal.UseAbility(E);
 					Utils.Sleep(250, "abyssal");
 				} // Abyssal Item end
-				if (urn != null && urn.CanBeCasted() && urn.CurrentCharges > 0 && me.Distance2D(e) <= 400
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(urn.Name) && Utils.SleepCheck("urn"))
+				if (_urn != null && _urn.CanBeCasted() && _urn.CurrentCharges > 0 && Me.Distance2D(E) <= 400
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_urn.Name) && Utils.SleepCheck("urn"))
 				{
-					urn.UseAbility(e);
+					_urn.UseAbility(E);
 					Utils.Sleep(240, "urn");
 				}
 				if ( // Hellbard
-					halberd != null
-					&& halberd.CanBeCasted()
-					&& me.CanCast()
-					&& !e.IsMagicImmune()
-					&& (e.NetworkActivity == NetworkActivity.Attack
-						|| e.NetworkActivity == NetworkActivity.Crit
-						|| e.NetworkActivity == NetworkActivity.Attack2)
+					_halberd != null
+					&& _halberd.CanBeCasted()
+					&& Me.CanCast()
+					&& !E.IsMagicImmune()
+					&& (E.NetworkActivity == NetworkActivity.Attack
+						|| E.NetworkActivity == NetworkActivity.Crit
+						|| E.NetworkActivity == NetworkActivity.Attack2)
 					&& Utils.SleepCheck("halberd")
-					&& me.Distance2D(e) <= 700
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(halberd.Name)
+					&& Me.Distance2D(E) <= 700
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_halberd.Name)
 					)
 				{
-					halberd.UseAbility(e);
+					_halberd.UseAbility(E);
 					Utils.Sleep(250, "halberd");
 				}
 				if ( // Satanic 
-					satanic != null &&
-					me.Health <= (me.MaximumHealth * 0.3) &&
-					satanic.CanBeCasted() &&
-					me.Distance2D(e) <= me.AttackRange + 50
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(satanic.Name)
+					_satanic != null &&
+					Me.Health <= (Me.MaximumHealth * 0.3) &&
+					_satanic.CanBeCasted() &&
+					Me.Distance2D(E) <= Me.AttackRange + 50
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_satanic.Name)
 					&& Utils.SleepCheck("satanic")
 					)
 				{
-					satanic.UseAbility();
+					_satanic.UseAbility();
 					Utils.Sleep(240, "satanic");
 				} // Satanic Item end
-				if (mail != null && mail.CanBeCasted() && (v.Count(x => x.Distance2D(me) <= 650) >=
+				if (_mail != null && _mail.CanBeCasted() && (v.Count(x => x.Distance2D(Me) <= 650) >=
 														   (Menu.Item("Heelm").GetValue<Slider>().Value)) &&
-					Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mail.Name) && Utils.SleepCheck("mail"))
+					Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_mail.Name) && Utils.SleepCheck("mail"))
 				{
-					mail.UseAbility();
+					_mail.UseAbility();
 					Utils.Sleep(100, "mail");
 				}
-				if (bkb != null && bkb.CanBeCasted() && (v.Count(x => x.Distance2D(me) <= 650) >=
+				if (_bkb != null && _bkb.CanBeCasted() && (v.Count(x => x.Distance2D(Me) <= 650) >=
 														 (Menu.Item("Heel").GetValue<Slider>().Value)) &&
-					Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(bkb.Name) && Utils.SleepCheck("bkb"))
+					Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_bkb.Name) && Utils.SleepCheck("bkb"))
 				{
-					bkb.UseAbility();
+					_bkb.UseAbility();
 					Utils.Sleep(100, "bkb");
 				}
 			}
@@ -260,34 +261,34 @@
 
 		private void OnTimedEvent()
 		{
-			if (Game.IsPaused || R == null) return;
-			if (R != null)
+			if (Game.IsPaused || _r == null) return;
+			if (_r != null)
 			{
-				if (Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name))
+				if (Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_r.Name))
 				{
 					//Console.WriteLine("PING"+(int)Game.Ping);
-					float now = me.Health;
+					float now = Me.Health;
 					Task.Delay(4000 - (int)Game.Ping).ContinueWith(_ =>
 					{
 						
-						float back4 = me.Health;
+						float back4 = Me.Health;
 						if ((Menu.Item("ultMode2").GetValue<bool>() && (now - back4) >= Menu.Item("MomentDownHealth2").GetValue<Slider>().Value
-								|| (Menu.Item("ultMode1").GetValue<bool>() && (((int)me.MaximumHealth / (4 / (now - back4))) / 1000000) >= ((double)Menu.Item("MomentDownHealth1").GetValue<Slider>().Value / 100))) && R.CanBeCasted())
+								|| (Menu.Item("ultMode1").GetValue<bool>() && (((int)Me.MaximumHealth / (4 / (now - back4))) / 1000000) >= ((double)Menu.Item("MomentDownHealth1").GetValue<Slider>().Value / 100))) && _r.CanBeCasted())
 						{
-							if (R.CanBeCasted() && Utils.SleepCheck("R"))
+							if (_r.CanBeCasted() && Utils.SleepCheck("R"))
 							{
-								if (!me.AghanimState())
-									R.UseAbility();
+								if (!Me.AghanimState())
+									_r.UseAbility();
 								else
-									R.UseAbility(me);
+									_r.UseAbility(Me);
 								Utils.Sleep(250, "R");
 							}
 						}
 					});
 
 					var ally = ObjectManager.GetEntities<Hero>()
-										  .Where(x => x.Team == me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.Equals(me)).ToList();
-					if (Menu.Item("ult").GetValue<bool>() && me.AghanimState())
+										  .Where(x => x.Team == Me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.Equals(Me)).ToList();
+					if (Menu.Item("ult").GetValue<bool>() && Me.AghanimState())
 					{
 						foreach (var a in ally)
 						{
@@ -297,11 +298,11 @@
 
 								float backAlly4 = a.Health;
 								if ((Menu.Item("ultMode2Ally").GetValue<bool>() && (allyHealth - backAlly4) >= Menu.Item("MomentAllyDownHealth2").GetValue<Slider>().Value
-										|| (Menu.Item("ultMode1Ally").GetValue<bool>() && (((int)a.MaximumHealth / (4 / (allyHealth - backAlly4))) / 1000000) >= ((double)Menu.Item("MomentAllyDownHealth1").GetValue<Slider>().Value / 100))) && me.Distance2D(a)<= 1000 + me.HullRadius)
+										|| (Menu.Item("ultMode1Ally").GetValue<bool>() && (((int)a.MaximumHealth / (4 / (allyHealth - backAlly4))) / 1000000) >= ((double)Menu.Item("MomentAllyDownHealth1").GetValue<Slider>().Value / 100))) && Me.Distance2D(a)<= 1000 + Me.HullRadius)
 								{
-									if (R.CanBeCasted() && Utils.SleepCheck("RAlly"))
+									if (_r.CanBeCasted() && Utils.SleepCheck("RAlly"))
 									{
-										R.UseAbility(a);
+										_r.UseAbility(a);
 										Utils.Sleep(250, "RAlly");
 									}
 								}
@@ -317,24 +318,24 @@
 		}
         private void DrawQDamage(EventArgs args)
         {
-            if (!Game.IsInGame || Game.IsPaused || !me.IsAlive || Game.IsWatchingGame)
+            if (!Game.IsInGame || Game.IsPaused || !Me.IsAlive || Game.IsWatchingGame)
             {
                 return;
             }
             if (Menu.Item("ultDraw").GetValue<bool>())
             {
-                float now = me.Health;
+                float now = Me.Health;
                 Task.Delay(4000 - (int)Game.Ping / 1000).ContinueWith(_ =>
                 {
-                    float back4 = me.Health;
-                    health = (now - back4);
-                    if (health < 0)
-                        health = 0;
+                    float back4 = Me.Health;
+                    _health = (now - back4);
+                    if (_health < 0)
+                        _health = 0;
                 });
-                var screenPos = HUDInfo.GetHPbarPosition(me);
-                if (!OnScreen(me.Position)) return;
+                var screenPos = HUDInfo.GetHPbarPosition(Me);
+                if (!OnScreen(Me.Position)) return;
                 //TODO test
-                var text = Math.Floor(health).ToString();
+                var text = Math.Floor(_health).ToString(CultureInfo.InvariantCulture);
                 var size = new Vector2(18, 18);
                 var textSize = Drawing.MeasureText(text, "Arial", size, FontFlags.AntiAlias);
                 var position = new Vector2(screenPos.X - textSize.X - 1, screenPos.Y + 1);
@@ -391,22 +392,22 @@
 			Menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
 			Menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
 
-            ultME.AddItem(new MenuItem("ultDraw", "Show me Lost Health").SetValue(true));
-			ultALLY.AddItem(new MenuItem("ult", "Use ult in Ally").SetValue(true)).SetTooltip("You need have AghanimS!");
-			ultME.AddItem(new MenuItem("ultMode1", "Use 1 Mode(Number % of lost health)").SetValue(true));
-			ultME.AddItem(new MenuItem("MomentDownHealth1", "Min Health % Down To Ult").SetValue(new Slider(35, 5, 100))).SetTooltip("Minimal damage % in my max health which I absorb values 4 seconds before using the Ultimate.");
+            _ultMe.AddItem(new MenuItem("ultDraw", "Show Me Lost Health").SetValue(true));
+			_ultAlly.AddItem(new MenuItem("ult", "Use ult in Ally").SetValue(true)).SetTooltip("You need have AghanimS!");
+			_ultMe.AddItem(new MenuItem("ultMode1", "Use 1 Mode(Number % of lost health)").SetValue(true));
+			_ultMe.AddItem(new MenuItem("MomentDownHealth1", "Min Health % Down To Ult").SetValue(new Slider(35, 5))).SetTooltip("Minimal damage % in my max health which I absorb values 4 seconds before using the Ultimate.");
 
-			ultME.AddItem(new MenuItem("ultMode2", "Use 2 Mode(Number of lost health)").SetValue(true));
-			ultME.AddItem(new MenuItem("MomentDownHealth2", "Min Health Down To Ult").SetValue(new Slider(450, 200, 2000))).SetTooltip("Minimal damage which I absorb values 4 seconds before using the Ultimate.");
-			ultALLY.AddItem(new MenuItem("ultMode1Ally", "Use 1 Mode(% Number of lost health)").SetValue(true));
-			ultALLY.AddItem(
-				new MenuItem("MomentAllyDownHealth1", "Min Health % Ally Down To Ult").SetValue(new Slider(35, 5, 100))).SetTooltip("Damage % which absorb ally in 4 seconds)");
-			ultALLY.AddItem(new MenuItem("ultMode2Ally", "Use 2 Mode(Number of lost health)").SetValue(true));
-			ultALLY.AddItem(new MenuItem("MomentAllyDownHealth2", "Min Ally count Health Down To Ult").SetValue(new Slider(750, 300, 2000)))
+			_ultMe.AddItem(new MenuItem("ultMode2", "Use 2 Mode(Number of lost health)").SetValue(true));
+			_ultMe.AddItem(new MenuItem("MomentDownHealth2", "Min Health Down To Ult").SetValue(new Slider(450, 200, 2000))).SetTooltip("Minimal damage which I absorb values 4 seconds before using the Ultimate.");
+			_ultAlly.AddItem(new MenuItem("ultMode1Ally", "Use 1 Mode(% Number of lost health)").SetValue(true));
+			_ultAlly.AddItem(
+				new MenuItem("MomentAllyDownHealth1", "Min Health % Ally Down To Ult").SetValue(new Slider(35, 5))).SetTooltip("Damage % which absorb ally in 4 seconds)");
+			_ultAlly.AddItem(new MenuItem("ultMode2Ally", "Use 2 Mode(Number of lost health)").SetValue(true));
+			_ultAlly.AddItem(new MenuItem("MomentAllyDownHealth2", "Min Ally count Health Down To Ult").SetValue(new Slider(750, 300, 2000)))
 				.SetTooltip("Damage which absorb ally in 4 seconds)");
 
-			Menu.AddSubMenu(ultME);
-			Menu.AddSubMenu(ultALLY);
+			Menu.AddSubMenu(_ultMe);
+			Menu.AddSubMenu(_ultAlly);
             Drawing.OnDraw += DrawQDamage;
         }
 	}

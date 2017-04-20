@@ -1,8 +1,9 @@
+using DotaAllCombo.Extensions;
+
 namespace DotaAllCombo.Addons
 {
 	using System.Security.Permissions;
 	using Ensage;
-	using Ensage.Common;
 	using Ensage.Common.Extensions;
 	using SharpDX;
 	using System;
@@ -17,7 +18,7 @@ namespace DotaAllCombo.Addons
 #pragma warning disable CS0414 // The field 'OthersAddons._load' is assigned but its value is never used
 		private static bool _load;
 		private static Font _text;
-		public static Line _line = new Line(Drawing.Direct3DDevice9);
+		public static Line Line = new Line(Drawing.Direct3DDevice9);
 
 		public void Load()
 		{
@@ -38,7 +39,7 @@ namespace DotaAllCombo.Addons
 			Drawing.OnPostReset += Drawing_OnPostReset;
 			
 			OnLoadMessage();
-			me = ObjectManager.LocalHero;
+			Me = ObjectManager.LocalHero;
 		}
 
 		public void Unload()
@@ -49,53 +50,53 @@ namespace DotaAllCombo.Addons
 			Drawing.OnDraw -= Drawing_OnDraw;
 			_load = false;
 		}
-		private float _lastRange, AttackRange;
-		private ParticleEffect rangeDisplay, particleEffect;
+		private float _lastRange, _attackRange;
+		private ParticleEffect _rangeDisplay, _particleEffect;
 		/*
 		public static readonly List<TrackingProjectile> Projectiles = ObjectManager.TrackingProjectiles.Where(x=>
-						x.Source.ClassID == ClassID.CDOTA_Unit_Hero_ArcWarden
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Terrorblade
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_TemplarAssassin
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_DrowRanger
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Weaver
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Windrunner
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Enchantress
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Nevermore
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Obsidian_Destroyer
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Clinkz
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Silencer
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Huskar
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Viper
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Sniper
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Razor
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_StormSpirit
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Morphling
-						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_DragonKnight).ToList(); */
+						x.Source.ClassId == ClassId.CDOTA_Unit_Hero_ArcWarden
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_Terrorblade
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_TemplarAssassin
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_DrowRanger
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_Weaver
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_Windrunner
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_Enchantress
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_Nevermore
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_Obsidian_Destroyer
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_Clinkz
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_Silencer
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_Huskar
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_Viper
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_Sniper
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_Razor
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_StormSpirit
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_TrollWarlord
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_Morphling
+						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_DragonKnight).ToList(); */
 		public void RunScript()
 		{
-			if (!MainMenu.OthersMenu.Item("others").IsActive() || !Game.IsInGame || me == null || Game.IsPaused || Game.IsWatchingGame) return;
+			if (!MainMenu.OthersMenu.Item("others").IsActive() || !Game.IsInGame || Me == null || Game.IsPaused || Game.IsWatchingGame) return;
 
 
-            e = Toolset.ClosestToMouse(me, 10000);
+            E = Toolset.ClosestToMouse(Me, 10000);
             //TODO:UNAGRRO
             if (MainMenu.OthersMenu.Item("Auto Un Aggro").GetValue<bool>())
 			{
-				Toolset.UnAggro(me);
+				Toolset.UnAggro(Me);
 			}
 			//TODO:ESCAPE
 			/*
-	        if (MainMenu.OthersMenu.Item("EscapeAttack").GetValue<bool>() && me.Level>= Menu.Item("minLVL").GetValue<Slider>().Value)
+	        if (MainMenu.OthersMenu.Item("EscapeAttack").GetValue<bool>() && Me.Level>= Menu.Item("minLVL").GetValue<Slider>().Value)
 			{
 				
-				var meed = Toolset.IfITarget(me, Projectiles);
+				var meed = Toolset.IfITarget(Me, Projectiles);
 				var v =
 					 ObjectManager.GetEntities<Hero>()
-						 .Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && x.ClassID == meed.Source.ClassID)
+						 .Where(x => x.Team != Me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && x.ClassId == meed.Source.ClassId)
 						 .ToList();
 				foreach (var victim in v)
 				{
-					if (victim.Distance2D(me) <= 1000 && me.IsVisibleToEnemies && (victim.Handle!=e.Handle || me.Health <= (me.MaximumHealth * 0.4)))
+					if (victim.Distance2D(Me) <= 1000 && Me.IsVisibleToEnemies && (victim.Handle!=e.Handle || Me.Health <= (Me.MaximumHealth * 0.4)))
 					{
 						AutoDodge.qqNyx();
 						AutoDodge.qqTemplarRefraction();
@@ -120,100 +121,101 @@ namespace DotaAllCombo.Addons
 				}
 	        }*/
 		}
-		void Drawing_OnDraw(EventArgs args)
+
+	    private void Drawing_OnDraw(EventArgs args)
 		{
 
-			if (me == null)
+			if (Me == null)
 				return;
-			if (!MainMenu.OthersMenu.Item("others").IsActive() || !Game.IsInGame || me == null || Game.IsPaused || Game.IsWatchingGame) return;
+			if (!MainMenu.OthersMenu.Item("others").IsActive() || !Game.IsInGame || Me == null || Game.IsPaused || Game.IsWatchingGame) return;
 
 			//TODO:ATTACKRANGE
 			if (MainMenu.OthersMenu.Item("ShowAttakRange").GetValue<bool>())
 			{
-                Item item = me.Inventory.Items.FirstOrDefault(x => x != null && x.IsValid && (x.Name.Contains("item_dragon_lance") || x.Name.Contains("item_hurricane_pike")));
+                Item item = Me.Inventory.Items.FirstOrDefault(x => x != null && x.IsValid && (x.Name.Contains("item_dragon_lance") || x.Name.Contains("item_hurricane_pike")));
                 
-                if (me.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord && me.HasModifier("modifier_troll_warlord_berserkers_rage"))
-			        AttackRange = 150 + me.HullRadius+24;
-                   else if (me.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord && !me.HasModifier("modifier_troll_warlord_berserkers_rage"))
-                    AttackRange = me.GetAttackRange() + me.HullRadius + 24;
+                if (Me.ClassId == ClassId.CDOTA_Unit_Hero_TrollWarlord && Me.HasModifier("modifier_troll_warlord_berserkers_rage"))
+			        _attackRange = 150 + Me.HullRadius+24;
+                   else if (Me.ClassId == ClassId.CDOTA_Unit_Hero_TrollWarlord && !Me.HasModifier("modifier_troll_warlord_berserkers_rage"))
+                    _attackRange = Me.GetAttackRange() + Me.HullRadius + 24;
                 else
-                if (me.ClassID == ClassID.CDOTA_Unit_Hero_TemplarAssassin)
-                    AttackRange = me.GetAttackRange() + me.HullRadius;
+                if (Me.ClassId == ClassId.CDOTA_Unit_Hero_TemplarAssassin)
+                    _attackRange = Me.GetAttackRange() + Me.HullRadius;
                 else 
-                if (me.ClassID == ClassID.CDOTA_Unit_Hero_DragonKnight && me.HasModifier("modifier_dragon_knight_dragon_form"))
-                    AttackRange = me.GetAttackRange() + me.HullRadius+24;
+                if (Me.ClassId == ClassId.CDOTA_Unit_Hero_DragonKnight && Me.HasModifier("modifier_dragon_knight_dragon_form"))
+                    _attackRange = Me.GetAttackRange() + Me.HullRadius+24;
                 else
-                if(item == null && me.IsRanged)
-                    AttackRange = me.GetAttackRange() + me.HullRadius + 24;
+                if(item == null && Me.IsRanged)
+                    _attackRange = Me.GetAttackRange() + Me.HullRadius + 24;
                 else
-               if (item !=null && me.IsRanged)
-                    AttackRange = me.GetAttackRange() + me.HullRadius + 24;
+               if (item !=null && Me.IsRanged)
+                    _attackRange = Me.GetAttackRange() + Me.HullRadius + 24;
                 else
-                    AttackRange = me.GetAttackRange() + me.HullRadius;
-                if (rangeDisplay == null)
+                    _attackRange = Me.GetAttackRange() + Me.HullRadius;
+                if (_rangeDisplay == null)
 					{
-						if (me.IsAlive)
+						if (Me.IsAlive)
 						{
-							rangeDisplay = me.AddParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf");
-							rangeDisplay.SetControlPoint(1, new Vector3(255, 0, 222));
-							rangeDisplay.SetControlPoint(3, new Vector3(5, 0, 0));
-							rangeDisplay.SetControlPoint(2, new Vector3(_lastRange, 255, 0));
+							_rangeDisplay = Me.AddParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf");
+							_rangeDisplay.SetControlPoint(1, new Vector3(255, 0, 222));
+							_rangeDisplay.SetControlPoint(3, new Vector3(5, 0, 0));
+							_rangeDisplay.SetControlPoint(2, new Vector3(_lastRange, 255, 0));
 						}
 					}
 					else
 					{
-						if (!me.IsAlive)
+						if (!Me.IsAlive)
 						{
-							rangeDisplay.Dispose();
-							rangeDisplay = null;
+							_rangeDisplay.Dispose();
+							_rangeDisplay = null;
 						}
-						else if (_lastRange != AttackRange)
+						else if (_lastRange.Equals(_attackRange))
 						{
-							rangeDisplay.Dispose();
-							_lastRange = AttackRange;
-							rangeDisplay = me.AddParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf");
-							rangeDisplay.SetControlPoint(1, new Vector3(255, 0, 222));
-							rangeDisplay.SetControlPoint(3, new Vector3(5, 0, 0));
-							rangeDisplay.SetControlPoint(2, new Vector3(_lastRange, 255, 0));
+							_rangeDisplay.Dispose();
+							_lastRange = _attackRange;
+							_rangeDisplay = Me.AddParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf");
+							_rangeDisplay.SetControlPoint(1, new Vector3(255, 0, 222));
+							_rangeDisplay.SetControlPoint(3, new Vector3(5, 0, 0));
+							_rangeDisplay.SetControlPoint(2, new Vector3(_lastRange, 255, 0));
 						}
 					}
 				}
 				else
 				{
-					if (rangeDisplay != null) rangeDisplay.Dispose();
-					rangeDisplay = null;
+					if (_rangeDisplay != null) _rangeDisplay.Dispose();
+					_rangeDisplay = null;
 				}
 
 
             //TODO:TARGETMARKER
-            e = Toolset.ClosestToMouse(me, 10000);
-            if (e != null && e.IsValid && !e.IsIllusion && e.IsAlive && e.IsVisible &&
+            E = Toolset.ClosestToMouse(Me, 10000);
+            if (E != null && E.IsValid && !E.IsIllusion && E.IsAlive && E.IsVisible &&
 			    MainMenu.OthersMenu.Item("ShowTargetMarker").GetValue<bool>())
 			{
 				DrawTarget();
 			}
-			else if (particleEffect != null)
+			else if (_particleEffect != null)
 			{
-				particleEffect.Dispose();
-				particleEffect = null;
+				_particleEffect.Dispose();
+				_particleEffect = null;
 			}
 			// TY  splinterjke.:)
 		}
 
 		private void DrawTarget()
 	    {
-			if (particleEffect == null)
+			if (_particleEffect == null)
 			{
-				particleEffect = new ParticleEffect(@"particles\ui_mouseactions\range_finder_tower_aoe.vpcf", e);    
-				particleEffect.SetControlPoint(2, new Vector3(me.Position.X, me.Position.Y, me.Position.Z));
-				particleEffect.SetControlPoint(6, new Vector3(1, 0, 0)); 
-				particleEffect.SetControlPoint(7, new Vector3(e.Position.X, e.Position.Y, e.Position.Z));
+				_particleEffect = new ParticleEffect(@"particles\ui_mouseactions\range_finder_tower_aoe.vpcf", E);    
+				_particleEffect.SetControlPoint(2, new Vector3(Me.Position.X, Me.Position.Y, Me.Position.Z));
+				_particleEffect.SetControlPoint(6, new Vector3(1, 0, 0)); 
+				_particleEffect.SetControlPoint(7, new Vector3(E.Position.X, E.Position.Y, E.Position.Z));
 			}
 			else 
 			{
-				particleEffect.SetControlPoint(2, new Vector3(me.Position.X, me.Position.Y, me.Position.Z));
-				particleEffect.SetControlPoint(6, new Vector3(1, 0, 0));
-				particleEffect.SetControlPoint(7, new Vector3(e.Position.X, e.Position.Y, e.Position.Z));
+				_particleEffect.SetControlPoint(2, new Vector3(Me.Position.X, Me.Position.Y, Me.Position.Z));
+				_particleEffect.SetControlPoint(6, new Vector3(1, 0, 0));
+				_particleEffect.SetControlPoint(7, new Vector3(E.Position.X, E.Position.Y, E.Position.Z));
 			}
 		}
 		private static void Drawing_OnPostReset(EventArgs args)
@@ -228,7 +230,7 @@ namespace DotaAllCombo.Addons
 		
 		private void OnLoadMessage()
 		{
-			Game.PrintMessage("<font face='verdana' color='#ffa420'>@addon OtherAddons is Loaded!</font>", MessageType.LogMessage);
+			Game.PrintMessage("<font face='verdana' color='#ffa420'>@addon OtherAddons is Loaded!</font>");
 			Service.Debug.Print.ConsoleMessage.Encolored("@addon OtherAddons is Loaded!", ConsoleColor.Yellow);
 		}
 	}

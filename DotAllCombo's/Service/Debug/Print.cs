@@ -1,26 +1,25 @@
 ﻿namespace DotaAllCombo.Service.Debug
 {
 	using System;
-	using System.Reflection;
 	using Ensage;
 
-	class Print
+    internal class Print
 	{
 		public class LogMessage
 		{
 			public static void Error(string text, params object[] arguments)
 			{
-				Game.PrintMessage("<font color='#ff0000'>" + text + "</font>", MessageType.LogMessage);
+				Game.PrintMessage("<font color='#ff0000'>" + text + "</font>");
 			}
 
 			public static void Success(string text, params object[] arguments)
 			{
-				Game.PrintMessage("<font color='#00ff00'>" + text + "</font>", MessageType.LogMessage);
+				Game.PrintMessage("<font color='#00ff00'>" + text + "</font>");
 			}
 
 			public static void Info(string text, params object[] arguments)
 			{
-				Game.PrintMessage("<font color='#ffffff'>" + text + "</font>", MessageType.LogMessage);
+				Game.PrintMessage("<font color='#ffffff'>" + text + "</font>");
 			}
 		} // Console class
 
@@ -48,6 +47,6 @@
 			{
 				Encolored(text, ConsoleColor.Yellow, arguments);
 			}
-		} // LogMessage class
-	} // Print class
+		} 
+	} 
 }

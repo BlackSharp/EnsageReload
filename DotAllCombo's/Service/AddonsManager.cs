@@ -3,23 +3,23 @@ namespace DotaAllCombo.Service
 {
 	using Addons;
     [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
-    class AddonsManager
+    internal class AddonsManager
     {
         public static bool IsLoaded { get; private set; }
 		//private static AutoDodge autoDodge;
 		//private static AutoStack autoStack;
-		private static CreepControl creepControl;
+		private static CreepControl _creepControl;
         //private static LastHit lastHit;
-        private static OthersAddons othersAddons;
+        private static OthersAddons _othersAddons;
 		public static void RunAddons()
 		{
 			if (!IsLoaded) return;
 
-			creepControl.RunScript();
+			_creepControl.RunScript();
             //autoStack.RunScript();
             //autoDodge.RunScript();
             //lastHit.RunScript();
-            othersAddons.RunScript();
+            _othersAddons.RunScript();
 		}
 
 		public static void Load()
@@ -27,23 +27,23 @@ namespace DotaAllCombo.Service
 
             //autoDodge = new AutoDodge();
             //lastHit = new LastHit();
-			creepControl = new CreepControl();
-			othersAddons = new OthersAddons();
+			_creepControl = new CreepControl();
+			_othersAddons = new OthersAddons();
 
-			creepControl.Load();
+			_creepControl.Load();
 			//autoStack.Load();
 			//autoDodge.Load();
-			othersAddons.Load();
+			_othersAddons.Load();
 			IsLoaded = true;
 		}
 
 		public static void Unload()
         {
            // lastHit.Unload();
-            othersAddons.Unload();
+            _othersAddons.Unload();
 			//autoDodge.Unload();
 			//autoStack.Unload();
-			creepControl.Unload();
+			_creepControl.Unload();
 			IsLoaded = false;
 		}
 	}

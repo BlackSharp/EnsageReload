@@ -1,8 +1,9 @@
-﻿namespace DotaAllCombo.Heroes
+﻿using DotaAllCombo.Extensions;
+
+namespace DotaAllCombo.Heroes
 {
-    using Service;
     using Service.Debug;
-    using Ensage;
+
     internal class VengefulSpiritController : Variables, IHeroController
     {
         public void Combo()

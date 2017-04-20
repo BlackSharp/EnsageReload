@@ -1,4 +1,6 @@
-﻿namespace DotaAllCombo.Heroes
+﻿using DotaAllCombo.Extensions;
+
+namespace DotaAllCombo.Heroes
 {
 	using System;
 	using System.Collections.Generic;
@@ -8,14 +10,13 @@
 	using Ensage.Common.Extensions;
 	using Ensage.Common.Menu;
 	using SharpDX;
-	using Service;
 	using Service.Debug;
 
 	internal class TemplarAssassinController : Variables, IHeroController
 	{
-		private Ability Q, W, R;
-		private Item urn, dagon, phase, cheese, halberd, ethereal,
-					mjollnir, orchid, abyssal, stick, mom, Shiva, mail, bkb, satanic, medall, blink, sheep, manta, pike;
+		private Ability _q, _w, _r;
+		private Item _urn, _dagon, _phase, _cheese, _halberd, _ethereal,
+					_mjollnir, _orchid, _abyssal, _stick, _mom, _shiva, _mail, _bkb, _satanic, _medall, _blink, _sheep, _manta, _pike;
 		
 		public void OnLoadEvent()
 		{
@@ -65,8 +66,8 @@
 			       {"item_phase_boots", true}
 			   })));
 			Menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
-			Menu.AddItem(new MenuItem("piKe", "Min targets healh use hurricane pike").SetValue(new Slider(35, 20, 100)));
-			Menu.AddItem(new MenuItem("piKeMe", "Min me healh use hurricane pike").SetValue(new Slider(45, 20, 100)));
+			Menu.AddItem(new MenuItem("piKe", "Min targets healh use hurricane pike").SetValue(new Slider(35, 20)));
+			Menu.AddItem(new MenuItem("piKeMe", "Min Me healh use hurricane pike").SetValue(new Slider(45, 20)));
 			Menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
 		}
 		public void Combo()
@@ -74,420 +75,420 @@
 			if (Menu.Item("enabled").IsActive() && Utils.SleepCheck("combo"))
 			{
 
-                e = Toolset.ClosestToMouse(me);
-                if (e == null)
+                E = Toolset.ClosestToMouse(Me);
+                if (E == null)
 					return;
-				Q = me.Spellbook.SpellQ;
-				W = me.Spellbook.SpellW;
-				R = me.Spellbook.SpellR;
+				_q = Me.Spellbook.SpellQ;
+				_w = Me.Spellbook.SpellW;
+				_r = Me.Spellbook.SpellR;
 				Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
 
-				Shiva = me.FindItem("item_shivas_guard");
-				pike = me.FindItem("item_hurricane_pike");
-				var dragon = me.FindItem("item_dragon_lance");
+				_shiva = Me.FindItem("item_shivas_guard");
+				_pike = Me.FindItem("item_hurricane_pike");
+				var dragon = Me.FindItem("item_dragon_lance");
 				
-				ethereal = me.FindItem("item_ethereal_blade");
-				mom = me.FindItem("item_mask_of_madness");
-				urn = me.FindItem("item_urn_of_shadows");
-				dagon = me.Inventory.Items.FirstOrDefault(
+				_ethereal = Me.FindItem("item_ethereal_blade");
+				_mom = Me.FindItem("item_mask_of_madness");
+				_urn = Me.FindItem("item_urn_of_shadows");
+				_dagon = Me.Inventory.Items.FirstOrDefault(
 						item => item.Name.Contains("item_dagon"));
-				halberd = me.FindItem("item_heavens_halberd");
-				mjollnir = me.FindItem("item_mjollnir");
-				orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn");
-				abyssal = me.FindItem("item_abyssal_blade");
-				mail = me.FindItem("item_blade_mail");
-				manta = me.FindItem("item_manta");
-				bkb = me.FindItem("item_black_king_bar");
-				satanic = me.FindItem("item_satanic");
-				blink = me.FindItem("item_blink");
-				medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
-				sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
-				cheese = me.FindItem("item_cheese");
-				stick = me.FindItem("item_magic_stick") ?? me.FindItem("item_magic_wand");
-				phase = me.FindItem("item_phase_boots");
+				_halberd = Me.FindItem("item_heavens_halberd");
+				_mjollnir = Me.FindItem("item_mjollnir");
+				_orchid = Me.FindItem("item_orchid") ?? Me.FindItem("item_bloodthorn");
+				_abyssal = Me.FindItem("item_abyssal_blade");
+				_mail = Me.FindItem("item_blade_mail");
+				_manta = Me.FindItem("item_manta");
+				_bkb = Me.FindItem("item_black_king_bar");
+				_satanic = Me.FindItem("item_satanic");
+				_blink = Me.FindItem("item_blink");
+				_medall = Me.FindItem("item_medallion_of_courage") ?? Me.FindItem("item_solar_crest");
+				_sheep = E.ClassId == ClassId.CDOTA_Unit_Hero_Tidehunter ? null : Me.FindItem("item_sheepstick");
+				_cheese = Me.FindItem("item_cheese");
+				_stick = Me.FindItem("item_magic_stick") ?? Me.FindItem("item_magic_wand");
+				_phase = Me.FindItem("item_phase_boots");
 
-				var Meld = me.Modifiers.ToList().Exists(y => y.Name == "modifier_templar_assassin_meld");
-				var pikeMod = me.Modifiers.ToList().Exists(y => y.Name == "modifier_item_hurricane_pike_range");
+				var meld = Me.Modifiers.ToList().Exists(y => y.Name == "modifier_templar_assassin_meld");
+				var pikeMod = Me.Modifiers.ToList().Exists(y => y.Name == "modifier_item_hurricane_pike_range");
 			    Toolset.Range();
-			    var stoneModif = e.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
+			    var stoneModif = E.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
 				var v =
 					ObjectManager.GetEntities<Hero>()
-						.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
+						.Where(x => x.Team != Me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
 						.ToList();
 
-				var pike_range = me.Modifiers.FirstOrDefault(y => y.Name == "modifier_item_hurricane_pike_range");
-				if (pike_range != null)
+				var pikeRange = Me.Modifiers.FirstOrDefault(y => y.Name == "modifier_item_hurricane_pike_range");
+				if (pikeRange != null)
 				{
 					if (
-						Q != null
-						&& Q.CanBeCasted()
-						&& !Meld
-						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
+						_q != null
+						&& _q.CanBeCasted()
+						&& !meld
+						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_q.Name)
 						&& Utils.SleepCheck("Q")
 						)
 					{
-						Q.UseAbility();
+						_q.UseAbility();
 						Utils.Sleep(200, "Q");
 					}
 					if (
-						W != null
-						&& Q != null
-						&& pike_range.StackCount <= 3
-						&& !Q.CanBeCasted()
-						&& W.CanBeCasted()
-						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
+						_w != null
+						&& _q != null
+						&& pikeRange.StackCount <= 3
+						&& !_q.CanBeCasted()
+						&& _w.CanBeCasted()
+						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_w.Name)
 						&& Utils.SleepCheck("W")
 						)
 					{
-						W.UseAbility();
-						me.Attack(e);
+						_w.UseAbility();
+						Me.Attack(E);
 						Utils.Sleep(200, "W");
 					}
 					if (Menu.Item("orbwalk").GetValue<bool>())
 					{
-						Orbwalking.Orbwalk(e, 0, 7000, true, true);
+						Orbwalking.Orbwalk(E, 0, 7000, true, true);
 					}
 				}
-				if (pike_range != null && pike_range.StackCount > 0) return;
+				if (pikeRange != null && pikeRange.StackCount > 0) return;
 				if (pikeMod) return;
 				if (Active)
 				{
-					if (Meld)
+					if (meld)
 					{
-						if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+						if (Menu.Item("orbwalk").GetValue<bool>() && Me.Distance2D(E) <= 1900)
 						{
-							Orbwalking.Orbwalk(e, 0, 1600, true, true);
+							Orbwalking.Orbwalk(E, 0, 1600, true, true);
 						}
 					}
 				}
 
-				if (Meld) return;
+				if (meld) return;
 
-				if (Active && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !me.IsInvisible())
+				if (Active && Me.Distance2D(E) <= 1400 && E != null && E.IsAlive && !Me.IsInvisible())
 				{
-					if (R != null
-						&& (pike == null
-						|| !pike.CanBeCasted())
-                        && me.Distance2D(e)>=Toolset.AttackRange+5
-						&& R.CanBeCasted()
-						&& !Meld
+					if (_r != null
+						&& (_pike == null
+						|| !_pike.CanBeCasted())
+                        && Me.Distance2D(E)>=Toolset.AttackRange+5
+						&& _r.CanBeCasted()
+						&& !meld
 						&& Utils.SleepCheck("R")
-						&& !e.Modifiers.ToList().Exists(x => x.Name == "modifier_templar_assassin_trap_slow")
-						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name))
+						&& !E.Modifiers.ToList().Exists(x => x.Name == "modifier_templar_assassin_trap_slow")
+						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_r.Name))
 					{
-						R.UseAbility(Prediction.InFront(e, 140));
+						_r.UseAbility(Prediction.InFront(E, 140));
 						Utils.Sleep(150, "R");
 					}
 					if (
-						Q != null && Q.CanBeCasted() 
-						&& me.Distance2D(e) <= Toolset.AttackRange+300
-						&& !Meld
-						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
+						_q != null && _q.CanBeCasted() 
+						&& Me.Distance2D(E) <= Toolset.AttackRange+300
+						&& !meld
+						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_q.Name)
 						&& Utils.SleepCheck("Q")
 						)
 					{
-						Q.UseAbility();
+						_q.UseAbility();
 						Utils.Sleep(200, "Q");
 					}
-					float angle = me.FindAngleBetween(e.Position, true);
-					Vector3 pos = new Vector3((float)(e.Position.X + 100 * Math.Cos(angle)), (float)(e.Position.Y + 100 * Math.Sin(angle)), 0);
+					float angle = Me.FindAngleBetween(E.Position, true);
+					Vector3 pos = new Vector3((float)(E.Position.X + 100 * Math.Cos(angle)), (float)(E.Position.Y + 100 * Math.Sin(angle)), 0);
 					if (
-						blink != null
-						&& me.CanCast()
-						&& blink.CanBeCasted()
-						&& me.Distance2D(e) >= Toolset.AttackRange
-						&& me.Distance2D(pos) <= 1190
-						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
+						_blink != null
+						&& Me.CanCast()
+						&& _blink.CanBeCasted()
+						&& Me.Distance2D(E) >= Toolset.AttackRange
+						&& Me.Distance2D(pos) <= 1190
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_blink.Name)
 						&& Utils.SleepCheck("blink")
 						)
 					{
-						blink.UseAbility(pos);
+						_blink.UseAbility(pos);
 						Utils.Sleep(250, "blink");
 					}
 					if (
-						W != null && W.CanBeCasted() && me.Distance2D(e) <= Toolset.AttackRange-10
-						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
+						_w != null && _w.CanBeCasted() && Me.Distance2D(E) <= Toolset.AttackRange-10
+						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_w.Name)
 						&& Utils.SleepCheck("W")
 						)
 					{
-						W.UseAbility();
-						me.Attack(e);
+						_w.UseAbility();
+						Me.Attack(E);
 						Utils.Sleep(200, "W");
 					}
 					if ( // MOM
-						mom != null
-						&& mom.CanBeCasted()
-						&& me.CanCast()
-						&& !Meld
-						&& Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(mom.Name)
+						_mom != null
+						&& _mom.CanBeCasted()
+						&& Me.CanCast()
+						&& !meld
+						&& Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_mom.Name)
 						&& Utils.SleepCheck("mom")
-						&& me.Distance2D(e) <= 700
+						&& Me.Distance2D(E) <= 700
 						)
 					{
-						mom.UseAbility();
+						_mom.UseAbility();
 						Utils.Sleep(250, "mom");
 					}
 					if ( // Hellbard
-						halberd != null
-						&& halberd.CanBeCasted()
-						&& me.CanCast()
-						&& !e.IsMagicImmune()
-						&& (e.NetworkActivity == NetworkActivity.Attack
-						|| e.NetworkActivity == NetworkActivity.Crit
-						|| e.NetworkActivity == NetworkActivity.Attack2)
+						_halberd != null
+						&& _halberd.CanBeCasted()
+						&& Me.CanCast()
+						&& !E.IsMagicImmune()
+						&& (E.NetworkActivity == NetworkActivity.Attack
+						|| E.NetworkActivity == NetworkActivity.Crit
+						|| E.NetworkActivity == NetworkActivity.Attack2)
 						&& Utils.SleepCheck("halberd")
-						&& me.Distance2D(e) <= 700
-						&& !Meld
-						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(halberd.Name)
+						&& Me.Distance2D(E) <= 700
+						&& !meld
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_halberd.Name)
 						)
 					{
-						halberd.UseAbility(e);
+						_halberd.UseAbility(E);
 						Utils.Sleep(250, "halberd");
 					}
 					if ( // Mjollnir
-						mjollnir != null
-						&& mjollnir.CanBeCasted()
-						&& me.CanCast()
-						&& !Meld
-						&& !e.IsMagicImmune()
-						&& Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(mjollnir.Name)
+						_mjollnir != null
+						&& _mjollnir.CanBeCasted()
+						&& Me.CanCast()
+						&& !meld
+						&& !E.IsMagicImmune()
+						&& Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_mjollnir.Name)
 						&& Utils.SleepCheck("mjollnir")
-						&& me.Distance2D(e) <= 900
+						&& Me.Distance2D(E) <= 900
 						)
 					{
-						mjollnir.UseAbility(me);
+						_mjollnir.UseAbility(Me);
 						Utils.Sleep(250, "mjollnir");
 					} // Mjollnir Item end
 					if (
 						// cheese
-						cheese != null
-						&& cheese.CanBeCasted()
-						&& !Meld
-						&& me.Health <= (me.MaximumHealth * 0.3)
-						&& me.Distance2D(e) <= 700
-						&& Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(cheese.Name)
+						_cheese != null
+						&& _cheese.CanBeCasted()
+						&& !meld
+						&& Me.Health <= (Me.MaximumHealth * 0.3)
+						&& Me.Distance2D(E) <= 700
+						&& Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_cheese.Name)
 						&& Utils.SleepCheck("cheese")
 						)
 					{
-						cheese.UseAbility();
+						_cheese.UseAbility();
 						Utils.Sleep(200, "cheese");
 					} // cheese Item end
 					if ( // Medall
-						medall != null
-						&& medall.CanBeCasted()
-						&& !Meld
+						_medall != null
+						&& _medall.CanBeCasted()
+						&& !meld
 						&& Utils.SleepCheck("Medall")
-						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(medall.Name)
-						&& me.Distance2D(e) <= 700
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_medall.Name)
+						&& Me.Distance2D(E) <= 700
 						)
 					{
-						medall.UseAbility(e);
+						_medall.UseAbility(E);
 						Utils.Sleep(250, "Medall");
 					} // Medall Item end
 
 					if ( // sheep
-						sheep != null
-						&& sheep.CanBeCasted()
-						&& me.CanCast()
-						&& !e.IsLinkensProtected()
-						&& !e.IsMagicImmune()
-						&& !Meld
-						&& me.Distance2D(e) <= 1400
+						_sheep != null
+						&& _sheep.CanBeCasted()
+						&& Me.CanCast()
+						&& !E.IsLinkensProtected()
+						&& !E.IsMagicImmune()
+						&& !meld
+						&& Me.Distance2D(E) <= 1400
 						&& !stoneModif
-						&& Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(sheep.Name)
+						&& Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_sheep.Name)
 						&& Utils.SleepCheck("sheep")
 						)
 					{
-						sheep.UseAbility(e);
+						_sheep.UseAbility(E);
 						Utils.Sleep(250, "sheep");
 					} // sheep Item end
 					if ( // Abyssal Blade
-						abyssal != null
-						&& abyssal.CanBeCasted()
-						&& me.CanCast()
-						&& !Meld
-						&& !e.IsStunned()
-						&& !e.IsHexed()
-						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(abyssal.Name)
+						_abyssal != null
+						&& _abyssal.CanBeCasted()
+						&& Me.CanCast()
+						&& !meld
+						&& !E.IsStunned()
+						&& !E.IsHexed()
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_abyssal.Name)
 						&& Utils.SleepCheck("abyssal")
-						&& me.Distance2D(e) <= 400
+						&& Me.Distance2D(E) <= 400
 						)
 					{
-						abyssal.UseAbility(e);
+						_abyssal.UseAbility(E);
 						Utils.Sleep(250, "abyssal");
 					} // Abyssal Item end
-					if (orchid != null 
-						&& orchid.CanBeCasted()
-						&& !Meld
-						&& me.Distance2D(e) <= 600
-						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(orchid.Name) &&
+					if (_orchid != null 
+						&& _orchid.CanBeCasted()
+						&& !meld
+						&& Me.Distance2D(E) <= 600
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_orchid.Name) &&
 						Utils.SleepCheck("orchid"))
 					{
-						orchid.UseAbility(e);
+						_orchid.UseAbility(E);
 						Utils.Sleep(100, "orchid");
 					}
 
-					if (Shiva != null 
-						&& Shiva.CanBeCasted() 
-						&& me.Distance2D(e) <= 600
-						&& !Meld
-						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(Shiva.Name)
-						&& !e.IsMagicImmune() && Utils.SleepCheck("Shiva"))
+					if (_shiva != null 
+						&& _shiva.CanBeCasted() 
+						&& Me.Distance2D(E) <= 600
+						&& !meld
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_shiva.Name)
+						&& !E.IsMagicImmune() && Utils.SleepCheck("Shiva"))
 					{
-						Shiva.UseAbility();
+						_shiva.UseAbility();
 						Utils.Sleep(100, "Shiva");
 					}
 					if ( // ethereal
-						ethereal != null
-						&& ethereal.CanBeCasted()
-						&& me.CanCast()
-						&& !Meld
-						&& !e.IsLinkensProtected()
-						&& !e.IsMagicImmune()
+						_ethereal != null
+						&& _ethereal.CanBeCasted()
+						&& Me.CanCast()
+						&& !meld
+						&& !E.IsLinkensProtected()
+						&& !E.IsMagicImmune()
 						&& !stoneModif
-						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name)
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_ethereal.Name)
 						&& Utils.SleepCheck("ethereal")
 						)
 					{
-						ethereal.UseAbility(e);
+						_ethereal.UseAbility(E);
 						Utils.Sleep(200, "ethereal");
 					} // ethereal Item end
 
 
 					if ( // Dagon
-						me.CanCast()
-						&& dagon != null
-						&& (ethereal == null
-						|| (e.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow")
-						|| ethereal.Cooldown < 17))
-						&& !e.IsLinkensProtected()
-						&& dagon.CanBeCasted()
-						&& !Meld
-						&& !e.IsMagicImmune()
+						Me.CanCast()
+						&& _dagon != null
+						&& (_ethereal == null
+						|| (E.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow")
+						|| _ethereal.Cooldown < 17))
+						&& !E.IsLinkensProtected()
+						&& _dagon.CanBeCasted()
+						&& !meld
+						&& !E.IsMagicImmune()
 						&& !stoneModif
 						&& Utils.SleepCheck("dagon")
 						)
 					{
-						dagon.UseAbility(e);
+						_dagon.UseAbility(E);
 						Utils.Sleep(200, "dagon");
 					} // Dagon Item end
-					if (phase != null
-						&& phase.CanBeCasted()
-						&& !Meld
+					if (_phase != null
+						&& _phase.CanBeCasted()
+						&& !meld
 						&& Utils.SleepCheck("phase")
-						&& Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(phase.Name)
-						&& !blink.CanBeCasted()
-						&& me.Distance2D(e) >= me.AttackRange + 20)
+						&& Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_phase.Name)
+						&& !_blink.CanBeCasted()
+						&& Me.Distance2D(E) >= Me.AttackRange + 20)
 					{
-						phase.UseAbility();
+						_phase.UseAbility();
 						Utils.Sleep(200, "phase");
 					}
-					if (urn != null 
-						&& urn.CanBeCasted() 
-						&& urn.CurrentCharges > 0 
-						&& me.Distance2D(e) <= 400
-						&& !Meld
-						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(urn.Name) 
+					if (_urn != null 
+						&& _urn.CanBeCasted() 
+						&& _urn.CurrentCharges > 0 
+						&& Me.Distance2D(E) <= 400
+						&& !meld
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_urn.Name) 
 						&& Utils.SleepCheck("urn"))
 					{
-						urn.UseAbility(e);
+						_urn.UseAbility(E);
 						Utils.Sleep(240, "urn");
 					}
 					if (
-						stick != null
-						&& stick.CanBeCasted()
-						&& stick.CurrentCharges != 0
-						&& me.Distance2D(e) <= 700
-						&& !Meld
-						&& (me.Health <= (me.MaximumHealth * 0.5)
-							|| me.Mana <= (me.MaximumMana * 0.5))
-						&& Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(stick.Name))
+						_stick != null
+						&& _stick.CanBeCasted()
+						&& _stick.CurrentCharges != 0
+						&& Me.Distance2D(E) <= 700
+						&& !meld
+						&& (Me.Health <= (Me.MaximumHealth * 0.5)
+							|| Me.Mana <= (Me.MaximumMana * 0.5))
+						&& Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_stick.Name))
 					{
-						stick.UseAbility();
+						_stick.UseAbility();
 						Utils.Sleep(200, "mana_items");
 					}
-					if (manta != null
-						&& manta.CanBeCasted()
-						&& !Meld
-						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(manta.Name)
-						&& me.Distance2D(e) <= Toolset.AttackRange
+					if (_manta != null
+						&& _manta.CanBeCasted()
+						&& !meld
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_manta.Name)
+						&& Me.Distance2D(E) <= Toolset.AttackRange
 						&& Utils.SleepCheck("manta"))
 					{
-						manta.UseAbility();
+						_manta.UseAbility();
 						Utils.Sleep(100, "manta");
 					}
 					if ( // Satanic 
-						satanic != null &&
-						me.Health <= (me.MaximumHealth * 0.3) &&
-						satanic.CanBeCasted()
-						&& !Meld
-						&& me.Distance2D(e) <= me.AttackRange + 50
-						&& Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(satanic.Name)
+						_satanic != null &&
+						Me.Health <= (Me.MaximumHealth * 0.3) &&
+						_satanic.CanBeCasted()
+						&& !meld
+						&& Me.Distance2D(E) <= Me.AttackRange + 50
+						&& Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_satanic.Name)
 						&& Utils.SleepCheck("satanic")
 						)
 					{
-						satanic.UseAbility();
+						_satanic.UseAbility();
 						Utils.Sleep(240, "satanic");
 					} // Satanic Item end
-					if (mail != null 
-						&& mail.CanBeCasted() 
-						&& (v.Count(x => x.Distance2D(me) <= 650) 
+					if (_mail != null 
+						&& _mail.CanBeCasted() 
+						&& (v.Count(x => x.Distance2D(Me) <= 650) 
 						>= (Menu.Item("Heelm").GetValue<Slider>().Value))
-						&& !Meld
-						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mail.Name) 
+						&& !meld
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_mail.Name) 
 						&& Utils.SleepCheck("mail"))
 					{
-						mail.UseAbility();
+						_mail.UseAbility();
 						Utils.Sleep(100, "mail");
 					}
-					if (bkb != null 
-						&& bkb.CanBeCasted()
-						&& !Meld
-						&& (v.Count(x => x.Distance2D(me) <= 650) 
+					if (_bkb != null 
+						&& _bkb.CanBeCasted()
+						&& !meld
+						&& (v.Count(x => x.Distance2D(Me) <= 650) 
 						>= (Menu.Item("Heel").GetValue<Slider>().Value)) &&
-						Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(bkb.Name) 
+						Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_bkb.Name) 
 						&& Utils.SleepCheck("bkb"))
 					{
-						bkb.UseAbility();
+						_bkb.UseAbility();
 						Utils.Sleep(100, "bkb");
 					}
 					
-					if (Active && me.Distance2D(e) <= 1400 && e != null && e.IsAlive)
+					if (Active && Me.Distance2D(E) <= 1400 && E != null && E.IsAlive)
 					{
-						if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+						if (Menu.Item("orbwalk").GetValue<bool>() && Me.Distance2D(E) <= 1900)
 						{
-							Orbwalking.Orbwalk(e, 0, 1600, true, true);
+							Orbwalking.Orbwalk(E, 0, 1600, true, true);
 						}
 					}
-					if (pike != null 
-						&& pike.CanBeCasted() 
-						&& me.IsAttacking()
-						&& Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(pike.Name)
-						&& (e.Health <= (e.MaximumHealth / 100 * Menu.Item("piKe").GetValue<Slider>().Value)
-						||  me.Health <= (me.MaximumHealth / 100 * Menu.Item("piKeMe").GetValue<Slider>().Value))
-                        && (W == null
-						|| !W.CanBeCasted())
-						&& !Meld
-						&& me.Distance2D(e) <= 450 
+					if (_pike != null 
+						&& _pike.CanBeCasted() 
+						&& Me.IsAttacking()
+						&& Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(_pike.Name)
+						&& (E.Health <= (E.MaximumHealth / 100 * Menu.Item("piKe").GetValue<Slider>().Value)
+						||  Me.Health <= (Me.MaximumHealth / 100 * Menu.Item("piKeMe").GetValue<Slider>().Value))
+                        && (_w == null
+						|| !_w.CanBeCasted())
+						&& !meld
+						&& Me.Distance2D(E) <= 450 
 						&& Utils.SleepCheck("pike"))
 					{
-						pike.UseAbility(e);
-						if (((pike != null && pike.CanBeCasted()) || IsCasted(pike)) && R.CanBeCasted() && !me.Modifiers.ToList().Exists(y => y.Name == "modifier_templar_assassin_meld") && me.Distance2D(e.NetworkPosition) <= 400 && me.CanCast() && !me.IsSilenced() && !me.IsHexed())
+						_pike.UseAbility(E);
+						if (((_pike != null && _pike.CanBeCasted()) || IsCasted(_pike)) && _r.CanBeCasted() && !Me.Modifiers.ToList().Exists(y => y.Name == "modifier_templar_assassin_meld") && Me.Distance2D(E.NetworkPosition) <= 400 && Me.CanCast() && !Me.IsSilenced() && !Me.IsHexed())
 						{
-							var a1 = me.Position.ToVector2().FindAngleBetween(e.Position.ToVector2(), true);
+							var a1 = Me.Position.ToVector2().FindAngleBetween(E.Position.ToVector2(), true);
 							var p1 = new Vector3(
-								(e.Position.X + 520 * (float)Math.Cos(a1)),
-								(e.Position.Y + 520 * (float)Math.Sin(a1)),
+								(E.Position.X + 520 * (float)Math.Cos(a1)),
+								(E.Position.Y + 520 * (float)Math.Sin(a1)),
 								100);
-							R.UseAbility(p1);
+							_r.UseAbility(p1);
 						}
 						Utils.Sleep(100, "pike");
 					}
-					var traps = ObjectManager.GetEntities<Unit>().Where(x => x.Name == "npc_dota_templar_assassin_psionic_trap" && x.Team == me.Team
-									  && x.Distance2D(me) <= 1700 && x.IsAlive && x.IsValid).ToList();
+					var traps = ObjectManager.GetEntities<Unit>().Where(x => x.Name == "npc_dota_templar_assassin_psionic_trap" && x.Team == Me.Team
+									  && x.Distance2D(Me) <= 1700 && x.IsAlive && x.IsValid).ToList();
 					foreach (var q in traps)
 					{
-						if (!HurPikeActived() && e.NetworkPosition.Distance2D(q.Position) < 390 && q.Spellbook.SpellQ.CanBeCasted() && Utils.SleepCheck("traps") && !e.Modifiers.ToList().Exists(x => x.Name == "modifier_templar_assassin_trap_slow"))
+						if (!HurPikeActived() && E.NetworkPosition.Distance2D(q.Position) < 390 && q.Spellbook.SpellQ.CanBeCasted() && Utils.SleepCheck("traps") && !E.Modifiers.ToList().Exists(x => x.Name == "modifier_templar_assassin_trap_slow"))
 						{
 							q.Spellbook.SpellQ.UseAbility();
 							Utils.Sleep(150, "traps");
@@ -508,7 +509,7 @@
 		}
 		private bool HurPikeActived()
 		{
-			return (pike != null && (pike.CooldownLength - pike.Cooldown) < 4.5 && pike.Cooldown > 0);
+			return (_pike != null && (_pike.CooldownLength - _pike.Cooldown) < 4.5 && _pike.Cooldown > 0);
 		}
 	}
 }

@@ -1,10 +1,9 @@
 ﻿
 
-using Ensage;
+using DotaAllCombo.Extensions;
 
 namespace DotaAllCombo.Heroes
 {
-    using Service;
     using Service.Debug;
 
     internal class VisageController : Variables, IHeroController

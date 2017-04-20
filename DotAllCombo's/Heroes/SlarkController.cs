@@ -1,4 +1,6 @@
-﻿namespace DotaAllCombo.Heroes
+﻿using DotaAllCombo.Extensions;
+
+namespace DotaAllCombo.Heroes
 {
     using System;
     using System.Collections.Generic;
@@ -9,16 +11,15 @@
     using Ensage.Common.Menu;
 	using SharpDX;
 	using SharpDX.Direct3D9;
-	using Service;
-	using Service.Debug;
+    using Service.Debug;
 	using System.Threading.Tasks;
 	internal class SlarkController : Variables, IHeroController
     {
-		private Ability Q, W, R;
-		private bool trying;
-		private Item urn, ethereal, dagon, halberd, mjollnir, abyssal, mom, mail, bkb, satanic, blink, armlet, medall, orchid;
-		private Font text;
-		private Line line;
+		private Ability _q, _w, _r;
+        protected bool Trying;
+		private Item _urn, _ethereal, _dagon, _halberd, _mjollnir, _abyssal, _mom, _mail, _bkb, _satanic, _blink, _armlet, _medall, _orchid;
+		private Font _text;
+		private Line _line;
 
 		public void OnLoadEvent()
 		{
@@ -29,7 +30,7 @@
 			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
 			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
 			Menu.AddItem(new MenuItem("keyBind", "Key Combo").SetValue(new KeyBind(32, KeyBindType.Press)));
-			Menu.AddItem(new MenuItem("healUlt", "Use Ult if me Health % <").SetValue(new Slider(25, 15, 80)));
+			Menu.AddItem(new MenuItem("healUlt", "Use Ult if Me Health % <").SetValue(new Slider(25, 15, 80)));
 			Menu.AddItem(
 			new MenuItem("Skills", ":").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
@@ -58,7 +59,7 @@
 				})));
 			Menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
 			Menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
-			text = new Font(
+			_text = new Font(
 				Drawing.Direct3DDevice9,
 				new FontDescription
 				{
@@ -68,7 +69,7 @@
 					Quality = FontQuality.ClearType
 				});
 
-			line = new Line(Drawing.Direct3DDevice9);
+			_line = new Line(Drawing.Direct3DDevice9);
 		}
 
 		public async void Combo()
@@ -77,29 +78,29 @@
 			
 			if (!Menu.Item("enabled").IsActive()) return;
 
-            e = Toolset.ClosestToMouse(me);
+            E = Toolset.ClosestToMouse(Me);
 
-            if (e == null) return;
-			Q = me.Spellbook.SpellQ;
+            if (E == null) return;
+			_q = Me.Spellbook.SpellQ;
 
-			W = me.Spellbook.SpellW;
+			_w = Me.Spellbook.SpellW;
 
-			R = me.Spellbook.SpellR;
-			mom = me.FindItem("item_mask_of_madness");
-			urn = me.FindItem("item_urn_of_shadows");
-			dagon = me.Inventory.Items.FirstOrDefault(x => x.Name.Contains("item_dagon"));
-			ethereal = me.FindItem("item_ethereal_blade");
-			halberd = me.FindItem("item_heavens_halberd");
-			mjollnir = me.FindItem("item_mjollnir");
-			armlet = me.FindItem("item_armlet");
-			orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn");
-			abyssal = me.FindItem("item_abyssal_blade");
-			mail = me.FindItem("item_blade_mail");
-			bkb = me.FindItem("item_black_king_bar");
-			blink = me.FindItem("item_blink");
-			satanic = me.FindItem("item_satanic");
-			medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
-			var invisModif = Toolset.invUnit(me);
+			_r = Me.Spellbook.SpellR;
+			_mom = Me.FindItem("item_mask_of_madness");
+			_urn = Me.FindItem("item_urn_of_shadows");
+			_dagon = Me.Inventory.Items.FirstOrDefault(x => x.Name.Contains("item_dagon"));
+			_ethereal = Me.FindItem("item_ethereal_blade");
+			_halberd = Me.FindItem("item_heavens_halberd");
+			_mjollnir = Me.FindItem("item_mjollnir");
+			_armlet = Me.FindItem("item_armlet");
+			_orchid = Me.FindItem("item_orchid") ?? Me.FindItem("item_bloodthorn");
+			_abyssal = Me.FindItem("item_abyssal_blade");
+			_mail = Me.FindItem("item_blade_mail");
+			_bkb = Me.FindItem("item_black_king_bar");
+			_blink = Me.FindItem("item_blink");
+			_satanic = Me.FindItem("item_satanic");
+			_medall = Me.FindItem("item_medallion_of_courage") ?? Me.FindItem("item_solar_crest");
+			var invisModif = Toolset.invUnit(Me);
 
 			
 
@@ -109,230 +110,230 @@
 			if (Active)
 			{
 				
-				if (e != null && (!e.IsValid || !e.IsVisible || !e.IsAlive))
+				if (E != null && (!E.IsValid || !E.IsVisible || !E.IsAlive))
 				{
-					e = null;
+					E = null;
 				}
-				if (e != null && e.IsAlive && !e.IsInvul() && !e.IsIllusion)
+				if (E != null && E.IsAlive && !E.IsInvul() && !E.IsIllusion)
 				{
-					if (me.CanCast() && !me.IsChanneling())
+					if (Me.CanCast() && !Me.IsChanneling())
 					{
-						float angle = me.FindAngleBetween(e.Position, true);
-						Vector3 pos = new Vector3((float)(e.Position.X - 100 * Math.Cos(angle)), (float)(e.Position.Y - 100 * Math.Sin(angle)), 0);
+						float angle = Me.FindAngleBetween(E.Position, true);
+						Vector3 pos = new Vector3((float)(E.Position.X - 100 * Math.Cos(angle)), (float)(E.Position.Y - 100 * Math.Sin(angle)), 0);
 
-						if (blink != null
-							&& blink.Cooldown <= 0
-							&& me.Distance2D(pos) <= 1180
-							&& me.Distance2D(e) >= 400 &&
-							Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
+						if (_blink != null
+							&& _blink.Cooldown <= 0
+							&& Me.Distance2D(pos) <= 1180
+							&& Me.Distance2D(E) >= 400 &&
+							Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_blink.Name))
 						{
-							blink.UseAbility(pos);
+							_blink.UseAbility(pos);
 						}
-						if (W != null && W.CanBeCasted()
-						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
+						if (_w != null && _w.CanBeCasted()
+						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_w.Name))
 						{
-							if (e.NetworkActivity == NetworkActivity.Move)
+							if (E.NetworkActivity == NetworkActivity.Move)
 							{
-								var VectorOfMovement = new Vector2((float)Math.Cos(e.RotationRad) * e.MovementSpeed, (float)Math.Sin(e.RotationRad) * e.MovementSpeed);
-								var HitPosition = Interception(e.Position, VectorOfMovement, me.Position, 933.33f);
-								var HitPosMod = HitPosition + new Vector3(VectorOfMovement.X * (TimeToTurn(me, HitPosition)), VectorOfMovement.Y * (TimeToTurn(me, HitPosition)), 0);
-								var HitPosMod2 = HitPosition + new Vector3(VectorOfMovement.X * (TimeToTurn(me, HitPosMod)), VectorOfMovement.Y * (TimeToTurn(me, HitPosMod)), 0);
+								var vectorOfMovement = new Vector2((float)Math.Cos(E.RotationRad) * E.MovementSpeed, (float)Math.Sin(E.RotationRad) * E.MovementSpeed);
+								var hitPosition = Interception(E.Position, vectorOfMovement, Me.Position, 933.33f);
+								var hitPosMod = hitPosition + new Vector3(vectorOfMovement.X * (TimeToTurn(Me, hitPosition)), vectorOfMovement.Y * (TimeToTurn(Me, hitPosition)), 0);
+								var hitPosMod2 = hitPosition + new Vector3(vectorOfMovement.X * (TimeToTurn(Me, hitPosMod)), vectorOfMovement.Y * (TimeToTurn(Me, hitPosMod)), 0);
 
-								if (GetDistance2D(me, HitPosMod2) > (755 + e.HullRadius))
+								if (GetDistance2D(Me, hitPosMod2) > (755 + E.HullRadius))
 								{
 									return;
 								}
-								if (IsFacing(me, HitPosMod2))
+								if (IsFacing(Me, hitPosMod2))
 								{
-									W.UseAbility();
-									trying = true;
+									_w.UseAbility();
+									Trying = true;
 									await Task.Delay(400); //Avoid trying to W multiple times.
-									trying = false;
+									Trying = false;
 								}
 								else
 								{
-									me.Move((HitPosMod2 - me.Position) * 50 / (float)GetDistance2D(HitPosMod2, me) + me.Position);
+									Me.Move((hitPosMod2 - Me.Position) * 50 / (float)GetDistance2D(hitPosMod2, Me) + Me.Position);
 								}
 							}
 							else
 							{
-								if (GetDistance2D(me, e) > (755 + e.HullRadius))
+								if (GetDistance2D(Me, E) > (755 + E.HullRadius))
 								{
 									return;
 								}
-								if (IsFacing(me, e))
+								if (IsFacing(Me, E))
 								{
-									W.UseAbility();
-									trying = true;
+									_w.UseAbility();
+									Trying = true;
 									await Task.Delay(400);
-									trying = false;
+									Trying = false;
 								}
 								else
 								{
-									me.Move((e.Position - me.Position) * 50 / (float)GetDistance2D(e, me) + me.Position);
+									Me.Move((E.Position - Me.Position) * 50 / (float)GetDistance2D(E, Me) + Me.Position);
 								}
 							}
 						}
-						if (!W.CanBeCasted() || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
+						if (_w != null && (!_w.CanBeCasted() || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_w.Name)))
 							{
-							if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+							if (Menu.Item("orbwalk").GetValue<bool>() && Me.Distance2D(E) <= 1900)
 							{
-								Orbwalking.Orbwalk(e, 0, 1600, true, true);
+								Orbwalking.Orbwalk(E, 0, 1600, true, true);
 							}
 						}
-						if (Q != null 
-							&& Q.CanBeCasted()
-							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
-							&& me.Distance2D(e) <= 325
+						if (_q != null 
+							&& _q.CanBeCasted()
+							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_q.Name)
+							&& Me.Distance2D(E) <= 325
 							&& Utils.SleepCheck("Q"))
 						{
-							Q.UseAbility();
+							_q.UseAbility();
 							Utils.Sleep(200, "Q");
 						}
-						if (orchid != null 
-							&& orchid.CanBeCasted() 
-							&& me.Distance2D(e) <= 400
-							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(orchid.Name) 
+						if (_orchid != null 
+							&& _orchid.CanBeCasted() 
+							&& Me.Distance2D(E) <= 400
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_orchid.Name) 
 							&& Utils.SleepCheck("orchid"))
 						{
-							orchid.UseAbility(e);
+							_orchid.UseAbility(E);
 							Utils.Sleep(100, "orchid");
 						}
-						if (R != null 
-							&& R.IsValid 
-							&& R.CanBeCasted() 
-							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
-							&& me.Health <= me.MaximumHealth / 100 * Menu.Item("healUlt").GetValue<Slider>().Value 
+						if (_r != null 
+							&& _r.IsValid 
+							&& _r.CanBeCasted() 
+							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_r.Name)
+							&& Me.Health <= Me.MaximumHealth / 100 * Menu.Item("healUlt").GetValue<Slider>().Value 
 							&& Utils.SleepCheck("R"))
 						{
-							R.UseAbility();
+							_r.UseAbility();
 							Utils.Sleep(200, "R");
 						}
 						
 						if ( // MOM
-							mom != null
-							&& mom.CanBeCasted()
-							&& me.CanCast()
-							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mom.Name)
+							_mom != null
+							&& _mom.CanBeCasted()
+							&& Me.CanCast()
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_mom.Name)
 							&& Utils.SleepCheck("mom")
-							&& me.Distance2D(e) <= 700
+							&& Me.Distance2D(E) <= 700
 							)
 						{
-							mom.UseAbility();
+							_mom.UseAbility();
 							Utils.Sleep(250, "mom");
 						}
 						if ( // Mjollnir
-							mjollnir != null
-							&& mjollnir.CanBeCasted()
-							&& me.CanCast()
-							&& !e.IsMagicImmune()
-							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mjollnir.Name)
+							_mjollnir != null
+							&& _mjollnir.CanBeCasted()
+							&& Me.CanCast()
+							&& !E.IsMagicImmune()
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_mjollnir.Name)
 							&& Utils.SleepCheck("mjollnir")
-							&& me.Distance2D(e) <= 900
+							&& Me.Distance2D(E) <= 900
 							)
 						{
-							mjollnir.UseAbility(me);
+							_mjollnir.UseAbility(Me);
 							Utils.Sleep(250, "mjollnir");
 						} // Mjollnir Item end
 						if ( // Medall
-							medall != null
-							&& medall.CanBeCasted()
+							_medall != null
+							&& _medall.CanBeCasted()
 							&& Utils.SleepCheck("Medall")
-							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(medall.Name)
-							&& me.Distance2D(e) <= 700
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_medall.Name)
+							&& Me.Distance2D(E) <= 700
 							)
 						{
-							medall.UseAbility(e);
+							_medall.UseAbility(E);
 							Utils.Sleep(250, "Medall");
 						} // Medall Item end
-						if (armlet != null && !armlet.IsToggled &&
-							Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(armlet.Name) &&
+						if (_armlet != null && !_armlet.IsToggled &&
+							Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_armlet.Name) &&
 							Utils.SleepCheck("armlet"))
 						{
-							armlet.ToggleAbility();
+							_armlet.ToggleAbility();
 							Utils.Sleep(300, "armlet");
 						}
 						
 
-						if (ethereal != null && ethereal.CanBeCasted()
-							&& me.Distance2D(e) <= 700 && me.Distance2D(e) <= 400
-							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name) &&
+						if (_ethereal != null && _ethereal.CanBeCasted()
+							&& Me.Distance2D(E) <= 700 && Me.Distance2D(E) <= 400
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_ethereal.Name) &&
 							Utils.SleepCheck("ethereal"))
 						{
-							ethereal.UseAbility(e);
+							_ethereal.UseAbility(E);
 							Utils.Sleep(100, "ethereal");
 						}
 
-						if (dagon != null
-							&& dagon.CanBeCasted()
-							&& me.Distance2D(e) <= 500
+						if (_dagon != null
+							&& _dagon.CanBeCasted()
+							&& Me.Distance2D(E) <= 500
 							&& Utils.SleepCheck("dagon"))
 						{
-							dagon.UseAbility(e);
+							_dagon.UseAbility(E);
 							Utils.Sleep(100, "dagon");
 						}
 						if ( // Abyssal Blade
-							abyssal != null
-							&& abyssal.CanBeCasted()
-							&& me.CanCast()
-							&& !e.IsStunned()
-							&& !e.IsHexed()
+							_abyssal != null
+							&& _abyssal.CanBeCasted()
+							&& Me.CanCast()
+							&& !E.IsStunned()
+							&& !E.IsHexed()
 							&& Utils.SleepCheck("abyssal")
-							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(abyssal.Name)
-							&& me.Distance2D(e) <= 400
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_abyssal.Name)
+							&& Me.Distance2D(E) <= 400
 							)
 						{
-							abyssal.UseAbility(e);
+							_abyssal.UseAbility(E);
 							Utils.Sleep(250, "abyssal");
 						} // Abyssal Item end
-						if (urn != null && urn.CanBeCasted() && urn.CurrentCharges > 0 && me.Distance2D(e) <= 400
-							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(urn.Name) && Utils.SleepCheck("urn"))
+						if (_urn != null && _urn.CanBeCasted() && _urn.CurrentCharges > 0 && Me.Distance2D(E) <= 400
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_urn.Name) && Utils.SleepCheck("urn"))
 						{
-							urn.UseAbility(e);
+							_urn.UseAbility(E);
 							Utils.Sleep(240, "urn");
 						}
 						if ( // Hellbard
-							halberd != null
-							&& halberd.CanBeCasted()
-							&& me.CanCast()
-							&& !e.IsMagicImmune()
-							&& (e.NetworkActivity == NetworkActivity.Attack
-								|| e.NetworkActivity == NetworkActivity.Crit
-								|| e.NetworkActivity == NetworkActivity.Attack2)
+							_halberd != null
+							&& _halberd.CanBeCasted()
+							&& Me.CanCast()
+							&& !E.IsMagicImmune()
+							&& (E.NetworkActivity == NetworkActivity.Attack
+								|| E.NetworkActivity == NetworkActivity.Crit
+								|| E.NetworkActivity == NetworkActivity.Attack2)
 							&& Utils.SleepCheck("halberd")
-							&& me.Distance2D(e) <= 700
-							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(halberd.Name)
+							&& Me.Distance2D(E) <= 700
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_halberd.Name)
 							)
 						{
-							halberd.UseAbility(e);
+							_halberd.UseAbility(E);
 							Utils.Sleep(250, "halberd");
 						}
 						if ( // Satanic 
-							satanic != null &&
-							me.Health <= (me.MaximumHealth * 0.3) &&
-							satanic.CanBeCasted() &&
-							me.Distance2D(e) <= me.AttackRange + 50
-							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(satanic.Name)
+							_satanic != null &&
+							Me.Health <= (Me.MaximumHealth * 0.3) &&
+							_satanic.CanBeCasted() &&
+							Me.Distance2D(E) <= Me.AttackRange + 50
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_satanic.Name)
 							&& Utils.SleepCheck("satanic")
 							)
 						{
-							satanic.UseAbility();
+							_satanic.UseAbility();
 							Utils.Sleep(240, "satanic");
 						} // Satanic Item end
-						var v = ObjectManager.GetEntities<Hero>().Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
+						var v = ObjectManager.GetEntities<Hero>().Where(x => x.Team != Me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
 					.ToList();
-						if (mail != null && mail.CanBeCasted() && (v.Count(x => x.Distance2D(me) <= 650) >=
+						if (_mail != null && _mail.CanBeCasted() && (v.Count(x => x.Distance2D(Me) <= 650) >=
 																   (Menu.Item("Heelm").GetValue<Slider>().Value)) &&
-							Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mail.Name) && Utils.SleepCheck("mail"))
+							Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_mail.Name) && Utils.SleepCheck("mail"))
 						{
-							mail.UseAbility();
+							_mail.UseAbility();
 							Utils.Sleep(100, "mail");
 						}
-						if (bkb != null && bkb.CanBeCasted() && (v.Count(x => x.Distance2D(me) <= 650) >=
+						if (_bkb != null && _bkb.CanBeCasted() && (v.Count(x => x.Distance2D(Me) <= 650) >=
 																 (Menu.Item("Heel").GetValue<Slider>().Value)) &&
-							Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(bkb.Name) && Utils.SleepCheck("bkb"))
+							Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_bkb.Name) && Utils.SleepCheck("bkb"))
 						{
-							bkb.UseAbility();
+							_bkb.UseAbility();
 							Utils.Sleep(100, "bkb");
 						}
 					}
@@ -343,18 +344,18 @@
 		{
 			var vLine = new Vector2[2];
 
-			line.GLLines = true;
-			line.Antialias = false;
-			line.Width = w;
+			_line.GLLines = true;
+			_line.Antialias = false;
+			_line.Width = w;
 
 			vLine[0].X = x + w / 2;
 			vLine[0].Y = y;
 			vLine[1].X = x + w / 2;
 			vLine[1].Y = y + h;
 
-			line.Begin();
-			line.Draw(vLine, color);
-			line.End();
+			_line.Begin();
+			_line.Draw(vLine, color);
+			_line.End();
 		}
 
 		public void DrawBox(float x, float y, float w, float h, float px, Color color)
@@ -372,14 +373,14 @@
 		}
 		
 
-		private  double GetDistance2D(dynamic A, dynamic B)
+		private  double GetDistance2D(dynamic a, dynamic b)
 		{
-			if (!(A is Unit || A is Vector3)) throw new ArgumentException("Not valid parameters, accepts Unit|Vector3 only", "A");
-			if (!(B is Unit || B is Vector3)) throw new ArgumentException("Not valid parameters, accepts Unit|Vector3 only", "B");
-			if (A is Unit) A = A.Position;
-			if (B is Unit) B = B.Position;
+			if (!(a is Unit || a is Vector3)) throw new ArgumentException("Not valid parameters, accepts Unit|Vector3 only", "a");
+			if (!(b is Unit || b is Vector3)) throw new ArgumentException("Not valid parameters, accepts Unit|Vector3 only", "b");
+			if (a is Unit) a = a.Position;
+			if (b is Unit) b = b.Position;
 
-			return Math.Sqrt(Math.Pow(A.X - B.X, 2) + Math.Pow(A.Y - B.Y, 2));
+			return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
 		}
 
 		private  Vector3 Interception(Vector3 x, Vector2 y, Vector3 z, float s)
@@ -391,7 +392,8 @@
 			float h1 = x1 * y.X + y1 * y.Y;
 			float t;
 
-			if (hs == 0)
+		    double TOLERANCE = 0;
+		    if (Math.Abs(hs) < TOLERANCE)
 			{
 				t = -(x1 * x1 + y1 * y1) / 2 * h1;
 			}
@@ -413,47 +415,47 @@
 			return new Vector3(x.X + t * y.X, x.Y + t * y.Y, x.Z);
 		}
 
-		private  bool IsFacing(Unit StartUnit, dynamic Enemy)
+		private  bool IsFacing(Unit startUnit, dynamic enemy)
 		{
-			if (!(Enemy is Unit || Enemy is Vector3)) throw new ArgumentException("TimeToTurn => INVALID PARAMETERS!", "Enemy");
-			if (Enemy is Unit) Enemy = Enemy.Position;
+			if (!(enemy is Unit || enemy is Vector3)) throw new ArgumentException("TimeToTurn => INVALID PARAMETERS!", "enemy");
+			if (enemy is Unit) enemy = enemy.Position;
 
-			float deltaY = StartUnit.Position.Y - Enemy.Y;
-			float deltaX = StartUnit.Position.X - Enemy.X;
+			float deltaY = startUnit.Position.Y - enemy.Y;
+			float deltaX = startUnit.Position.X - enemy.X;
 			float angle = (float)(Math.Atan2(deltaY, deltaX));
 
-			float n1 = (float)Math.Sin(StartUnit.RotationRad - angle);
-			float n2 = (float)Math.Cos(StartUnit.RotationRad - angle);
+			float n1 = (float)Math.Sin(startUnit.RotationRad - angle);
+			float n2 = (float)Math.Cos(startUnit.RotationRad - angle);
 
 			return (Math.PI - Math.Abs(Math.Atan2(n1, n2))) < 0.1;
 		}
 
-		private  float TimeToTurn(Unit StartUnit, dynamic Enemy)
+		private  float TimeToTurn(Unit startUnit, dynamic enemy)
 		{
-			if (!(Enemy is Unit || Enemy is Vector3)) throw new ArgumentException("TimeToTurn => INVALID PARAMETERS!", "Enemy");
-			if (Enemy is Unit) Enemy = Enemy.Position;
+			if (!(enemy is Unit || enemy is Vector3)) throw new ArgumentException("TimeToTurn => INVALID PARAMETERS!", "enemy");
+			if (enemy is Unit) enemy = enemy.Position;
 
-			double TurnRate = 0.5; //Game.FindKeyValues(string.Format("{0}/MovementTurnRate", StartUnit.Name), KeyValueSource.Hero).FloatValue; // (Only works in lobby)
+			double turnRate = 0.5; //Game.FindKeyValues(string.Format("{0}/MovementTurnRate", StartUnit.Name), KeyValueSource.Hero).FloatValue; // (Only works in lobby)
 
-			float deltaY = StartUnit.Position.Y - Enemy.Y;
-			float deltaX = StartUnit.Position.X - Enemy.X;
+			float deltaY = startUnit.Position.Y - enemy.Y;
+			float deltaX = startUnit.Position.X - enemy.X;
 			float angle = (float)(Math.Atan2(deltaY, deltaX));
 
-			float n1 = (float)Math.Sin(StartUnit.RotationRad - angle);
-			float n2 = (float)Math.Cos(StartUnit.RotationRad - angle);
+			float n1 = (float)Math.Sin(startUnit.RotationRad - angle);
+			float n2 = (float)Math.Cos(startUnit.RotationRad - angle);
 
-			float Calc = (float)(Math.PI - Math.Abs(Math.Atan2(n1, n2)));
+			float calc = (float)(Math.PI - Math.Abs(Math.Atan2(n1, n2)));
 
-			if (Calc < 0.1 && Calc > -0.1) return 0;
+			if (calc < 0.1 && calc > -0.1) return 0;
 
-			return (float)(Calc * (0.03 / TurnRate));
+			return (float)(calc * (0.03 / turnRate));
 		}
 		
 
 		private void CurrentDomain_DomainUnload(object sender, EventArgs e)
 		{
-			text.Dispose();
-			line.Dispose();
+			_text.Dispose();
+			_line.Dispose();
 		}
 		
 		public void OnCloseEvent()

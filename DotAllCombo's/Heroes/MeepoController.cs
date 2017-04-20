@@ -1,4 +1,6 @@
-﻿namespace DotaAllCombo.Heroes
+﻿using DotaAllCombo.Extensions;
+
+namespace DotaAllCombo.Heroes
 {
 	using System;
 	using System.Linq;
@@ -10,75 +12,88 @@
 	using SharpDX.Direct3D9;
 	using System.Threading.Tasks;
 	using Ensage.Common.Menu;
-	using Service;
 	using Service.Debug;
 
     internal class MeepoController : Variables, IHeroController
     {
-		public Hero initMeepo;
+		public Hero InitMeepo;
 
-		public bool activated, PoofKey, SafePoof, PoofAutoMode, SliderCountUnit, dodge = true;
+		public bool Activated, PoofKey, SafePoof, PoofAutoMode, SliderCountUnit, Dodge = true;
 
 #pragma warning disable CS0649 // Field 'MeepoController.Travel' is never assigned to, and will always have its default value null
-		public Item blink, travel, Travel, shiva, sheep, medall, dagon, cheese, ethereal, vail, atos, orchid, abyssal;
+		public Item Blink, Travel, Shiva, Sheep, Medall, Dagon, Cheese, Ethereal, Vail, Atos, Orchid, Abyssal;
 #pragma warning restore CS0649 // Field 'MeepoController.Travel' is never assigned to, and will always have its default value null
-		public Font txt;
-		public Font not;
+		public Font Txt;
+		public Font Not;
 #pragma warning disable CS0649 // Field 'MeepoController.meepos' is never assigned to, and will always have its default value null
-		public List<Hero> meepos;
+		public List<Hero> Meepos;
 #pragma warning restore CS0649 // Field 'MeepoController.meepos' is never assigned to, and will always have its default value null
-		public readonly Menu skills = new Menu("All Poof", "PoofMeepo");
+		public readonly Menu Skills = new Menu("All Poof", "PoofMeepo");
 		//public readonly Menu farm = new Menu("FarmMode", "FarmMode");
 		
 
 		public void Combo()
 		{
-			if (me == null || me.ClassID != ClassID.CDOTA_Unit_Hero_Meepo || !Game.IsInGame) return;
-            if(!me.IsAlive) return;
+			if (Me == null || Me.ClassId != ClassId.CDOTA_Unit_Hero_Meepo || !Game.IsInGame) return;
+            if(!Me.IsAlive) return;
 
-            activated = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
+            Activated = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
             PoofKey = Game.IsKeyDown(Menu.Item("poofKey").GetValue<KeyBind>().Key);
             PoofAutoMode = Menu.Item("poofAutoMod").GetValue<KeyBind>().Active;
             SafePoof = Menu.Item("poofSafe").IsActive();
-            dodge = Menu.Item("Dodge").GetValue<KeyBind>().Active;
-            var checkObj = ObjectManager.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-                        || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
-                        || x.ClassID == ClassID.CDOTA_BaseNPC_Creep
-                        || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
+            Dodge = Menu.Item("Dodge").GetValue<KeyBind>().Active;
+            var checkObj = ObjectManager.GetEntities<Unit>().Where(x => (x.ClassId == ClassId.CDOTA_BaseNPC_Creep_Lane
+                        || x.ClassId == ClassId.CDOTA_BaseNPC_Creep_Siege
+                        || x.ClassId == ClassId.CDOTA_BaseNPC_Creep
+                        || x.ClassId == ClassId.CDOTA_BaseNPC_Creep_Neutral
                         || x.HasInventory
-                        || x.ClassID == ClassID.CDOTA_Unit_SpiritBear) && x.IsAlive && x.Team != me.Team && x.IsValid).ToList();
-            var meepos = ObjectManager.GetEntities<Hero>().Where(x => x.IsControllable && x.IsAlive && x.ClassID == ClassID.CDOTA_Unit_Hero_Meepo).ToList();
+                        || x.ClassId == ClassId.CDOTA_Unit_SpiritBear) && x.IsAlive && x.Team != Me.Team && x.IsValid).ToList();
+            var meepos = ObjectManager.GetEntities<Hero>().Where(x => x.IsControllable && x.IsAlive && x.ClassId == ClassId.CDOTA_Unit_Hero_Meepo).ToList();
 
 
 
 
 
-            List<Unit> fount = ObjectManager.GetEntities<Unit>().Where(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Fountain).ToList();
-            //blink = me.FindItem("item_blink");
+            List<Unit> fount = ObjectManager.GetEntities<Unit>().Where(x => x.Team == Me.Team && x.ClassId == ClassId.CDOTA_Unit_Fountain).ToList();
+            //blink = Me.FindItem("item_blink");
 
 
 
-            e = ObjectManager.GetEntities<Hero>()
-                        .Where(x => x.IsAlive && x.Team != me.Team && !x.IsIllusion)
-                        .OrderBy(x => GetDistance2D(x.Position, meepos.OrderBy(y => GetDistance2D(x.Position, y.Position)).FirstOrDefault().Position))
+            E = ObjectManager.GetEntities<Hero>()
+                        .Where(x => x.IsAlive && x.Team != Me.Team && !x.IsIllusion)
+                        .OrderBy(x =>
+                {
+                    var firstOrDefault = meepos.OrderBy(y => GetDistance2D(x.Position, y.Position)).FirstOrDefault();
+                    if (firstOrDefault != null)
+                        return GetDistance2D(x.Position,
+                            firstOrDefault.Position);
+                    return 0;
+                })
                         .FirstOrDefault();
 
 
             /**************************************************DODGE*************************************************************/
 
             var f = ObjectManager.GetEntities<Hero>()
-                        .Where(x => x.IsAlive && x.Team == me.Team && !x.IsIllusion && x.IsControllable && x.ClassID == ClassID.CDOTA_Unit_Hero_Meepo)
-                        .OrderBy(x => GetDistance2D(x.Position, fount.OrderBy(y => GetDistance2D(x.Position, y.Position)).FirstOrDefault().Position))
+                        .Where(x => x.IsAlive && x.Team == Me.Team && !x.IsIllusion && x.IsControllable && x.ClassId == ClassId.CDOTA_Unit_Hero_Meepo)
+                        .OrderBy(x =>
+                {
+                    var firstOrDefault = fount.OrderBy(y => GetDistance2D(x.Position, y.Position)).FirstOrDefault();
+                    if (firstOrDefault != null)
+                        return GetDistance2D(x.Position,
+                            firstOrDefault.Position);
+                    return 0;
+                })
                         .FirstOrDefault();
 		    var meeposCount = meepos.Count();
             Ability[] q = new Ability[meeposCount];
             for (int i = 0; i < meeposCount; ++i) q[i] = meepos[i].Spellbook.SpellQ;
             Ability[] w = new Ability[meeposCount];
             for (int i = 0; i < meeposCount; ++i) w[i] = meepos[i].Spellbook.SpellW;
-            if (dodge && me.IsAlive)
+            if (Dodge && Me.IsAlive)
             {
                 var baseDota =
-                  ObjectManager.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_base" && unit.Team != me.Team).ToList();
+                  ObjectManager.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_base" && unit.Team != Me.Team).ToList();
                 if (baseDota != null)
                 {
                     for (int t = 0; t < baseDota.Count(); ++t)
@@ -93,7 +108,7 @@
                                 Utils.Sleep(120, meepos[i].Handle + "MoveDodge");
                                 //	Console.WriteLine("Name: " + baseDota[t].Name);
                                 //	Console.WriteLine("Speed: " + baseDota[t].Speed);
-                                //	Console.WriteLine("ClassID: " + baseDota[t].ClassID);
+                                //	Console.WriteLine("ClassId: " + baseDota[t].ClassId);
                                 //	Console.WriteLine("Handle: " + baseDota[t].Handle);
                                 //	Console.WriteLine("UnitState: " + baseDota[t].UnitState);
                             }
@@ -102,7 +117,7 @@
                 }
 
                 var thinker =
-                   ObjectManager.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_thinker" && unit.Team != me.Team).ToList();
+                   ObjectManager.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_thinker" && unit.Team != Me.Team).ToList();
                 if (thinker != null)
                 {
                     for (int i = 0; i < thinker.Count(); ++i)
@@ -134,7 +149,7 @@
                         v.Move(fount.First().Position);
                         Utils.Sleep(300, v.Handle + "_move");
                     }
-                    if (activated)
+                    if (Activated)
                     {
                         float angle = v.FindAngleBetween(fount.First().Position, true);
                         Vector3 pos = new Vector3((float)(fount.First().Position.X - 500 * Math.Cos(angle)), (float)(fount.First().Position.Y - 500 * Math.Sin(angle)), 0);
@@ -142,7 +157,7 @@
                         if (
                             v.Health >= v.MaximumHealth * 0.58
                             && v.Distance2D(fount.First()) <= 400
-                            && me.Team == Team.Radiant
+                            && Me.Team == Team.Radiant
                             && Utils.SleepCheck(v.Handle + "RadMove")
                             )
                         {
@@ -152,7 +167,7 @@
                         if (
                             v.Health >= v.MaximumHealth * 0.58
                             && v.Distance2D(fount.First()) <= 400
-                            && me.Team == Team.Dire
+                            && Me.Team == Team.Dire
                             && Utils.SleepCheck(v.Handle + "DireMove")
                             )
                         {
@@ -164,14 +179,14 @@
 
                 for (int i = 0; i < meeposCount; ++i)
                 {
-                    travel = meepos[i].FindItem("item_travel_boots") ?? meepos[i].FindItem("item_travel_boots_2");
+                    Travel = meepos[i].FindItem("item_travel_boots") ?? meepos[i].FindItem("item_travel_boots_2");
                     if (w[i] != null
                         && w[i].CanBeCasted()
                         && meepos[i].Health <= meepos[i].MaximumHealth
                         / 100 * Menu.Item("healh").GetValue<Slider>().Value
                         && meepos[i].Handle != f.Handle
                         && meepos[i].Distance2D(f) >= 700
-                        && e == null
+                        && E == null
                         && meepos[i].Distance2D(fount.First().Position) >= 1500
                         && Utils.SleepCheck(meepos[i].Handle + "W"))
                     {
@@ -179,8 +194,8 @@
                         Utils.Sleep(1000, meepos[i].Handle + "W");
                     }
                     else if (
-                        travel != null
-                        && travel.CanBeCasted()
+                        Travel != null
+                        && Travel.CanBeCasted()
                         && meepos[i].Health <= meepos[i].MaximumHealth
                         / 100 * Menu.Item("healh").GetValue<Slider>().Value
                        && (!w[i].CanBeCasted()
@@ -190,10 +205,10 @@
                        || (meepos[i].IsSilenced()
                        || meepos[i].MovementSpeed <= 280)
                        && meepos[i].Distance2D(fount.First().Position) >= 1500
-                       && e == null
+                       && E == null
                        && Utils.SleepCheck(meepos[i].Handle + "travel"))
                     {
-                        travel.UseAbility(fount.First().Position);
+                        Travel.UseAbility(fount.First().Position);
                         Utils.Sleep(1000, meepos[i].Handle + "travel");
                     }
                     if (meepos[i].HasModifier("modifier_bloodseeker_rupture"))
@@ -207,58 +222,59 @@
                             w[i].UseAbility(f);
                             Utils.Sleep(500, meepos[i].Handle + "W");
                         }
-                        else if (travel != null && travel.CanBeCasted()
+                        else if (Travel != null && Travel.CanBeCasted()
                                  && !w[i].CanBeCasted()
                                  && meepos[i].Distance2D(fount.First().Position) >= 1200
                                  && Utils.SleepCheck(meepos[i].Handle + "travel"))
                         {
-                            travel.UseAbility(fount.First().Position);
+                            Travel.UseAbility(fount.First().Position);
                             Utils.Sleep(1000, meepos[i].Handle + "travel");
                         }
                     }
-                    if (e != null
+                    if (E != null
                         && q[i] != null
                         && meepos[i].Health <= meepos[i].MaximumHealth
                         / 100 * Menu.Item("healh").GetValue<Slider>().Value
                         && q[i].CanBeCasted()
-                        && e.Modifiers.Any(y => y.Name != "modifier_meepo_earthbind")
-                        && !e.IsMagicImmune()
-                        && meepos[i].Distance2D(e) <= q[i].GetCastRange() - 50
+                        && E.Modifiers.Any(y => y.Name != "modifier_meepo_earthbind")
+                        && !E.IsMagicImmune()
+                        && meepos[i].Distance2D(E) <= q[i].GetCastRange() - 50
                         && Utils.SleepCheck(meepos[i].Handle + "_net_casting"))
                     {
-                        q[i].CastSkillShot(e);
-                        Utils.Sleep(q[i].GetCastDelay(meepos[i], e, true) + 500, meepos[i].Handle + "_net_casting");
+                        q[i].CastSkillShot(E);
+                        Utils.Sleep(q[i].GetCastDelay(meepos[i], E, true) + 500, meepos[i].Handle + "_net_casting");
                     }
                     else if (!q[i].CanBeCasted() && meepos[i].Health <= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value)
                     {
+                        // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
                         for (var j = 0; j < meeposCount; ++j)
                         {
-                            if (e != null
+                            if (E != null
                                 && q[j] != null
                                 && meepos[i].Handle != meepos[j].Handle
-                                && meepos[j].Position.Distance2D(e) < q[i].GetCastRange()
-                                && e.Modifiers.Any(y => y.Name != "modifier_meepo_earthbind")
+                                && meepos[j].Position.Distance2D(E) < q[i].GetCastRange()
+                                && E.Modifiers.Any(y => y.Name != "modifier_meepo_earthbind")
                                 && meepos[j].Position.Distance2D(meepos[i]) < q[j].GetCastRange()
-                                && !e.IsMagicImmune()
+                                && !E.IsMagicImmune()
                                 && Utils.SleepCheck(meepos[i].Handle + "_net_casting"))
                             {
-                                q[j].CastSkillShot(e);
-                                Utils.Sleep(q[j].GetCastDelay(meepos[j], e, true) + 1500, meepos[i].Handle + "_net_casting");
+                                q[j].CastSkillShot(E);
+                                Utils.Sleep(q[j].GetCastDelay(meepos[j], E, true) + 1500, meepos[i].Handle + "_net_casting");
                                 break;
                             }
                         }
                     }
-                    if (e != null
+                    if (E != null
                         && w[i] != null
                         && w[i].CanBeCasted()
                         && meepos[i].Health <= meepos[i].MaximumHealth
                         / 100 * Menu.Item("healh").GetValue<Slider>().Value
                         && meepos[i].Handle != f.Handle && meepos[i].Distance2D(f) >= 700
-                        && (meepos[i].Distance2D(e) >= (e.AttackRange + 60)
+                        && (meepos[i].Distance2D(E) >= (E.AttackRange + 60)
                         || meepos[i].MovementSpeed <= 290)
                         && (q == null || (!q[i].CanBeCasted()
-                        || e.HasModifier("modifier_meepo_earthbind")
-                        || !e.IsMagicImmune()) || meepos[i].Distance2D(e) >= 1000)
+                        || E.HasModifier("modifier_meepo_earthbind")
+                        || !E.IsMagicImmune()) || meepos[i].Distance2D(E) >= 1000)
                         && meepos[i].Distance2D(fount.First().Position) >= 1100
                         && Utils.SleepCheck(meepos[i].Handle + "W"))
                     {
@@ -266,22 +282,22 @@
                         Utils.Sleep(1000, meepos[i].Handle + "W");
                     }
                     else if (
-                            e != null
-                            && travel != null
-                            && travel.CanBeCasted()
+                            E != null
+                            && Travel != null
+                            && Travel.CanBeCasted()
                             && meepos[i].Health <= meepos[i].MaximumHealth
                             / 100 * Menu.Item("healh").GetValue<Slider>().Value
                             && (!w[i].CanBeCasted()
                             || meepos[i].Position.Distance2D(f) >= 1000
                             || (w[i].CanBeCasted()
                             && f.Distance2D(fount.First()) >= 2000))
-                            && (meepos[i].Distance2D(e) >= (e.AttackRange + 60)
+                            && (meepos[i].Distance2D(E) >= (E.AttackRange + 60)
                             || (meepos[i].IsSilenced()
                             || meepos[i].MovementSpeed <= 290))
                             && meepos[i].Distance2D(fount.First().Position) >= 1100
                             && Utils.SleepCheck(meepos[i].Handle + "travel"))
                     {
-                        travel.UseAbility(fount.First().Position);
+                        Travel.UseAbility(fount.First().Position);
                         Utils.Sleep(1000, meepos[i].Handle + "travel");
                     }
                 }
@@ -301,7 +317,7 @@
                             && w[i].CanBeCasted()
                             && (meepos[i].Health >= meepos[i].MaximumHealth
                             / 100 * Menu.Item("healh").GetValue<Slider>().Value
-                            || !dodge)
+                            || !Dodge)
                             && Utils.SleepCheck(meepos[i].Handle + "Wpos"))
                         {
                             w[i].UseAbility(meepos[i]);
@@ -317,12 +333,12 @@
             {
                 for (int i = 0; i < meeposCount; i++)
                 {
-                    var nCreeps = ObjectManager.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-                        || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
-                        || x.ClassID == ClassID.CDOTA_BaseNPC_Creep
-                        || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral) && x.Team != me.Team && x.IsSpawned && x.IsAlive).Where(x => x.Distance2D(meepos[i]) <= 345).ToList().Count();
+                    var nCreeps = ObjectManager.GetEntities<Unit>().Where(x => (x.ClassId == ClassId.CDOTA_BaseNPC_Creep_Lane
+                        || x.ClassId == ClassId.CDOTA_BaseNPC_Creep_Siege
+                        || x.ClassId == ClassId.CDOTA_BaseNPC_Creep
+                        || x.ClassId == ClassId.CDOTA_BaseNPC_Creep_Neutral) && x.Team != Me.Team && x.IsSpawned && x.IsAlive).Where(x => x.Distance2D(meepos[i]) <= 345).ToList().Count();
 
-                    SliderCountUnit = nCreeps >= (skills.Item("poofCount").GetValue<Slider>().Value);
+                    SliderCountUnit = nCreeps >= (Skills.Item("poofCount").GetValue<Slider>().Value);
 
                     if (SliderCountUnit
                         && w[i] != null
@@ -341,14 +357,14 @@
             }
             /***************************************************POOF*************************************************************/
             /**************************************************COMBO*************************************************************/
-            if (activated)
+            if (Activated)
             {
                 for (int i = 0; i < meeposCount; ++i)
                 {
-                    e = ClosestToMouse(meepos[i]);
+                    E = ClosestToMouse(meepos[i]);
 
-                    if (e == null) return;
-                    initMeepo = GetClosestToTarget(meepos, e);
+                    if (E == null) return;
+                    InitMeepo = GetClosestToTarget(meepos, E);
 
 
                     if (
@@ -361,131 +377,131 @@
                     && meepos.Count(x => x.Distance2D(meepos[i]) <= 1000) > 1
                     && meepos[i].Health >= meepos[i].MaximumHealth * 0.8
                     && w[i].CanBeCasted()
-                    && initMeepo.Distance2D(e) <= 350
+                    && InitMeepo.Distance2D(E) <= 350
                     && Utils.SleepCheck(meepos[i].Handle + "poof")
                     )
                     {
-                        w[i].UseAbility(e.Position);
+                        w[i].UseAbility(E.Position);
                         Utils.Sleep(250, meepos[i].Handle + "poof");
                     }
 
-                    if (me.HasModifier("modifier_fountain_aura_buff"))
+                    if (Me.HasModifier("modifier_fountain_aura_buff"))
                     {
                         if (
-                            me.Spellbook.SpellW != null
-                            && me.Spellbook.SpellW.CanBeCasted()
-                            && me.Health >= me.MaximumHealth * 0.8
-                            && meepos.Count(x => x.Distance2D(me) <= 1000) > 1
-                            && initMeepo.Distance2D(e) <= 350
-                            && Utils.SleepCheck(me.Handle + "pooff")
+                            Me.Spellbook.SpellW != null
+                            && Me.Spellbook.SpellW.CanBeCasted()
+                            && Me.Health >= Me.MaximumHealth * 0.8
+                            && meepos.Count(x => x.Distance2D(Me) <= 1000) > 1
+                            && InitMeepo.Distance2D(E) <= 350
+                            && Utils.SleepCheck(Me.Handle + "pooff")
                             )
                         {
-                            me.Spellbook.SpellW.UseAbility(e.Position);
-                            Utils.Sleep(250, me.Handle + "pooff");
+                            Me.Spellbook.SpellW.UseAbility(E.Position);
+                            Utils.Sleep(250, Me.Handle + "pooff");
                         }
                     }
                     //	
                     /*int[] cool;
-					var core = me.FindItem("item_octarine_core");
+					var core = Me.FindItem("item_octarine_core");
 					if (core !=null)
 						cool = new int[4] { 20, 16, 12, 8 };
 					else
 						cool = new int[4] { 15, 12, 9, 6 };*/
 
-                    orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn");
-                    blink = meepos[i].FindItem("item_blink");
-                    sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
+                    Orchid = Me.FindItem("item_orchid") ?? Me.FindItem("item_bloodthorn");
+                    Blink = meepos[i].FindItem("item_blink");
+                    Sheep = E.ClassId == ClassId.CDOTA_Unit_Hero_Tidehunter ? null : Me.FindItem("item_sheepstick");
 
 
                     if ( // sheep
-                    sheep != null
-                    && sheep.CanBeCasted()
-                    && me.CanCast()
-                    && !e.IsLinkensProtected()
-                    && !e.IsMagicImmune()
-                    && me.Distance2D(e) <= 900
-                    && meepos[i].Distance2D(e) <= 350
+                    Sheep != null
+                    && Sheep.CanBeCasted()
+                    && Me.CanCast()
+                    && !E.IsLinkensProtected()
+                    && !E.IsMagicImmune()
+                    && Me.Distance2D(E) <= 900
+                    && meepos[i].Distance2D(E) <= 350
                     && Utils.SleepCheck("sheep")
                     )
                     {
-                        sheep.UseAbility(e);
+                        Sheep.UseAbility(E);
                         Utils.Sleep(250, "sheep");
                     } // sheep Item end
 
                     if ( // Medall
-                    medall != null
-                    && medall.CanBeCasted()
+                    Medall != null
+                    && Medall.CanBeCasted()
                     && Utils.SleepCheck("Medall")
-                    && meepos[i].Distance2D(e) <= 300
-                    && me.Distance2D(e) <= 700
+                    && meepos[i].Distance2D(E) <= 300
+                    && Me.Distance2D(E) <= 700
                     )
                     {
-                        medall.UseAbility(e);
+                        Medall.UseAbility(E);
                         Utils.Sleep(250, "Medall");
                     } // Medall Item end
                     if ( // orchid
-                        orchid != null
-                        && orchid.CanBeCasted()
-                        && me.CanCast()
-                        && !e.IsLinkensProtected()
-                        && !e.IsMagicImmune()
-                        && meepos[i].Distance2D(e) <= 300
-                        && me.Distance2D(e) <= 900
+                        Orchid != null
+                        && Orchid.CanBeCasted()
+                        && Me.CanCast()
+                        && !E.IsLinkensProtected()
+                        && !E.IsMagicImmune()
+                        && meepos[i].Distance2D(E) <= 300
+                        && Me.Distance2D(E) <= 900
                         && Utils.SleepCheck("orchid")
                         )
                     {
-                        orchid.UseAbility(e);
+                        Orchid.UseAbility(E);
                         Utils.Sleep(250, "orchid");
                     } // orchid Item end
                     if (Utils.SleepCheck("Q")
-                        && !e.HasModifier("modifier_meepo_earthbind")
-                        && (((!blink.CanBeCasted()
-                        || blink == null)
-                        && meepos[i].Distance2D(e) <= q[i].GetCastRange())
-                        || (blink.CanBeCasted()
-                        && meepos[i].Distance2D(e) <= 350))
+                        && !E.HasModifier("modifier_meepo_earthbind")
+                        && (((!Blink.CanBeCasted()
+                        || Blink == null)
+                        && meepos[i].Distance2D(E) <= q[i].GetCastRange())
+                        || (Blink.CanBeCasted()
+                        && meepos[i].Distance2D(E) <= 350))
                         )
                     {
                         if (q[i] != null
                             && (meepos[i].Health >= meepos[i].MaximumHealth
                             / 100 * Menu.Item("healh").GetValue<Slider>().Value
-                            || !dodge)
+                            || !Dodge)
                             && q[i].CanBeCasted()
-                            && !e.IsMagicImmune()
+                            && !E.IsMagicImmune()
                              && !meepos[i].IsChanneling()
-                             && meepos[i].Distance2D(e) <= q[i].GetCastRange()
+                             && meepos[i].Distance2D(E) <= q[i].GetCastRange()
                              && Utils.SleepCheck(meepos[i].Handle + "_net_casting"))
                         {
-                            q[i].CastSkillShot(e);
-                            Utils.Sleep(q[i].GetCastDelay(meepos[i], e, true) + 1500, meepos[i].Handle + "_net_casting");
+                            q[i].CastSkillShot(E);
+                            Utils.Sleep(q[i].GetCastDelay(meepos[i], E, true) + 1500, meepos[i].Handle + "_net_casting");
                             Utils.Sleep(1500, "Q");
                         }
                     }
 
                     if (
-                        blink != null
-                        && me.CanCast()
-                        && blink.CanBeCasted()
-                        && me.Distance2D(e) >= 350
-                        && me.Distance2D(e) <= 1150
+                        Blink != null
+                        && Me.CanCast()
+                        && Blink.CanBeCasted()
+                        && Me.Distance2D(E) >= 350
+                        && Me.Distance2D(E) <= 1150
                         )
                     {
-                        if (blink.CanBeCasted()
+                        if (Blink.CanBeCasted()
                                && !Menu.Item("blinkDelay").IsActive()
                                && meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
                                && Utils.SleepCheck("13"))
                         {
-                            blink.UseAbility(e.Position);
+                            Blink.UseAbility(E.Position);
                             Utils.Sleep(200, "13");
                         }
 
                         Task.Delay(1340 - (int)Game.Ping).ContinueWith(_ =>
                         {
-                            if (blink.CanBeCasted()
+                            if (Blink.CanBeCasted()
                             && Menu.Item("blinkDelay").IsActive()
                             && Utils.SleepCheck("12"))
                             {
-                                blink.UseAbility(e.Position);
+                                Blink.UseAbility(E.Position);
                                 Utils.Sleep(200, "12");
                             }
                         });
@@ -493,154 +509,154 @@
                         {
                             if (
                             w[j] != null
-                            && meepos[j].Handle != me.Handle
+                            && meepos[j].Handle != Me.Handle
                             && meepos[j].CanCast()
                             && ((f.Handle != meepos[j].Handle && f.HasModifier("modifier_fountain_aura_buff")
                             || !f.HasModifier("modifier_fountain_aura_buff"))
                             )
                             && meepos[j].Health >= meepos[j].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
-                            && !e.IsMagicImmune()
+                            && !E.IsMagicImmune()
                             && w[j].CanBeCasted()
                             && Utils.SleepCheck(meepos[j].Handle + "poof")
                             )
                             {
-                                w[j].UseAbility(e.Position);
+                                w[j].UseAbility(E.Position);
                                 Utils.Sleep(250, meepos[j].Handle + "poof");
                             }
                         }
                     }
                     if (
-                       meepos[i].Distance2D(e) <= 200 && (!meepos[i].IsAttackImmune() || !e.IsAttackImmune())
+                       meepos[i].Distance2D(E) <= 200 && (!meepos[i].IsAttackImmune() || !E.IsAttackImmune())
                        && meepos[i].NetworkActivity != NetworkActivity.Attack && meepos[i].CanAttack()
                        && meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
                        && !meepos[i].IsChanneling() 
                        && Utils.SleepCheck(meepos[i].Handle + "Attack")
                        )
                     {
-                        meepos[i].Attack(e);
+                        meepos[i].Attack(E);
                         Utils.Sleep(180, meepos[i].Handle + "Attack");
                     }
                     else if (((
                        (!meepos[i].CanAttack()
-                       || meepos[i].Distance2D(e) >= 0)
+                       || meepos[i].Distance2D(E) >= 0)
                        && meepos[i].NetworkActivity != NetworkActivity.Attack
-                       && meepos[i].Distance2D(e) <= 1000))
-                       && ((meepos[i].Handle != me.Handle
-                       && (blink != null && blink.CanBeCasted()
-                       && me.Distance2D(e) <= 350)
-                       || (meepos[i].Handle == me.Handle
-                       && !blink.CanBeCasted()))
-                       || blink == null)
+                       && meepos[i].Distance2D(E) <= 1000))
+                       && ((meepos[i].Handle != Me.Handle
+                       && (Blink != null && Blink.CanBeCasted()
+                       && Me.Distance2D(E) <= 350)
+                       || (meepos[i].Handle == Me.Handle
+                       && !Blink.CanBeCasted()))
+                       || Blink == null)
                        && meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
                        && !meepos[i].IsChanneling()
                        && Utils.SleepCheck(meepos[i].Handle + "Move"))
                     {
-                        meepos[i].Move(e.Predict(450));
+                        meepos[i].Move(E.Predict(450));
                         Utils.Sleep(250, meepos[i].Handle + "Move");
                     }
 
 
                 }
 
-                vail = me.FindItem("item_veil_of_discord");
-                shiva = me.FindItem("item_shivas_guard");
-                medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
-                atos = me.FindItem("item_rod_of_atos");
-                cheese = me.FindItem("item_cheese");
-                abyssal = me.FindItem("item_abyssal_blade");
-                dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
-                ethereal = me.FindItem("item_ethereal_blade");
+                Vail = Me.FindItem("item_veil_of_discord");
+                Shiva = Me.FindItem("item_shivas_guard");
+                Medall = Me.FindItem("item_medallion_of_courage") ?? Me.FindItem("item_solar_crest");
+                Atos = Me.FindItem("item_rod_of_atos");
+                Cheese = Me.FindItem("item_cheese");
+                Abyssal = Me.FindItem("item_abyssal_blade");
+                Dagon = Me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
+                Ethereal = Me.FindItem("item_ethereal_blade");
 
-                e = Toolset.ClosestToMouse(me);
-                if (e == null) return;
+                E = Toolset.ClosestToMouse(Me);
+                if (E == null) return;
                 if ( // ethereal
-                    ethereal != null
-                    && ethereal.CanBeCasted()
-                    && me.CanCast()
-                    && !e.IsLinkensProtected()
-                    && !e.IsMagicImmune()
+                    Ethereal != null
+                    && Ethereal.CanBeCasted()
+                    && Me.CanCast()
+                    && !E.IsLinkensProtected()
+                    && !E.IsMagicImmune()
                     && Utils.SleepCheck("ethereal")
                     )
                 {
-                    ethereal.UseAbility(e);
+                    Ethereal.UseAbility(E);
                     Utils.Sleep(200, "ethereal");
                 } // ethereal Item end
                 if (// Dagon
-                    me.CanCast()
-                    && dagon != null
-                    && (ethereal == null
-                    || (e.HasModifier("modifier_item_ethereal_blade_slow")
-                    || ethereal.Cooldown < 17))
-                    && !e.IsLinkensProtected()
-                    && dagon.CanBeCasted()
-                    && !e.IsMagicImmune()
+                    Me.CanCast()
+                    && Dagon != null
+                    && (Ethereal == null
+                    || (E.HasModifier("modifier_item_ethereal_blade_slow")
+                    || Ethereal.Cooldown < 17))
+                    && !E.IsLinkensProtected()
+                    && Dagon.CanBeCasted()
+                    && !E.IsMagicImmune()
                     && Utils.SleepCheck("dagon")
                     )
                 {
-                    dagon.UseAbility(e);
+                    Dagon.UseAbility(E);
                     Utils.Sleep(200, "dagon");
                 } // Dagon Item end
                 if ( // vail
-                    vail != null
-                    && vail.CanBeCasted()
-                    && me.CanCast()
-                    && !e.IsMagicImmune()
-                    && me.Distance2D(e) <= 1100
+                    Vail != null
+                    && Vail.CanBeCasted()
+                    && Me.CanCast()
+                    && !E.IsMagicImmune()
+                    && Me.Distance2D(E) <= 1100
                     && Utils.SleepCheck("vail")
                     )
                 {
-                    vail.UseAbility(e.Position);
+                    Vail.UseAbility(E.Position);
                     Utils.Sleep(250, "vail");
                 } // orchid Item end
                 if (// Shiva Item
-                    shiva != null
-                    && shiva.CanBeCasted()
-                    && me.CanCast()
-                    && !e.IsMagicImmune()
+                    Shiva != null
+                    && Shiva.CanBeCasted()
+                    && Me.CanCast()
+                    && !E.IsMagicImmune()
                     && Utils.SleepCheck("shiva")
-                    && me.Distance2D(e) <= 600
+                    && Me.Distance2D(E) <= 600
                     )
                 {
-                    shiva.UseAbility();
+                    Shiva.UseAbility();
                     Utils.Sleep(250, "shiva");
                 } // Shiva Item end
                 if (
                     // cheese
-                    cheese != null
-                    && cheese.CanBeCasted()
-                    && me.Health <= (me.MaximumHealth * 0.3)
-                    && me.Distance2D(e) <= 700
+                    Cheese != null
+                    && Cheese.CanBeCasted()
+                    && Me.Health <= (Me.MaximumHealth * 0.3)
+                    && Me.Distance2D(E) <= 700
                     && Utils.SleepCheck("cheese")
                     )
                 {
-                    cheese.UseAbility();
+                    Cheese.UseAbility();
                     Utils.Sleep(200, "cheese");
                 } // cheese Item end
 
                 if ( // atos Blade
-                    atos != null
-                    && atos.CanBeCasted()
-                    && me.CanCast()
-                    && !e.IsLinkensProtected()
-                    && !e.IsMagicImmune()
-                    && me.Distance2D(e) <= 2000
+                    Atos != null
+                    && Atos.CanBeCasted()
+                    && Me.CanCast()
+                    && !E.IsLinkensProtected()
+                    && !E.IsMagicImmune()
+                    && Me.Distance2D(E) <= 2000
                     && Utils.SleepCheck("atos")
                     )
                 {
-                    atos.UseAbility(e);
+                    Atos.UseAbility(E);
                     Utils.Sleep(250, "atos");
                 } // atos Item end
                 if ( // Abyssal Blade
-                    abyssal != null
-                    && abyssal.CanBeCasted()
-                    && me.CanCast()
-                    && !e.IsStunned()
-                    && !e.IsHexed()
+                    Abyssal != null
+                    && Abyssal.CanBeCasted()
+                    && Me.CanCast()
+                    && !E.IsStunned()
+                    && !E.IsHexed()
                     && Utils.SleepCheck("abyssal")
-                    && me.Distance2D(e) <= 300
+                    && Me.Distance2D(E) <= 300
                     )
                 {
-                    abyssal.UseAbility(e);
+                    Abyssal.UseAbility(E);
                     Utils.Sleep(250, "abyssal");
                 } // Abyssal Item end
             }
@@ -650,21 +666,21 @@
 		{
 			AssemblyExtensions.InitAssembly("VickTheRock", "0.1b");
 
-			Print.LogMessage.Success("<font face='verdana' color='#f80000'>Probably gonna dig a grave or two before this is done.</font>", MessageType.LogMessage);
+			Print.LogMessage.Success("<font face='verdana' color='#f80000'>Probably gonna dig a grave or two before this is done.</font>");
 
 			Console.WriteLine("Meepo combo loaded!");
 			Menu.AddItem(new MenuItem("keyBind", "Combo key").SetValue(new KeyBind('D', KeyBindType.Press)));
 			Menu.AddItem(new MenuItem("Dodge", "Dodge meepo's").SetValue(new KeyBind('T', KeyBindType.Toggle)));
 			Menu.AddItem(new MenuItem("blinkDelay", "Use Blink delay before all poof meepo the enemy").SetValue(true));
-			Menu.AddItem(new MenuItem("healh", "Min Healh to Move Fount").SetValue(new Slider(58, 10, 100)));
-			skills.AddItem(new MenuItem("poofSafe", "Use poof if ability radius suitable targets.").SetValue(true));
-			skills.AddItem(new MenuItem("poofKey", "All Poof Key").SetValue(new KeyBind('F', KeyBindType.Press)));
-			skills.AddItem(new MenuItem("poofAutoMod", "AutoPoofFarm").SetValue(new KeyBind('J', KeyBindType.Toggle)));
-			skills.AddItem(new MenuItem("poofCount", "Min units to Poof").SetValue(new Slider(3, 1, 10)));
-			skills.AddItem(new MenuItem("mana", "Min Mana % to Poof").SetValue(new Slider(35, 10, 100)));
-			Menu.AddSubMenu(skills);
+			Menu.AddItem(new MenuItem("healh", "Min Healh to Move Fount").SetValue(new Slider(58, 10)));
+			Skills.AddItem(new MenuItem("poofSafe", "Use poof if ability radius suitable targets.").SetValue(true));
+			Skills.AddItem(new MenuItem("poofKey", "All Poof Key").SetValue(new KeyBind('F', KeyBindType.Press)));
+			Skills.AddItem(new MenuItem("poofAutoMod", "AutoPoofFarm").SetValue(new KeyBind('J', KeyBindType.Toggle)));
+			Skills.AddItem(new MenuItem("poofCount", "Min units to Poof").SetValue(new Slider(3, 1, 10)));
+			Skills.AddItem(new MenuItem("mana", "Min Mana % to Poof").SetValue(new Slider(35, 10)));
+			Menu.AddSubMenu(Skills);
 			
-			txt = new Font(
+			Txt = new Font(
 				Drawing.Direct3DDevice9,
 				new FontDescription
 				{
@@ -674,7 +690,7 @@
 					Quality = FontQuality.Default
 				});
 
-			not = new Font(
+			Not = new Font(
 				Drawing.Direct3DDevice9,
 				new FontDescription
 				{
@@ -705,7 +721,7 @@
 				ObjectManager.GetEntities<Hero>()
 					.Where(
 						x =>
-							x.Team != me.Team && !x.IsIllusion && x.IsAlive && x.IsVisible
+							x.Team != Me.Team && !x.IsIllusion && x.IsAlive && x.IsVisible
 							&& x.Distance2D(mousePosition) <= range);
 			Hero[] closestHero = { null };
 			foreach (var enemyHero in enemyHeroes.Where(enemyHero => closestHero[0] == null || closestHero[0].Distance2D(mousePosition) > enemyHero.Distance2D(mousePosition)))
@@ -725,17 +741,17 @@
 			}
 			return closestHero;
 		}
-		
-		double GetDistance2D(Vector3 a, Vector3 b)
+
+        private double GetDistance2D(Vector3 a, Vector3 b)
 		{
 			return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
 		}
 
 
-		void CurrentDomain_DomainUnload(object sender, EventArgs args)
+        private void CurrentDomain_DomainUnload(object sender, EventArgs args)
 		{
-			txt.Dispose();
-			not.Dispose();
+			Txt.Dispose();
+			Not.Dispose();
 		}
 
 
@@ -745,26 +761,26 @@
 				return;
 
 			var player = ObjectManager.LocalPlayer;
-			if (player == null || player.Team == Team.Observer || me == null)
+			if (player == null || player.Team == Team.Observer || Me == null)
 				return;
-			if (activated)
+			if (Activated)
 			{
-				txt.DrawText(null, "Combo meepo's active", 1200, 12, Color.Green);
+				Txt.DrawText(null, "Combo meepo's active", 1200, 12, Color.Green);
 			}
 
-			if (!dodge)
+			if (!Dodge)
 			{
-				txt.DrawText(null, "Warning! Dodge unActive", 1200, 22, Color.DarkRed);
+				Txt.DrawText(null, "Warning! Dodge unActive", 1200, 22, Color.DarkRed);
 			}
 
 			if (PoofAutoMode)
 			{
-				txt.DrawText(null, "Auto Poof On", 1200, 30, Color.Green);
+				Txt.DrawText(null, "Auto Poof On", 1200, 30, Color.Green);
 			}
 
 			if (!PoofAutoMode)
 			{
-				txt.DrawText(null, "Auto Poof Off", 1200, 30, Color.DarkRed);
+				Txt.DrawText(null, "Auto Poof Off", 1200, 30, Color.DarkRed);
 			}
 
 			/*
@@ -791,16 +807,16 @@
 			*/
 		}
 
-		void Drawing_OnPostReset(EventArgs args)
+        private void Drawing_OnPostReset(EventArgs args)
 		{
-			txt.OnResetDevice();
-			not.OnResetDevice();
+			Txt.OnResetDevice();
+			Not.OnResetDevice();
 		}
 
-		void Drawing_OnPreReset(EventArgs args)
+        private void Drawing_OnPreReset(EventArgs args)
 		{
-			txt.OnLostDevice();
-			not.OnLostDevice();
+			Txt.OnLostDevice();
+			Not.OnLostDevice();
 		}
 	}
 }

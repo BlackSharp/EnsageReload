@@ -1,12 +1,10 @@
 namespace DotaAllCombo
 {
 	using System.Security.Permissions;
-	using System;
-	using System.Threading;
 	internal class Program
     {
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
-        static void Main(string[] args)
+        private static void Main()
 		{
 
             /*new Thread(delegate () {

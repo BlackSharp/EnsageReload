@@ -1,352 +1,348 @@
-﻿namespace DotaAllCombo.Heroes
+﻿using DotaAllCombo.Extensions;
+
+namespace DotaAllCombo.Heroes
 {
-	using System;
-	using System.Collections.Generic;
+    using System.Collections.Generic;
 	using System.Linq;
-	using System.Threading.Tasks;
-	using Ensage;
+    using Ensage;
 	using Ensage.Common;
 	using Ensage.Common.Extensions;
 	using Ensage.Common.Menu;
 	using SharpDX;
-
-	using Service;
-	using Service.Debug;
+    using Service.Debug;
 	
 
 	internal class PuckController : Variables, IHeroController
 	{
-		private Ability Q, W, E, D, R;
-		private Item blink, dagon, ethereal, euls, forcestaff, Shiva, orchid, sheep, vail;
+		private Ability _q, _w, _e, _d, _r;
+		private Item _blink, _dagon, _ethereal, _shiva, _orchid, _sheep, _vail;
 		//private int stage;
 
 		public void Combo()
 		{
 			if (!Menu.Item("enabled").IsActive())
 				return;
-            e = Toolset.ClosestToMouse(me);
+            E = Toolset.ClosestToMouse(Me);
 
 
-            if (me == null || e == null)
+            if (Me == null || E == null)
 				return;
 			// skills
-				Q = me.Spellbook.SpellQ;
-				W = me.Spellbook.SpellW;
-				E = me.Spellbook.SpellE;
-				D = me.Spellbook.SpellD;
-				R = me.Spellbook.SpellR;
+				_q = Me.Spellbook.SpellQ;
+				_w = Me.Spellbook.SpellW;
+				_e = Me.Spellbook.SpellE;
+				_d = Me.Spellbook.SpellD;
+				_r = Me.Spellbook.SpellR;
 			// itens
-			blink = me.FindItem("item_blink");
-			dagon = me.Inventory.Items.FirstOrDefault(x => x.Name.Contains("item_dagon"));
-			ethereal = me.FindItem("item_ethereal_blade");
-			euls = me.FindItem("item_cyclone");
-			Shiva = me.FindItem("item_shivas_guard");
-			orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn");
-			vail = me.FindItem("item_veil_of_discord");
-			forcestaff = me.FindItem("item_force_staff");
-			sheep = me.FindItem("item_sheepstick");
+			_blink = Me.FindItem("item_blink");
+			_dagon = Me.Inventory.Items.FirstOrDefault(x => x.Name.Contains("item_dagon"));
+			_ethereal = Me.FindItem("item_ethereal_blade");
+			_shiva = Me.FindItem("item_shivas_guard");
+			_orchid = Me.FindItem("item_orchid") ?? Me.FindItem("item_bloodthorn");
+			_vail = Me.FindItem("item_veil_of_discord");
+			_sheep = Me.FindItem("item_sheepstick");
 
 			//Starting Combo
             
-			var _Is_in_Advantage = (e.HasModifier("modifier_item_blade_mail_reflect") ||
-									e.HasModifier("modifier_item_lotus_orb_active") ||
-									e.HasModifier("modifier_nyx_assassin_spiked_carapace") ||
-									e.HasModifier("modifier_templar_assassin_refraction_damage") ||
-									e.HasModifier("modifier_ursa_enrage") ||
-									e.HasModifier("modifier_abaddon_borrowed_time") ||
-									(e.HasModifier("modifier_dazzle_shallow_grave")));
+			var isInAdvantage = (E.HasModifier("modifier_item_blade_mail_reflect") ||
+									E.HasModifier("modifier_item_lotus_orb_active") ||
+									E.HasModifier("modifier_nyx_assassin_spiked_carapace") ||
+									E.HasModifier("modifier_templar_assassin_refraction_damage") ||
+									E.HasModifier("modifier_ursa_enrage") ||
+									E.HasModifier("modifier_abaddon_borrowed_time") ||
+									(E.HasModifier("modifier_dazzle_shallow_grave")));
 			if (Game.IsKeyDown(Menu.Item("Full").GetValue<KeyBind>().Key) && Utils.SleepCheck("combo"))
 			{
-				if (me.CanCast() && !me.IsChanneling() && me.Distance2D(e) <= 1200 &&
-				 e.IsVisible && e.IsAlive && !e.IsMagicImmune() &&
-				 !_Is_in_Advantage)
+				if (Me.CanCast() && !Me.IsChanneling() && Me.Distance2D(E) <= 1200 &&
+				 E.IsVisible && E.IsAlive && !E.IsMagicImmune() &&
+				 !isInAdvantage)
 				{
-                    if (me.CanCast())
+                    if (Me.CanCast())
                     {
                         var v =
                       ObjectManager.GetEntities<Hero>()
-                          .Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
+                          .Where(x => x.Team != Me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
                           .ToList();
-                        var X = me.Position.X;
-                        var Y = me.Position.Y;
-                        var pos = new Vector3(X, Y, me.Position.Z);
-                        if (me.Position.X < 0)
+                        var X = Me.Position.X;
+                        var y = Me.Position.Y;
+                        var pos = new Vector3(X, y, Me.Position.Z);
+                        if (Me.Position.X < 0)
                         {
-                            X = me.Position.X + 100;
+                            X = Me.Position.X + 100;
                         }
                         else
                         {
-                            X = me.Position.X - 100;
+                            X = Me.Position.X - 100;
                         }
-                        if (me.Position.Y < 0)
+                        if (Me.Position.Y < 0)
                         {
-                            Y = me.Position.Y + 100;
+                            y = Me.Position.Y + 100;
                         }
                         else
                         {
-                            Y = me.Position.Y - 100;
+                            y = Me.Position.Y - 100;
                         }
                         uint elsecount = 0;
-                        if (blink != null
-                            && blink.CanBeCasted()
-                            && me.Distance2D(e.Position) > 300
-                            && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
+                        if (_blink != null
+                            && _blink.CanBeCasted()
+                            && Me.Distance2D(E.Position) > 300
+                            && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_blink.Name))
                         {
-                            blink.UseAbility(e.Position);
+                            _blink.UseAbility(E.Position);
                         }
                         elsecount++;
                         if ( // vail
-                            vail != null
-                            && vail.CanBeCasted()
-                            && me.CanCast()
-                            && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(vail.Name)
-                            && !e.IsMagicImmune()
+                            _vail != null
+                            && _vail.CanBeCasted()
+                            && Me.CanCast()
+                            && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_vail.Name)
+                            && !E.IsMagicImmune()
                             && Utils.SleepCheck("vail")
-                            && me.Distance2D(e) <= 1500
+                            && Me.Distance2D(E) <= 1500
                             )
                         {
-                            vail.UseAbility(e.Position);
+                            _vail.UseAbility(E.Position);
                         }
                         else elsecount++;
-                        if (orchid != null && orchid.CanBeCasted() &&
-                                Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(orchid.Name))
+                        if (_orchid != null && _orchid.CanBeCasted() &&
+                                Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_orchid.Name))
                         {
-                            orchid.UseAbility(e);
+                            _orchid.UseAbility(E);
                         }
                         else elsecount++;
-                        if (sheep != null && sheep.CanBeCasted() &&
-                                      Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name))
+                        if (_sheep != null && _sheep.CanBeCasted() &&
+                                      Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_sheep.Name))
                         {
-                            sheep.UseAbility(e);
+                            _sheep.UseAbility(E);
                         }
                         else elsecount++;
-                        if (ethereal != null
-                            && ethereal.CanBeCasted()
-                            && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name))
+                        if (_ethereal != null
+                            && _ethereal.CanBeCasted()
+                            && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_ethereal.Name))
                         {
-                            ethereal.UseAbility(e);
+                            _ethereal.UseAbility(E);
                         }
                         else elsecount++;
-                        if (Q != null
-                            && Q.CanBeCasted()
-                            && (blink == null
-                            || !blink.CanBeCasted())
-                            && me.Distance2D(e) < Q.GetCastRange()
-                            && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name))
+                        if (_q != null
+                            && _q.CanBeCasted()
+                            && (_blink == null
+                            || !_blink.CanBeCasted())
+                            && Me.Distance2D(E) < _q.GetCastRange()
+                            && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_q.Name))
                         {
-                            Q.UseAbility(pos);
+                            _q.UseAbility(pos);
                         }
                         else elsecount++;
 
-                        if (W != null && W.CanBeCasted() && me.Distance2D(e) < 390 &&
-                                Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
+                        if (_w != null && _w.CanBeCasted() && Me.Distance2D(E) < 390 &&
+                                Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_w.Name))
                         {
-                            W.UseAbility();
+                            _w.UseAbility();
                         }
                         else elsecount++;
                         if (// Dagon
                              elsecount == 7 &&
-                                me.CanCast()
-                                && dagon != null
-                                && (ethereal == null
-                                || (e.HasModifier("modifier_item_ethereal_blade_slow")
-                                || ethereal.Cooldown < 17))
-                                && !e.IsLinkensProtected()
-                                && dagon.CanBeCasted()
+                                Me.CanCast()
+                                && _dagon != null
+                                && (_ethereal == null
+                                || (E.HasModifier("modifier_item_ethereal_blade_slow")
+                                || _ethereal.Cooldown < 17))
+                                && !E.IsLinkensProtected()
+                                && _dagon.CanBeCasted()
                                 && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon")
-                                && !e.IsMagicImmune()
+                                && !E.IsMagicImmune()
                                 && Utils.SleepCheck("dagon")
                                 )
                         {
-                            dagon.UseAbility(e);
+                            _dagon.UseAbility(E);
                             Utils.Sleep(200, "dagon");
                         }
                         else elsecount++;  // Dagon Item end
-                        if (elsecount == 8 && Shiva != null
-                                && Shiva.CanBeCasted()
-                                && me.Distance2D(e) <= 600
-                                && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(Shiva.Name))
+                        if (elsecount == 8 && _shiva != null
+                                && _shiva.CanBeCasted()
+                                && Me.Distance2D(E) <= 600
+                                && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_shiva.Name))
                         {
-                            Shiva.UseAbility();
+                            _shiva.UseAbility();
                         }
                         else elsecount++;
-                        if (elsecount == 9 && R != null && R.CanBeCasted() && (v.Count(x => x.Distance2D(me) <= 650) >=
+                        if (elsecount == 9 && _r != null && _r.CanBeCasted() && (v.Count(x => x.Distance2D(Me) <= 650) >=
                                                                  (Menu.Item("Heel").GetValue<Slider>().Value)) &&
-                            Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name) && Utils.SleepCheck("R"))
+                            Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_r.Name) && Utils.SleepCheck("R"))
                         {
-                            R.UseAbility(e.Position);
+                            _r.UseAbility(E.Position);
                             Utils.Sleep(100, "R");
                         }
                     }
-					if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+					if (Menu.Item("orbwalk").GetValue<bool>() && Me.Distance2D(E) <= 1900)
 					{
-						Orbwalking.Orbwalk(e, 0, 1600, true, true);
+						Orbwalking.Orbwalk(E, 0, 1600, true, true);
 					}
 				}
 				Utils.Sleep(250, "combo");
 			}
 			//Escape-combo
-			if (Game.IsKeyDown(Menu.Item("Escape").GetValue<KeyBind>().Key) && me.Distance2D(e) <= 1200 &&
-				e.IsVisible && e.IsAlive && !e.IsMagicImmune() &&
+			if (Game.IsKeyDown(Menu.Item("Escape").GetValue<KeyBind>().Key) && Me.Distance2D(E) <= 1200 &&
+				E.IsVisible && E.IsAlive && !E.IsMagicImmune() &&
 				Utils.SleepCheck("combo2"))
 			{
 			   
 
-                if (me.CanCast())
+                if (Me.CanCast())
 				{
-					var X = me.Position.X;
-					var Y = me.Position.Y;
-					var pos = new Vector3(X, Y, me.Position.Z);
-                    if (me.Position.X < 0)
+					var x = Me.Position.X;
+					var y = Me.Position.Y;
+					var pos = new Vector3(x, y, Me.Position.Z);
+                    if (Me.Position.X < 0)
                     {
-                        X = me.Position.X + 100;
+                        x = Me.Position.X + 100;
                     }
                     else
                     {
-                        X = me.Position.X - 100;
+                        x = Me.Position.X - 100;
                     }
-                    if (me.Position.Y < 0)
+                    if (Me.Position.Y < 0)
                     {
-                        Y = me.Position.Y + 100;
+                        y = Me.Position.Y + 100;
                     }
                     else
                     {
-                        Y = me.Position.Y - 100;
+                        y = Me.Position.Y - 100;
                     }
                     uint elsecount = 0;
-                    if (blink != null 
-                        && blink.CanBeCasted() 
-                        && me.Distance2D(e.Position) > 300 
-                        && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
+                    if (_blink != null 
+                        && _blink.CanBeCasted() 
+                        && Me.Distance2D(E.Position) > 300 
+                        && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_blink.Name))
                     {
-                        blink.UseAbility(e.Position);
+                        _blink.UseAbility(E.Position);
                     }
                     elsecount++;
                     if ( // vail
-						vail != null
-						&& vail.CanBeCasted()
-						&& me.CanCast()
-						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(vail.Name)
-						&& !e.IsMagicImmune()
+						_vail != null
+						&& _vail.CanBeCasted()
+						&& Me.CanCast()
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_vail.Name)
+						&& !E.IsMagicImmune()
 						&& Utils.SleepCheck("vail")
-						&& me.Distance2D(e) <= 1500
+						&& Me.Distance2D(E) <= 1500
 						)
 					{
-						vail.UseAbility(e.Position);
+						_vail.UseAbility(E.Position);
                     }
                     else elsecount++;
-                    if (orchid != null && orchid.CanBeCasted() &&
-                            Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(orchid.Name))
+                    if (_orchid != null && _orchid.CanBeCasted() &&
+                            Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_orchid.Name))
                     {
-                        orchid.UseAbility(e);
+                        _orchid.UseAbility(E);
                     }
                     else elsecount++;
-                    if (sheep != null && sheep.CanBeCasted() &&
-                                  Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name))
+                    if (_sheep != null && _sheep.CanBeCasted() &&
+                                  Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_sheep.Name))
                     {
-                        sheep.UseAbility(e);
+                        _sheep.UseAbility(E);
                     }
                     else elsecount++;
-                    if (ethereal != null
-						&& ethereal.CanBeCasted()
-						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name))
+                    if (_ethereal != null
+						&& _ethereal.CanBeCasted()
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_ethereal.Name))
 					{
-						ethereal.UseAbility(e);
+						_ethereal.UseAbility(E);
 					}
                     else elsecount++;
-                        if (Q != null 
-							&& Q.CanBeCasted() 
-							&& ( blink == null 
-							|| !blink.CanBeCasted())
-							&& me.Distance2D(e) < Q.GetCastRange() 
-							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name))
+                        if (_q != null 
+							&& _q.CanBeCasted() 
+							&& ( _blink == null 
+							|| !_blink.CanBeCasted())
+							&& Me.Distance2D(E) < _q.GetCastRange() 
+							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_q.Name))
 						{
-							Q.UseAbility(pos);
+							_q.UseAbility(pos);
                     }
                     else elsecount++;
 
-                    if (W != null && W.CanBeCasted() && me.Distance2D(e) < 390 &&
-							Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
+                    if (_w != null && _w.CanBeCasted() && Me.Distance2D(E) < 390 &&
+							Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_w.Name))
 						{
-							W.UseAbility();
+							_w.UseAbility();
                     }
                     else elsecount++;
                     if (// Dagon
                          elsecount == 7 &&
-                            me.CanCast()
-                            && dagon != null
-                            && (ethereal == null
-                            || (e.HasModifier("modifier_item_ethereal_blade_slow")
-                            || ethereal.Cooldown < 17))
-                            && !e.IsLinkensProtected()
-                            && dagon.CanBeCasted()
+                            Me.CanCast()
+                            && _dagon != null
+                            && (_ethereal == null
+                            || (E.HasModifier("modifier_item_ethereal_blade_slow")
+                            || _ethereal.Cooldown < 17))
+                            && !E.IsLinkensProtected()
+                            && _dagon.CanBeCasted()
                             && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon")
-                            && !e.IsMagicImmune()
+                            && !E.IsMagicImmune()
                             && Utils.SleepCheck("dagon")
                             )
                         {
-                            dagon.UseAbility(e);
+                            _dagon.UseAbility(E);
                             Utils.Sleep(200, "dagon");
                     }
                     else elsecount++;  // Dagon Item end
-                    if (Shiva != null
-							&& Shiva.CanBeCasted()
-							&& me.Distance2D(e) <= 600
-							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(Shiva.Name))
+                    if (_shiva != null
+							&& _shiva.CanBeCasted()
+							&& Me.Distance2D(E) <= 600
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_shiva.Name))
 						{
-							Shiva.UseAbility();
+							_shiva.UseAbility();
                     }
                     else elsecount++;
-                    if (elsecount ==9 && E != null
-                            && E.CanBeCasted()
-                            && D != null
-                            && D.CanBeCasted()
+                    if (elsecount ==9 && _e != null
+                            && _e.CanBeCasted()
+                            && _d != null
+                            && _d.CanBeCasted()
                             &&
-                            ((sheep == null || !sheep.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name))
-                             && (Shiva == null || !Shiva.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(Shiva.Name))
-                             && (dagon == null || !dagon.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon"))
-                             && (ethereal == null || !ethereal.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name))
-                             && (orchid == null || !orchid.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(orchid.Name))
-                             && (blink == null || !blink.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
-                             && (W == null || !W.CanBeCasted() || me.Distance2D(e) >= 400 || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
+                            ((_sheep == null || !_sheep.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_sheep.Name))
+                             && (_shiva == null || !_shiva.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_shiva.Name))
+                             && (_dagon == null || !_dagon.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon"))
+                             && (_ethereal == null || !_ethereal.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_ethereal.Name))
+                             && (_orchid == null || !_orchid.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_orchid.Name))
+                             && (_blink == null || !_blink.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_blink.Name))
+                             && (_w == null || !_w.CanBeCasted() || Me.Distance2D(E) >= 400 || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_w.Name))
                             && Utils.SleepCheck("1")))
                     {
-                        E.UseAbility();
+                        _e.UseAbility();
                         Utils.Sleep(250, "1");
                     }
                     if (
-							D != null
-							&& D.CanBeCasted()
-							&& (sheep == null || !sheep.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name))
-							&& (Shiva == null || !Shiva.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(Shiva.Name))
-							&& (dagon == null || !dagon.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon"))
-							&& (ethereal == null || !ethereal.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name))
-							&& (orchid == null || !orchid.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(orchid.Name))
-							&& (blink == null || !blink.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
-							&& (W == null || !W.CanBeCasted() || me.Distance2D(e) >= 400 || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
+							_d != null
+							&& _d.CanBeCasted()
+							&& (_sheep == null || !_sheep.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_sheep.Name))
+							&& (_shiva == null || !_shiva.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_shiva.Name))
+							&& (_dagon == null || !_dagon.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon"))
+							&& (_ethereal == null || !_ethereal.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_ethereal.Name))
+							&& (_orchid == null || !_orchid.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_orchid.Name))
+							&& (_blink == null || !_blink.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_blink.Name))
+							&& (_w == null || !_w.CanBeCasted() || Me.Distance2D(E) >= 400 || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_w.Name))
 							&& Utils.SleepCheck("12"))
 						{
 							var baseDota =
 								ObjectManager.GetEntities<Unit>()
-									.Where(unit => unit.Name == "npc_dota_base" && unit.Team == me.Team)
+									.Where(unit => unit.Name == "npc_dota_base" && unit.Team == Me.Team)
 									.ToList();
 
 							if (baseDota != null)
 							{
 								for (int i = 0; i < baseDota.Count(); ++i)
 								{
-									if (baseDota[i].Distance2D(me) >= 1200)
+									if (baseDota[i].Distance2D(Me) >= 1200)
 									{
-										D.UseAbility();
+										_d.UseAbility();
 									}
 								}
 							}
 							Utils.Sleep(200, "12");
                     }
 				}
-				if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+				if (Menu.Item("orbwalk").GetValue<bool>() && Me.Distance2D(E) <= 1900)
 				{
-					Orbwalking.Orbwalk(e, 0, 1600, true, true);
+					Orbwalking.Orbwalk(E, 0, 1600, true, true);
 				}
 				Utils.Sleep(300, "combo2");
 			}
