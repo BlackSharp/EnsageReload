@@ -55,7 +55,6 @@ Temporary Items
 *.userprefs
 
 # Build results
-[Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
 x64/
@@ -79,7 +78,6 @@ DTAR_*/
 TestResult.xml
 
 # Build Results of an ATL Project
-[Dd]ebugPS/
 [Rr]eleasePS/
 dlldata.c
 
