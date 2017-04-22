@@ -54,65 +54,31 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="clipper_library">
-      <HintPath>..\..\..\..\..\..\eViYkMhXe\References\clipper_library.dll</HintPath>
-    </Reference>
     <Reference Include="Ensage">
-      <HintPath>..\..\..\..\..\..\eViYkMhXe\References\Ensage.dll</HintPath>
+      <HintPath>D:\eViYkMhXe\References\Ensage.dll</HintPath>
     </Reference>
     <Reference Include="Ensage.Common">
-      <HintPath>..\..\..\..\..\..\eViYkMhXe\References\Ensage.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Ensage.SDK">
-      <HintPath>..\..\..\..\..\..\eViYkMhXe\References\Ensage.SDK.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.DirectX.AudioVideoPlayback, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Microsoft.Net.Compilers.1.2.1\tools\Microsoft.DirectX.AudioVideoPlayback.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\eViYkMhXe\References\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="PlaySharp.Service">
-      <HintPath>..\..\..\..\..\..\eViYkMhXe\References\PlaySharp.Service.dll</HintPath>
-    </Reference>
-    <Reference Include="PlaySharp.Toolkit">
-      <HintPath>..\..\..\..\..\..\eViYkMhXe\References\PlaySharp.Toolkit.dll</HintPath>
+      <HintPath>D:\eViYkMhXe\References\Ensage.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>..\..\..\..\..\..\eViYkMhXe\References\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct2D1">
-      <HintPath>..\..\..\..\..\..\eViYkMhXe\References\SharpDX.Direct2D1.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D11">
-      <HintPath>..\..\..\..\..\..\eViYkMhXe\References\SharpDX.Direct3D11.dll</HintPath>
+      <HintPath>D:\eViYkMhXe\References\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>..\..\..\..\..\..\eViYkMhXe\References\SharpDX.Direct3D9.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.DXGI">
-      <HintPath>..\..\..\..\..\..\eViYkMhXe\References\SharpDX.DXGI.dll</HintPath>
+      <HintPath>D:\eViYkMhXe\References\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Mathematics">
-      <HintPath>..\..\..\..\..\..\eViYkMhXe\References\SharpDX.Mathematics.dll</HintPath>
+      <HintPath>D:\eViYkMhXe\References\SharpDX.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\eViYkMhXe\References\System.Collections.Immutable.dll</HintPath>
+      <HintPath>D:\eViYkMhXe\References\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime">
-      <HintPath>..\..\..\..\..\..\eViYkMhXe\References\System.Runtime.dll</HintPath>
+      <HintPath>D:\eViYkMhXe\References\System.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>

@@ -22,14 +22,14 @@ namespace DotaAllCombo.Heroes
         private readonly Menu _ult = new Menu("AutoUsage Abilities and Items to Solo enemy kill", "id");
         private float _eDmg;
         private float _rDmg;
-        private double[] _wDmg = { 0, 100, 175, 275, 350 };
-        private double[] _qDmg = { 0, 85, 100, 115, 145 };
-        private double[] _penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
-        private double[] _bloodrage = { 0, 1.15, 1.2, 1.25, 1.3 };
-        private double[] _souls = { 0, 1.2, 1.3, 1.4, 1.5 };
+        private readonly double[] _wDmg = { 0, 100, 175, 275, 350 };
+        private readonly double[] _qDmg = { 0, 85, 100, 115, 145 };
+        private readonly double[] _penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
+        private readonly double[] _bloodrage = { 0, 1.15, 1.2, 1.25, 1.3 };
+        private readonly double[] _souls = { 0, 1.2, 1.3, 1.4, 1.5 };
         private readonly int[] _dagonDmg = { 0, 400, 500, 600, 700, 800 };
 
-        private Dictionary<uint, double> _damage = new Dictionary<uint, double>();
+        private readonly Dictionary<uint, double> _damage = new Dictionary<uint, double>();
 
         private List<Hero> _enemies = new List<Hero>();
 
