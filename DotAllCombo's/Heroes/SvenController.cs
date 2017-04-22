@@ -16,7 +16,7 @@ namespace DotaAllCombo.Heroes
 	{
 		private Ability _q, _e, _r;
 
-		private Item _urn, _dagon, _halberd, _mjollnir, _abyssal, _mom, _shiva, _mail, _bkb, _satanic, _blink, _armlet, _medall;
+		private Item _urn, _dagon, _halberd, _mjollnir, _abyssal, _shiva, _mail, _bkb, _satanic, _blink, _armlet, _medall;
 
         
 
@@ -29,7 +29,6 @@ namespace DotaAllCombo.Heroes
 			_r = Me.Spellbook.SpellR;
 
 
-			_mom = Me.FindItem("item_mask_of_madness");
 			_urn = Me.FindItem("item_urn_of_shadows");
 			_dagon = Me.Inventory.Items.FirstOrDefault(x => x.Name.Contains("item_dagon"));
 			_halberd = Me.FindItem("item_heavens_halberd");
@@ -110,18 +109,6 @@ namespace DotaAllCombo.Heroes
 				{
 					_e.UseAbility();
 					Utils.Sleep(200, "E");
-				}
-				if ( // MOM
-					_mom != null
-					&& _mom.CanBeCasted()
-					&& Me.CanCast()
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_mom.Name)
-					&& Utils.SleepCheck("mom")
-					&& Me.Distance2D(E) <= 700
-					)
-				{
-					_mom.UseAbility();
-					Utils.Sleep(250, "mom");
 				}
 				if ( // Mjollnir
 					_mjollnir != null
