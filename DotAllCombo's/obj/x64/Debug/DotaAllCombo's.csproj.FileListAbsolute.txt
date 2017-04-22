@@ -3,7 +3,6 @@ D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\Do
 D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\DotaAllCombo's.pdb
 D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\Ensage.Common.dll
 D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\Ensage.dll
-D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\Microsoft.DirectX.AudioVideoPlayback.dll
 D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\Newtonsoft.Json.dll
 D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\SharpDX.Direct3D9.dll
 D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\SharpDX.dll
@@ -11,12 +10,9 @@ D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\Sh
 D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\SharpDX.Direct2D1.dll
 D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\SharpDX.Direct3D11.dll
 D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\SharpDX.DXGI.dll
-D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\Microsoft.DirectX.Direct3D.dll
-D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\Microsoft.DirectX.dll
 D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\Ensage.Common.pdb
-D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\Microsoft.DirectX.AudioVideoPlayback.xml
-D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\Microsoft.DirectX.Direct3D.xml
-D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\Microsoft.DirectX.xml
 D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\obj\x64\Debug\DotaAllCombo's.csprojResolveAssemblyReference.cache
 D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\obj\x64\Debug\DotaAllCombo's.exe
 D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\obj\x64\Debug\DotaAllCombo's.pdb
+D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\System.Collections.Immutable.dll
+D:\Maxim\Документы\Sourse\Repos\EnsageReload\DotAllCombo's\bin\Debug\System.Runtime.dll
