@@ -9,8 +9,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("A multihero multimodule assembly for Ensage (Dota 2 .NET API)")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("VickTheRock Assemblies & MaZaiPC<core>")]
-[assembly: AssemblyCopyright("(c) VickTheRock")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("(c) VickTheRock (Rework by Black)")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
