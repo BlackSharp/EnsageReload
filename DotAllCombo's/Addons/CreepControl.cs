@@ -6,8 +6,7 @@ namespace DotaAllCombo.Addons
     using Ensage.Common;
     using Ensage.Common.Extensions;
     using SharpDX;
-    using System; 
-	using System.Runtime;
+    using System;
     using System.Linq;
     using SharpDX.Direct3D9;
     using Service;

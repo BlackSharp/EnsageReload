@@ -3,7 +3,7 @@
 namespace DotaAllCombo.Heroes
 {
     //TODO Only Love MazaiPC
-    using System; using System.Runtime;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Ensage;
