@@ -16,7 +16,7 @@ namespace DotaAllCombo.Heroes
 	{
 		private Ability _q, _w;
 
-		private Item _urn, _ethereal, _dagon, _halberd, _vail, _mjollnir, _orchid, _abyssal, _mom, _shiva, _mail, _bkb, _satanic, _medall, _blink;
+		private Item _urn, _ethereal, _dagon, _halberd, _vail, _mjollnir, _orchid, _abyssal, _shiva, _mail, _bkb, _satanic, _medall, _blink;
 
         
 
@@ -34,7 +34,6 @@ namespace DotaAllCombo.Heroes
 			_w = Me.Spellbook.SpellW;
 
 			_blink = Me.FindItem("item_blink");
-			_mom = Me.FindItem("item_mask_of_madness");
 			_urn = Me.FindItem("item_urn_of_shadows");
 			_dagon = Me.Inventory.Items.FirstOrDefault(x => x.Name.Contains("item_dagon"));
 			_ethereal = Me.FindItem("item_ethereal_blade");
@@ -145,18 +144,6 @@ namespace DotaAllCombo.Heroes
 				{
 					_w.UseAbility(E);
 					Utils.Sleep(200, "W");
-				}
-				if ( // MOM
-					_mom != null
-					&& _mom.CanBeCasted()
-					&& Me.CanCast()
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_mom.Name)
-					&& Utils.SleepCheck("mom")
-					&& Me.Distance2D(E) <= 700
-					)
-				{
-					_mom.UseAbility();
-					Utils.Sleep(250, "mom");
 				}
 				if ( // Mjollnir
 					_mjollnir != null
