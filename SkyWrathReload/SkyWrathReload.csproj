@@ -63,9 +63,6 @@
     <Compile Include="Variables.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="clipper_library">
-      <HintPath>D:\eViYkMhXe\References\clipper_library.dll</HintPath>
-    </Reference>
     <Reference Include="Ensage">
       <HintPath>D:\eViYkMhXe\References\Ensage.dll</HintPath>
     </Reference>
@@ -73,46 +70,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>D:\eViYkMhXe\References\Ensage.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\eViYkMhXe\References\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="PlaySharp.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=7e3dc52b16ce4f66, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\eViYkMhXe\References\PlaySharp.Service.dll</HintPath>
-    </Reference>
-    <Reference Include="PlaySharp.Toolkit, Version=1.0.0.0, Culture=neutral, PublicKeyToken=7e3dc52b16ce4f66, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\eViYkMhXe\References\PlaySharp.Toolkit.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX">
-      <HintPath>D:\eViYkMhXe\References\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct2D1, Version=3.1.0.0, Culture=neutral, PublicKeyToken=7e3dc52b16ce4f66, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\eViYkMhXe\References\SharpDX.Direct2D1.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D11, Version=3.1.0.0, Culture=neutral, PublicKeyToken=7e3dc52b16ce4f66, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\eViYkMhXe\References\SharpDX.Direct3D11.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D9, Version=3.1.0.0, Culture=neutral, PublicKeyToken=7e3dc52b16ce4f66, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\eViYkMhXe\References\SharpDX.Direct3D9.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.DXGI, Version=3.1.0.0, Culture=neutral, PublicKeyToken=7e3dc52b16ce4f66, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\eViYkMhXe\References\SharpDX.DXGI.dll</HintPath>
-    </Reference>
     <Reference Include="SharpDX.Mathematics">
       <HintPath>D:\eViYkMhXe\References\SharpDX.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\eViYkMhXe\References\System.Collections.Immutable.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Drawing" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>

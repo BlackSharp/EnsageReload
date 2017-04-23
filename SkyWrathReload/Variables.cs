@@ -8,9 +8,9 @@ namespace SkyWrathReload
     {
         public const string AssemblyName = "SkyWrathReload";
 
-        public static string heroName;
+        public static string HeroName;
 
-        public static string[] modifiersNames =
+        public static string[] ModifiersNames =
         {
             "modifier_medusa_stone_gaze_stone",
             "modifier_winter_wyvern_winters_curse",
@@ -19,7 +19,7 @@ namespace SkyWrathReload
 
         public static Dictionary<string, Ability> Abilities;
 
-        public static Dictionary<string, bool> abilitiesDictionary = new Dictionary<string, bool>
+        public static Dictionary<string, bool> AbilitiesDictionary = new Dictionary<string, bool>
         {
             {"skywrath_mage_arcane_bolt", true},
             {"skywrath_mage_concussive_shot", true},
@@ -27,7 +27,7 @@ namespace SkyWrathReload
             {"skywrath_mage_mystic_flare", true}
         };
 
-        public static Dictionary<string, bool> popLinkensDictionary = new Dictionary<string, bool>
+        public static Dictionary<string, bool> PopLinkensDictionary = new Dictionary<string, bool>
         {
             {"item_medallion_of_courage", true},
             {"item_rod_of_atos", true},
@@ -39,7 +39,7 @@ namespace SkyWrathReload
             {"skywrath_mage_ancient_seal", true}
         };
 
-        public static Dictionary<string, bool> magicItemsDictionary = new Dictionary<string, bool>
+        public static Dictionary<string, bool> MagicItemsDictionary = new Dictionary<string, bool>
         {
             {"item_medallion_of_courage", true},
             {"item_rod_of_atos", true},
@@ -54,56 +54,56 @@ namespace SkyWrathReload
 
         public static Menu Menu;
 
-        public static Menu magicItems;
+        public static Menu MagicItems;
 
-        public static Menu popLinkensItems;
+        public static Menu PopLinkensItems;
 
         public static Menu abilities;
 
-        public static Menu noCastUlti;
+        public static Menu NoCastUlti;
 
-        public static Menu ezkillmenu;
+        public static Menu Ezkillmenu;
 
-        public static MenuItem comboKey;
+        public static MenuItem ComboKey;
 
-        public static MenuItem harassKey;
+        public static MenuItem HarassKey;
 
         public static MenuItem drawTarget;
 
-        public static MenuItem moveMode;
+        public static MenuItem MoveMode;
 
-        public static MenuItem ezKillCheck;
+        public static MenuItem EzKillCheck;
 
-        public static MenuItem ezKillStyle;
+        public static MenuItem EzKillStyle;
 
-        public static MenuItem straightTimeCheck;
+        public static MenuItem StraightTimeCheck;
 
         public static MenuItem ClosestToMouseRange;
 
-        public static MenuItem predictionType;
+        public static MenuItem PredictionType;
 
-        public static MenuItem soulRing;
+        public static MenuItem SoulRing;
 
-        public static MenuItem bladeMail;
+        public static MenuItem BladeMail;
 
         public static MenuItem useBlink;
 
-        public static MenuItem nocastulti;
+        public static MenuItem Nocastulti;
 
-        public static bool loaded, ezKill;
+        public static bool Loaded, EzKill;
 
-        public static Ability bolt, slow, silence, mysticflare;
+        public static Ability Bolt, Slow, Silence, Mysticflare;
 
-        public static Item soulring, force_staff, cyclone, orchid, sheep, veil, shivas, dagon, atos, ethereal, medal, bloodthorn, blink;
+        public static Item Soulring, ForceStaff, Cyclone, Orchid, Sheep, Veil, Shivas, Dagon, Atos, Ethereal, Medal, Bloodthorn, Blink;
 
-        public static Hero me, target;
+        public static Hero Me, Target;
 
-        public static Vector2 iconSize, screenPosition;
+        public static Vector2 IconSize, ScreenPosition;
 
-        public static Vector3 predictXYZ;
+        public static Vector3 PredictXyz;
 
-        public static DotaTexture heroIcon, ezkillIcon;
+        public static DotaTexture HeroIcon, EzkillIcon;
 
-        public static ParticleEffect circle;
+        public static ParticleEffect Circle;
     }
 }
