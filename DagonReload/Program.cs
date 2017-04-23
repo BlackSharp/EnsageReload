@@ -5,7 +5,7 @@ using Ensage.Common;
 using Ensage.Common.Extensions;
 using Ensage.Common.Menu;
 
-namespace DagonSharp
+namespace DagonReload
 {
     internal class Program
     {
