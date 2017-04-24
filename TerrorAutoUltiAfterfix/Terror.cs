@@ -18,7 +18,7 @@ namespace TerrorAutoUlti
             if (ObjectManager.LocalHero.ClassId != ClassId.CDOTA_Unit_Hero_Terrorblade) return;
             Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
             Menu.AddItem(new MenuItem("toggle", "Toggle").SetValue(new KeyBind('G', KeyBindType.Toggle)));
-            Menu.AddItem(new MenuItem("slider", "Min hp % to swap").SetValue(new Slider(25, 5, 75)));
+            Menu.AddItem(new MenuItem("slider", "Min hp % to swag").SetValue(new Slider(25, 5, 75)));
             Menu.AddToMainMenu();
             Game.OnUpdate += Game_OnUpdate;
         }
