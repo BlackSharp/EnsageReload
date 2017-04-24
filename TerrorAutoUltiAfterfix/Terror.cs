@@ -31,7 +31,7 @@ namespace TerrorAutoUlti
         {
             Events.OnLoad += OnLoadEvent;
             Events.OnClose += OnCloseEvent;
-            Game.OnUpdate += Tick;
+            
         }
         private static void Game_OnUpdate(EventArgs args)
         {
@@ -47,6 +47,7 @@ namespace TerrorAutoUlti
             if (!Utils.SleepCheck("toggle") || Game.IsChatOpen || Game.IsPaused ||
                 Game.IsWatchingGame) return;
             Utils.Sleep(200, "toggle");
+            Game.OnUpdate += Tick;
         }
         public static void Tick(EventArgs args)
         {
@@ -66,7 +67,7 @@ namespace TerrorAutoUlti
             {
                 if (!_me.IsValid || !v.IsValid || !(_me.Distance2D(v) <= ulti.GetCastRange()) || !ulti.CanBeCasted() ||
                     !_me.CanCast() || !Utils.SleepCheck("1")) continue;
-                if ((_me.Health / _me.MaximumHealth) * 100 >= Menu.Item("slider").GetValue<Slider>().Value)
+                if (_me.Health / _me.MaximumHealth * 100 >= Menu.Item("slider").GetValue<Slider>().Value)
                     continue;
                 ulti.UseAbility(v);
                 Utils.Sleep(1000, "1");
