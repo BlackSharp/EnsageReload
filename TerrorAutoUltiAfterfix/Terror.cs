@@ -5,7 +5,7 @@ using Ensage.Common;
 using Ensage.Common.Extensions;
 using Ensage.Common.Menu;
 
-namespace TerrorAutoUlti
+namespace TerrorAutoUlti123
 {
     internal class TerrorAutoUlti
     {
@@ -67,7 +67,7 @@ namespace TerrorAutoUlti
             {
                 if (!me.IsValid || !v.IsValid || !(me.Distance2D(v) <= ulti.GetCastRange()) || !ulti.CanBeCasted() ||
                     !me.CanCast() || !Utils.SleepCheck("1")) continue;
-                if (me.Health / me.MaximumHealth * 100 >= Menu.Item("slider").GetValue<Slider>().Value)
+                if (me.Health / me.MaximumHealth >= Menu.Item("slider").GetValue<Slider>().Value)
                     continue;
                 ulti.UseAbility(v);
                 Utils.Sleep(1000, "1");
