@@ -18,20 +18,20 @@ namespace TerrorAutoUlti
             if (ObjectManager.LocalHero.ClassId != ClassId.CDOTA_Unit_Hero_Terrorblade) return;
             Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
             Menu.AddItem(new MenuItem("toggle", "Toggle").SetValue(new KeyBind('G', KeyBindType.Toggle)));
-            Menu.AddItem(new MenuItem("slider", "Min hp % to swag").SetValue(new Slider(25, 5, 75)));
+            Menu.AddItem(new MenuItem("slider", "Min hp % to swa").SetValue(new Slider(25, 5, 75)));
             Menu.AddToMainMenu();
             Game.OnUpdate += Game_OnUpdate;
         }
         private static void OnCloseEvent(object sender, EventArgs args)
         {
             Game.OnUpdate -= Game_OnUpdate;
-            Game.OnUpdate += Tick;
             Menu.RemoveFromMainMenu();
         }
         private static void Main()
         {
             Events.OnLoad += OnLoadEvent;
             Events.OnClose += OnCloseEvent;
+            Game.OnUpdate += Tick;
         }
         private static void Game_OnUpdate(EventArgs args)
         {
