@@ -21,6 +21,7 @@ namespace TerrorAutoUlti
             Menu.AddItem(new MenuItem("slider", "Min hp % to swap").SetValue(new Slider(25, 5, 75)));
             Menu.AddToMainMenu();
             Game.OnUpdate += Game_OnUpdate;
+            Game.OnUpdate += Tick;
         }
         private static void OnCloseEvent(object sender, EventArgs args)
         {
@@ -65,7 +66,7 @@ namespace TerrorAutoUlti
             {
                 if (!_me.IsValid || !v.IsValid || !(_me.Distance2D(v) <= ulti.GetCastRange()) || !ulti.CanBeCasted() ||
                     !_me.CanCast() || !Utils.SleepCheck("1")) continue;
-                if ((_me.Health / _me.MaximumHealth) * 100 >= Menu.Item("slider").GetValue<Slider>().Value)
+                if ((_me.Health / _me.MaximumHealth) * 100 == Menu.Item("slider").GetValue<Slider>().Value)
                     continue;
                 ulti.UseAbility(v);
                 Utils.Sleep(1000, "1");
