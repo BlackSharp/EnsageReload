@@ -1,68 +1,55 @@
 using System;
 using System.Linq;
-using System.Windows.Input;
 using Ensage;
 using Ensage.Common;
-using SharpDX;
+using Ensage.Common.Menu;
 
 namespace TerrorAutoUlti
 {
     internal class TerrorAutoUlti
     {
-        private const Key ToggleKey = Key.G;
+        private static readonly Menu Menu = new Menu("TerrorAutoUlti", "TerrorAutoUlti by Black", true, "npc_dota_hero_terrorblade", true);
         private static bool _active = true;
         private static Hero _me;
         private static System.Collections.Generic.List<Hero> _enemies;
         private static bool _loaded;
-        private static string _toggleText;
-
-       
+        private static void OnLoadEvent(object sender, EventArgs args)
+        {
+            if (ObjectManager.LocalHero.ClassId != ClassId.CDOTA_Unit_Hero_Terrorblade) return;
+            Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
+            Menu.AddItem(new MenuItem("Key", "Combo key").SetValue(new KeyBind('D', KeyBindType.Toggle)));
+            Menu.AddItem(new MenuItem("Heel", "Min hp to swap").SetValue(new Slider(2, 1, 5)));
+            Menu.AddToMainMenu();
+            Game.OnUpdate += Game_OnUpdate;
+        }
+        private static void OnCloseEvent(object sender, EventArgs args)
+        {
+            Game.OnUpdate -= Game_OnUpdate;
+            Menu.RemoveFromMainMenu();
+        }
+        private static void Main()
+        {
+            Events.OnLoad += OnLoadEvent;
+            Events.OnClose += OnCloseEvent;
+        }
         private static void Game_OnUpdate(EventArgs args)
         {
             if (!_loaded)
             {
                 _me = ObjectManager.LocalHero;
 
-                if (!Game.IsInGame || Game.IsWatchingGame || _me == null || Game.IsChatOpen)
-                {
+                if (!Game.IsInGame || Game.IsWatchingGame || _me == null ||
+                    _me.ClassId != ClassId.CDOTA_Unit_Hero_Terrorblade) return;
+
+                if (!Menu.Item("enabled").IsActive())
                     return;
-                }
-
                 _loaded = true;
-                _toggleText = "(" + ToggleKey + ") AutoSunder: On";
-            }
-
-            if (_me == null || !_me.IsValid)
-            {
-                _loaded = false;
-                _me = ObjectManager.LocalHero;
-                _active = false;
-            }
-
-            if (Game.IsPaused) return;
-
-            if (!Game.IsKeyDown(ToggleKey) || !Utils.SleepCheck("toggle") || Game.IsChatOpen || Game.IsPaused ||
-                Game.IsWatchingGame) return;
-            if (!_active)
-            {
                 _active = true;
-                _toggleText = "(" + ToggleKey + ") AutoSunder: On";
-            }
-            else
-            {
-                _active = false;
-                _toggleText = "(" + ToggleKey + ") AutoSunder: Off";
-            }
 
+            }
+            if (!Game.FindKeyValues() || !Utils.SleepCheck("toggle") || Game.IsChatOpen || Game.IsPaused ||
+                Game.IsWatchingGame) return;
             Utils.Sleep(200, "toggle");
-        }
-
-        private static void Main()
-        {
-            Game.OnUpdate += Game_OnUpdate;
-            Drawing.OnDraw += Drawing_OnDraw;
-            Game.OnUpdate += Tick;
-            PrintSuccess("> TerrorAutoUlti");
         }
         public static void Tick(EventArgs args)
         {
@@ -97,30 +84,6 @@ namespace TerrorAutoUlti
                 _me.Spellbook.SpellR.UseAbility(v.Player.Hero);
                 Utils.Sleep(1000, "2");
             }
-        }
-
-
-
-
-        private static void Drawing_OnDraw(EventArgs args)
-        {
-            if (!_loaded) return;
-            Drawing.DrawText("Terror!", new Vector2(Drawing.Width * 5 / 100, Drawing.Height * 19 / 100), Color.LightGreen, FontFlags.DropShadow);
-            Drawing.DrawText(_toggleText,
-                new Vector2(Drawing.Width * 5 / 100, Drawing.Height * 20 / 100), Color.LightGreen, FontFlags.DropShadow);
-        }   
-
-
-        private static void PrintSuccess(string text, params object[] arguments)
-        {
-            PrintEncolored(text, ConsoleColor.Green, arguments);
-        }
-        private static void PrintEncolored(string text, ConsoleColor color, params object[] arguments)
-        {
-            var clr = Console.ForegroundColor;
-            Console.ForegroundColor = color;
-            Console.WriteLine(text, arguments);
-            Console.ForegroundColor = clr;
         }
     }
 }
