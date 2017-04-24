@@ -21,7 +21,6 @@ namespace TerrorAutoUlti
             Menu.AddItem(new MenuItem("slider", "Min hp % to swap").SetValue(new Slider(25, 5, 75)));
             Menu.AddToMainMenu();
             Game.OnUpdate += Game_OnUpdate;
-            Game.OnUpdate += Tick;
         }
         private static void OnCloseEvent(object sender, EventArgs args)
         {
