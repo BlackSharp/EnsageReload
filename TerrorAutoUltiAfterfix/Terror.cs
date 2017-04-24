@@ -26,6 +26,7 @@ namespace TerrorAutoUlti
         private static void OnCloseEvent(object sender, EventArgs args)
         {
             Game.OnUpdate -= Game_OnUpdate;
+            Game.OnUpdate += Tick;
             Menu.RemoveFromMainMenu();
         }
         private static void Main()
