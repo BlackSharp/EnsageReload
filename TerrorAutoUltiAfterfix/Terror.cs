@@ -66,7 +66,7 @@ namespace TerrorAutoUlti
             {
                 if (!_me.IsValid || !v.IsValid || !(_me.Distance2D(v) <= ulti.GetCastRange()) || !ulti.CanBeCasted() ||
                     !_me.CanCast() || !Utils.SleepCheck("1")) continue;
-                if ((_me.Health / _me.MaximumHealth) * 100 == Menu.Item("slider").GetValue<Slider>().Value)
+                if ((_me.Health / _me.MaximumHealth) * 100 >= Menu.Item("slider").GetValue<Slider>().Value)
                     continue;
                 ulti.UseAbility(v);
                 Utils.Sleep(1000, "1");
