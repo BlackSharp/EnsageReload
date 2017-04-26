@@ -46,6 +46,7 @@ namespace AutoSunder
                 return;
             _enemies = ObjectManager.GetEntitiesParallel<Hero>()
                 .Where(x => _me.Team != x.Team && x.IsValid && !x.IsIllusion && x.IsAlive)
+                .OrderByDescending(x => x.Health)
                 .ToList();
             if (_enemies == null)
                 return;
