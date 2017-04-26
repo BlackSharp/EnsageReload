@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("DotaAllCombo's")]
+[assembly: AssemblyTitle("DotaAllCombo's by Vick (Reworked by Black)")]
 [assembly: AssemblyDescription("A multihero multimodule assembly for Ensage (Dota 2 .NET API)")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
