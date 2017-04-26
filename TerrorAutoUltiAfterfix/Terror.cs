@@ -7,13 +7,13 @@ using Ensage.Common.Menu;
 
 namespace TerrorAutoUlti123
 {
-    internal class TerrorAutoUlti
+    class TerrorAutoUlti
     {
-        private static readonly Menu Menu = new Menu("TerrorAutoUlti", "TerrorAutoUlti by Black", true, "npc_dota_hero_terrorblade", true);
-        private static Hero me;
-        private static System.Collections.Generic.List<Hero> _enemies;
-        private static bool loaded;
-        private static void OnLoadEvent(object sender, EventArgs args)
+        static readonly Menu Menu = new Menu("TerrorAutoUlti", "TerrorAutoUlti by Black", true, "npc_dota_hero_terrorblade", true);
+        static Hero me;
+        static System.Collections.Generic.List<Hero> _enemies;
+        static bool loaded;
+        static void OnLoadEvent(object sender, EventArgs args)
         {
             if (ObjectManager.LocalHero.ClassId != ClassId.CDOTA_Unit_Hero_Terrorblade) return;
             Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
@@ -22,18 +22,18 @@ namespace TerrorAutoUlti123
             Menu.AddToMainMenu();
             Game.OnUpdate += Game_OnUpdate;
         }
-        private static void OnCloseEvent(object sender, EventArgs args)
+        static void OnCloseEvent(object sender, EventArgs args)
         {
             Game.OnUpdate -= Game_OnUpdate;
             Menu.RemoveFromMainMenu();
         }
-        private static void Main()
+        static void Main()
         {
             Events.OnLoad += OnLoadEvent;
             Events.OnClose += OnCloseEvent;
             
         }
-        private static void Game_OnUpdate(EventArgs args)
+        static void Game_OnUpdate(EventArgs args)
         {
             if (!loaded)
             {
@@ -67,7 +67,7 @@ namespace TerrorAutoUlti123
             {
                 if (!me.IsValid || !v.IsValid || !(me.Distance2D(v) <= ulti.GetCastRange()) || !ulti.CanBeCasted() ||
                     !me.CanCast() || !Utils.SleepCheck("1")) continue;
-                if (me.Health / me.MaximumHealth <= Menu.Item("slider").GetValue<Slider>().Value)
+                if (me.Health / me.MaximumHealth * 100 <= Menu.Item("slider").GetValue<Slider>().Value)
                     continue;
                 ulti.UseAbility(v);
                 Utils.Sleep(1000, "1");
