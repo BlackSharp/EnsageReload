@@ -30,9 +30,9 @@ namespace TerrorAutoUlti123
         static void Main()
         {
             Events.OnLoad += OnLoadEvent;
+			Game.OnUpdate += Tick;
             Events.OnClose += OnCloseEvent;
-            
-        }
+		}
         static void Game_OnUpdate(EventArgs args)
         {
             if (!loaded)
@@ -47,7 +47,6 @@ namespace TerrorAutoUlti123
             if (!Utils.SleepCheck("toggle") || Game.IsChatOpen || Game.IsPaused ||
                 Game.IsWatchingGame) return;
             Utils.Sleep(200, "toggle");
-            Game.OnUpdate += Tick;
         }
         public static void Tick(EventArgs args)
         {
