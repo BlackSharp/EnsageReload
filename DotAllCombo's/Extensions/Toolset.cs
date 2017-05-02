@@ -1,111 +1,106 @@
 ﻿namespace DotaAllCombo.Extensions
 {
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
+	using System;
+	using System.Linq;
+	using System.Collections.Generic;
     using Ensage;
-    using SharpDX;
-    using Ensage.Common.Extensions;
-    using Ensage.Common;
+	using SharpDX;
+	using Ensage.Common.Extensions;
+	using Ensage.Common;
 
     internal static class Toolset
-    {
-        private static Hero _me;
+	{
+		private static Hero _me;
 
         public static bool IsFullMagicResist(this Unit source)
         {
             return source.IsMagicImmune()
-                   || source.HasModifier("modifier_medusa_stone_gaze_stone")
-                   || source.HasModifier("modifier_huskar_life_break_charge")
-                   || source.HasModifier("modifier_oracle_fates_edict");
-        }
+                || source.HasModifier("modifier_medusa_stone_gaze_stone")
+                || source.HasModifier("modifier_huskar_life_break_charge")
+                || source.HasModifier("modifier_oracle_fates_edict");
 
+        }
         public static bool IsFullMagicSpellResist(this Unit source)
         {
             return source.HasModifier("modifier_medusa_stone_gaze_stone")
-                   || source.HasModifier("modifier_huskar_life_break_charge")
-                   || source.HasModifier("modifier_oracle_fates_edict")
-                   || source.HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison")
-                   || source.HasModifier("modifier_puck_phase_shift")
-                   || source.HasModifier("modifier_eul_cyclone")
-                   || source.HasModifier("modifier_invoker_tornado")
-                   || source.HasModifier("modifier_brewmaster_storm_cyclone")
-                   || source.HasModifier("modifier_shadow_demon_disruption")
-                   || source.HasModifier("modifier_tusk_snowball_movement")
-                   || source.HasModifier("modifier_abaddon_borrowed_time")
-                   || source.HasModifier("modifier_faceless_void_time_walk")
-                   || source.HasModifier("modifier_huskar_life_break_charge");
+                || source.HasModifier("modifier_huskar_life_break_charge")
+                || source.HasModifier("modifier_oracle_fates_edict")
+                || source.HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison")
+                    || source.HasModifier("modifier_puck_phase_shift")
+                    || source.HasModifier("modifier_eul_cyclone")
+                    || source.HasModifier("modifier_invoker_tornado")
+                    || source.HasModifier("modifier_brewmaster_storm_cyclone")
+                    || source.HasModifier("modifier_shadow_demon_disruption")
+                    || source.HasModifier("modifier_tusk_snowball_movement")
+                    || source.HasModifier("modifier_abaddon_borrowed_time")
+                    || source.HasModifier("modifier_faceless_void_time_walk")
+                    || source.HasModifier("modifier_huskar_life_break_charge");
         }
-
         public static float RadiansToFace(Unit startUnit, dynamic v)
-        {
-            if (!(v is Unit || v is Vector3)) throw new ArgumentException("RadiansToFace -> INVALID PARAMETERS!", "v");
-            if (v is Unit) v = v.Position;
+		{
+			if (!(v is Unit || v is Vector3)) throw new ArgumentException("RadiansToFace -> INVALID PARAMETERS!", "v");
+			if (v is Unit) v = v.Position;
 
-            float deltaY = startUnit.Position.Y - v.Y;
-            float deltaX = startUnit.Position.X - v.X;
-            var angle = (float) Math.Atan2(deltaY, deltaX);
+			float deltaY = startUnit.Position.Y - v.Y;
+			float deltaX = startUnit.Position.X - v.X;
+			float angle = (float) (Math.Atan2(deltaY, deltaX));
 
-            return
-                (float)
-                (Math.PI - Math.Abs(Math.Atan2(Math.Sin(startUnit.RotationRad - angle),
-                     Math.Cos(startUnit.RotationRad - angle))));
-        }
+			return
+				(float)
+					(Math.PI - Math.Abs(Math.Atan2(Math.Sin(startUnit.RotationRad - angle), Math.Cos(startUnit.RotationRad - angle))));
+		}
 
-        public static float AttackRange;
-        public static Hero FirstOrDefault { get; private set; }
+		public static float AttackRange;
+	    public static Hero FirstOrDefault { get; private set; }
 
-        public static void Range()
-        {
-            var item =
-                _me.Inventory.Items.FirstOrDefault(
-                    x => x != null && x.IsValid && (x.Name.Contains("item_dragon_lance") ||
-                                                    x.Name.Contains("item_hurricane_pike")));
+	    public static void Range()
+		{
+			Item item =
+				_me.Inventory.Items.FirstOrDefault(
+					x => x != null && x.IsValid && (x.Name.Contains("item_dragon_lance") || x.Name.Contains("item_hurricane_pike")));
 
 
-            if (_me.ClassId == ClassId.CDOTA_Unit_Hero_TrollWarlord &&
-                _me.HasModifier("modifier_troll_warlord_berserkers_rage"))
-                AttackRange = 150 + _me.HullRadius + 24;
-            else if (_me.ClassId == ClassId.CDOTA_Unit_Hero_TrollWarlord &&
-                     !_me.HasModifier("modifier_troll_warlord_berserkers_rage"))
-                AttackRange = _me.GetAttackRange() + _me.HullRadius + 24;
-            else if (_me.ClassId == ClassId.CDOTA_Unit_Hero_TemplarAssassin)
-                AttackRange = _me.GetAttackRange() + _me.HullRadius;
-            else if (_me.ClassId == ClassId.CDOTA_Unit_Hero_DragonKnight &&
-                     _me.HasModifier("modifier_dragon_knight_dragon_form"))
-                AttackRange = _me.GetAttackRange() + _me.HullRadius + 24;
-            else if (item == null && _me.IsRanged)
-                AttackRange = _me.GetAttackRange() + _me.HullRadius + 24;
-            else if (item != null && _me.IsRanged)
-                AttackRange = _me.GetAttackRange() + _me.HullRadius + 24;
-            else
-                AttackRange = _me.GetAttackRange() + _me.HullRadius;
-        }
 
-        public static bool CheckFace(Ability z, Hero v)
-        {
-            FirstOrDefault = ObjectManager.GetEntities<Hero>()
-                .Where(x => x.Distance2D(v) < z.GetCastRange())
-                .OrderBy(x => RadiansToFace(x, v))
-                .FirstOrDefault();
-            return true;
-        }
+			if (_me.ClassId == ClassId.CDOTA_Unit_Hero_TrollWarlord && _me.HasModifier("modifier_troll_warlord_berserkers_rage"))
+				AttackRange = 150 + _me.HullRadius + 24;
+			else if (_me.ClassId == ClassId.CDOTA_Unit_Hero_TrollWarlord && !_me.HasModifier("modifier_troll_warlord_berserkers_rage"))
+				AttackRange = _me.GetAttackRange() + _me.HullRadius + 24;
+			else if (_me.ClassId == ClassId.CDOTA_Unit_Hero_TemplarAssassin)
+				AttackRange = _me.GetAttackRange() + _me.HullRadius;
+			else if (_me.ClassId == ClassId.CDOTA_Unit_Hero_DragonKnight && _me.HasModifier("modifier_dragon_knight_dragon_form"))
+				AttackRange = _me.GetAttackRange() + _me.HullRadius + 24;
+			else if (item == null && _me.IsRanged)
+				AttackRange = _me.GetAttackRange() + _me.HullRadius + 24;
+			else if (item != null && _me.IsRanged)
+				AttackRange = _me.GetAttackRange() + _me.HullRadius + 24;
+			else
+				AttackRange = _me.GetAttackRange() + _me.HullRadius;
+		}
 
-        public static void InitToolset(Hero myHero)
-        {
-            _me = myHero;
-        }
+		public static bool CheckFace(Ability z, Hero v)
+		{
+		    FirstOrDefault = ObjectManager.GetEntities<Hero>()
+		        .Where(x => x.Distance2D(v) < z.GetCastRange())
+		        .OrderBy(x => RadiansToFace(x, v))
+		        .FirstOrDefault();
+		    return true;
 
-        public static Unit GetClosestToUnit(List<Unit> units, Unit e)
-        {
-            Unit closestHero = null;
-            foreach (var v in units.Where(v => closestHero == null || closestHero.Distance2D(e) > v.Distance2D(e)))
-            {
-                closestHero = v;
-            }
-            return closestHero;
-        }
+		}
 
+		public static void InitToolset(Hero myHero)
+		{
+			_me = myHero;
+		}
+
+		public static Unit GetClosestToUnit(List<Unit> units, Unit e)
+		{
+			Unit closestHero = null;
+			foreach (var v in units.Where(v => closestHero == null || closestHero.Distance2D(e) > v.Distance2D(e)))
+			{
+				closestHero = v;
+			}
+			return closestHero;
+		}
         public static Hero ClosestToMouse(Hero source, float range = 2500)
         {
             var mousePosition = Game.MousePosition;
@@ -115,196 +110,188 @@
                         x =>
                             x.Team != source.Team && !x.IsIllusion && x.IsAlive && x.IsVisible
                             && x.Distance2D(mousePosition) <= range);
-            Hero[] closestHero = {null};
+            Hero[] closestHero = { null };
             foreach (
                 var enemyHero in
-                enemyHeroes.Where(
-                    enemyHero =>
-                        closestHero[0] == null ||
-                        closestHero[0].Distance2D(mousePosition) > enemyHero.Distance2D(mousePosition)))
+                    enemyHeroes.Where(
+                        enemyHero =>
+                            closestHero[0] == null ||
+                            closestHero[0].Distance2D(mousePosition) > enemyHero.Distance2D(mousePosition)))
             {
                 closestHero[0] = enemyHero;
             }
             return closestHero[0];
         }
-
         public static Hero GetClosestToTarget(this List<Hero> units, Vector3 position)
-        {
-            Hero closestHero = null;
-            foreach (var v in units.Where(v => closestHero == null ||
-                                               closestHero.Distance2D(position) > v.Distance2D(position)))
-            {
-                closestHero = v;
-            }
-            return closestHero;
-        }
+		{
+			Hero closestHero = null;
+			foreach (var v in units.Where(v => closestHero == null || closestHero.Distance2D(position) > v.Distance2D(position)))
+			{
+				closestHero = v;
+			}
+			return closestHero;
+		}
 
-        public static void UnAggro(List<Unit> z, Unit v)
-        {
-            if (v == null) return;
-            var projectiles =
-                ObjectManager.TrackingProjectiles.Where(x => x.Target.Handle == v.Handle).ToList();
-            if (projectiles.Count <= 0) return;
-            for (var i = 0; i < projectiles.Count; ++i)
-            {
-                var closestCreepUnAgr = GetClosestToUnit(z, v);
+		public static void UnAggro(List<Unit> z, Unit v)
+		{
+			if (v == null) return;
+			List<TrackingProjectile> projectiles =
+				ObjectManager.TrackingProjectiles.Where(x => x.Target.Handle == v.Handle).ToList();
+			if (projectiles.Count <= 0) return;
+			for (int i = 0; i < projectiles.Count; ++i)
+			{
+				var closestCreepUnAgr = GetClosestToUnit(z, v);
 
-                if (projectiles[i].Source.ClassId == ClassId.CDOTA_BaseNPC_Tower
-                    || projectiles[i].Source.ClassId == ClassId.CDOTA_Unit_Fountain)
-                {
-                    if (closestCreepUnAgr == null) return;
-                    if (closestCreepUnAgr.Distance2D(v) <= 500 & Utils.SleepCheck("UnAgr"))
-                    {
-                        v.Attack(closestCreepUnAgr);
-                        Utils.Sleep(500, "UnAgr");
-                    }
-                }
-            }
-        }
-        /*
-        public static TrackingProjectile IfITarget(Unit v, List<TrackingProjectile> proj)
-        {
+				if (projectiles[i].Source.ClassId == ClassId.CDOTA_BaseNPC_Tower
+				    || projectiles[i].Source.ClassId == ClassId.CDOTA_Unit_Fountain)
+				{
+					if (closestCreepUnAgr == null) return;
+					if (closestCreepUnAgr.Distance2D(v) <= 500 & Utils.SleepCheck("UnAgr"))
+					{
+						v.Attack(closestCreepUnAgr);
+						Utils.Sleep(500, "UnAgr");
+					}
+				}
+			}
+		}
+		/*
+		public static TrackingProjectile IfITarget(Unit v, List<TrackingProjectile> proj)
+		{
 
-            foreach (var projs in proj)
-            {
+			foreach (var projs in proj)
+			{
 
-                if (projs.Target.Handle == v.Handle) return projs;
-            }
-            return null;
-        }
-        */
+				if (projs.Target.Handle == v.Handle) return projs;
+			}
+			return null;
+		}
+		*/
 
-        public static void UnAggro(Unit v)
-        {
-            if (v == null) return;
-            var creepsA = ObjectManager.GetEntities<Unit>()
-                .Where(creep =>
-                    (creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Lane
-                     || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Neutral
-                     || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep) &&
-                    creep.IsAlive && creep.Team == _me.Team && creep.IsVisible && creep.IsSpawned)
-                .ToList();
+		public static void UnAggro(Unit v)
+		{
+			if (v == null) return;
+			var creepsA = ObjectManager.GetEntities<Unit>().Where(creep =>
+				(creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Lane
+				 || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Neutral
+				 || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep) &&
+				creep.IsAlive && creep.Team == _me.Team && creep.IsVisible && creep.IsSpawned).ToList();
 
-            if (creepsA.Count(x => x.Distance2D(v) <= 500) == 0)
-            {
-                if (v.ClassId == ClassId.CDOTA_Unit_SpiritBear)
-                {
-                    creepsA = ObjectManager.GetEntities<Unit>()
-                        .Where(creep => creep.HasInventory && creep.Handle != v.Handle
-                                        && creep.IsAlive && creep.Team == _me.Team
-                                        && creep.ClassId != ClassId.CDOTA_Unit_Hero_LoneDruid
-                                        && creep.IsVisible &&
-                                        creep.Health >= creep.MaximumHealth * 0.5)
-                        .ToList();
-                }
-                else
-                {
-                    creepsA = ObjectManager.GetEntities<Unit>()
-                        .Where(creep => creep.HasInventory && creep.Handle != v.Handle
-                                        && creep.IsAlive && creep.Team == _me.Team &&
-                                        creep.IsVisible &&
-                                        creep.Health >= creep.MaximumHealth * 0.5)
-                        .ToList();
-                }
-            }
-            if (creepsA.Count == 0) return;
-            UnAggro(creepsA, v);
-        }
+			if (creepsA.Count(x => x.Distance2D(v) <= 500) == 0)
+			{
+				if (v.ClassId == ClassId.CDOTA_Unit_SpiritBear)
+				{
+					creepsA = ObjectManager.GetEntities<Unit>().Where(creep => (
+						creep.HasInventory && creep.Handle != v.Handle)
+					                    && creep.IsAlive && creep.Team == _me.Team
+					                    && creep.ClassId != ClassId.CDOTA_Unit_Hero_LoneDruid
+					                    && creep.IsVisible &&
+					                    creep.Health >= (creep.MaximumHealth*0.5)).ToList();
+				}
+				else
+				{
+					creepsA = ObjectManager.GetEntities<Unit>().Where(creep => (
+						creep.HasInventory && creep.Handle != v.Handle)
+										&& creep.IsAlive && creep.Team == _me.Team &&
+										creep.IsVisible &&
+										creep.Health >= (creep.MaximumHealth*0.5)).ToList();
+				}
+			}
+			if (creepsA.Count == 0) return;
+			UnAggro(creepsA, v);
+		}
 
-        public static bool HasStun(Hero x)
-        {
-            if (x.FindSpell("dragon_knight_dragon_tail") != null &&
-                x.FindSpell("dragon_knight_dragon_tail").Cooldown <= 0 &&
-                _me.Distance2D(x) <= x.FindSpell("dragon_knight_dragon_tail").GetCastRange()
-                ||
-                x.FindSpell("earthshaker_echo_slam") != null && x.FindSpell("earthshaker_echo_slam").Cooldown <= 0 &&
-                _me.Distance2D(x) <= x.FindSpell("earthshaker_echo_slam").GetCastRange()
-                ||
-                x.FindSpell("legion_commander_duel") != null && x.FindSpell("legion_commander_duel").Cooldown <= 0 &&
-                _me.Distance2D(x) <= x.FindSpell("legion_commander_duel").GetCastRange()
-                ||
-                x.FindSpell("leshrac_split_earth") != null && x.FindSpell("leshrac_split_earth").Cooldown <= 0 &&
-                _me.Distance2D(x) <= x.FindSpell("leshrac_split_earth").GetCastRange()
-                ||
-                x.FindSpell("leoric_hellfire_blast") != null && x.FindSpell("leoric_hellfire_blast").Cooldown <= 0 &&
-                _me.Distance2D(x) <= x.FindSpell("leoric_hellfire_blast").GetCastRange()
-                ||
-                x.FindSpell("lina_light_strike_array") != null &&
-                x.FindSpell("lina_light_strike_array").Cooldown <= 0 &&
-                _me.Distance2D(x) <= x.FindSpell("lina_light_strike_array").GetCastRange()
-                ||
-                x.FindSpell("lion_impale") != null && x.FindSpell("lion_impale").Cooldown <= 0 &&
-                _me.Distance2D(x) <= x.FindSpell("lion_impale").GetCastRange()
-                ||
-                x.FindSpell("magnataur_reverse_polarity") != null &&
-                x.FindSpell("magnataur_reverse_polarity").Cooldown <= 0 &&
-                _me.Distance2D(x) <= x.FindSpell("magnataur_reverse_polarity").GetCastRange()
-                ||
-                x.FindSpell("nyx_assassin_impale") != null && x.FindSpell("nyx_assassin_impale").Cooldown <= 0 &&
-                _me.Distance2D(x) <= x.FindSpell("nyx_assassin_impale").GetCastRange()
-                ||
-                x.FindSpell("ogre_magi_fireblast") != null && x.FindSpell("ogre_magi_fireblast").Cooldown <= 0 &&
-                _me.Distance2D(x) <= x.FindSpell("ogre_magi_fireblast").GetCastRange()
-                ||
-                x.FindSpell("skeleton_king_hellfire_blast") != null &&
-                x.FindSpell("skeleton_king_hellfire_blast").Cooldown <= 0 &&
-                _me.Distance2D(x) <= x.FindSpell("skeleton_king_hellfire_blast").GetCastRange()
-                ||
-                x.FindSpell("sven_storm_bolt") != null && x.FindSpell("sven_storm_bolt").Cooldown <= 0 &&
-                _me.Distance2D(x) <= x.FindSpell("sven_storm_bolt").GetCastRange()
-                ||
-                x.FindSpell("tiny_avalanche") != null && x.FindSpell("tiny_avalanche").Cooldown <= 0 &&
-                _me.Distance2D(x) <= x.FindSpell("tiny_avalanche").GetCastRange()
-                ||
-                x.FindSpell("tusk_walrus_punch") != null && x.FindSpell("tusk_walrus_punch").Cooldown <= 0 &&
-                _me.Distance2D(x) <= x.FindSpell("tusk_walrus_punch").GetCastRange()
-                ||
-                x.FindSpell("vengefulspirit_magic_missile") != null &&
-                x.FindSpell("vengefulspirit_magic_missile").Cooldown <= 0 &&
-                _me.Distance2D(x) <= x.FindSpell("vengefulspirit_magic_missile").GetCastRange()
-                ||
-                x.FindSpell("windrunner_shackleshot") != null && x.FindSpell("windrunner_shackleshot").Cooldown <= 0 &&
-                _me.Distance2D(x) <= x.FindSpell("windrunner_shackleshot").GetCastRange()
-            )
-                return true;
-            return false;
-        }
+		public static bool HasStun(Hero x)
+		{
+			if (x.FindSpell("dragon_knight_dragon_tail") != null &&
+			    x.FindSpell("dragon_knight_dragon_tail").Cooldown <= 0 &&
+			    _me.Distance2D(x) <= x.FindSpell("dragon_knight_dragon_tail").GetCastRange()
+			    ||
+			    x.FindSpell("earthshaker_echo_slam") != null && x.FindSpell("earthshaker_echo_slam").Cooldown <= 0 &&
+			    _me.Distance2D(x) <= x.FindSpell("earthshaker_echo_slam").GetCastRange()
+			    ||
+			    x.FindSpell("legion_commander_duel") != null && x.FindSpell("legion_commander_duel").Cooldown <= 0 &&
+			    _me.Distance2D(x) <= x.FindSpell("legion_commander_duel").GetCastRange()
+			    ||
+			    x.FindSpell("leshrac_split_earth") != null && x.FindSpell("leshrac_split_earth").Cooldown <= 0 &&
+			    _me.Distance2D(x) <= x.FindSpell("leshrac_split_earth").GetCastRange()
+			    ||
+			    x.FindSpell("leoric_hellfire_blast") != null && x.FindSpell("leoric_hellfire_blast").Cooldown <= 0 &&
+			    _me.Distance2D(x) <= x.FindSpell("leoric_hellfire_blast").GetCastRange()
+			    ||
+			    x.FindSpell("lina_light_strike_array") != null && x.FindSpell("lina_light_strike_array").Cooldown <= 0 &&
+			    _me.Distance2D(x) <= x.FindSpell("lina_light_strike_array").GetCastRange()
+			    ||
+			    x.FindSpell("lion_impale") != null && x.FindSpell("lion_impale").Cooldown <= 0 &&
+			    _me.Distance2D(x) <= x.FindSpell("lion_impale").GetCastRange()
+			    ||
+			    x.FindSpell("magnataur_reverse_polarity") != null &&
+			    x.FindSpell("magnataur_reverse_polarity").Cooldown <= 0 &&
+			    _me.Distance2D(x) <= x.FindSpell("magnataur_reverse_polarity").GetCastRange()
+			    ||
+			    x.FindSpell("nyx_assassin_impale") != null && x.FindSpell("nyx_assassin_impale").Cooldown <= 0 &&
+			    _me.Distance2D(x) <= x.FindSpell("nyx_assassin_impale").GetCastRange()
+			    ||
+			    x.FindSpell("ogre_magi_fireblast") != null && x.FindSpell("ogre_magi_fireblast").Cooldown <= 0 &&
+			    _me.Distance2D(x) <= x.FindSpell("ogre_magi_fireblast").GetCastRange()
+			    ||
+			    x.FindSpell("skeleton_king_hellfire_blast") != null &&
+			    x.FindSpell("skeleton_king_hellfire_blast").Cooldown <= 0 &&
+			    _me.Distance2D(x) <= x.FindSpell("skeleton_king_hellfire_blast").GetCastRange()
+			    ||
+			    x.FindSpell("sven_storm_bolt") != null && x.FindSpell("sven_storm_bolt").Cooldown <= 0 &&
+			    _me.Distance2D(x) <= x.FindSpell("sven_storm_bolt").GetCastRange()
+			    ||
+			    x.FindSpell("tiny_avalanche") != null && x.FindSpell("tiny_avalanche").Cooldown <= 0 &&
+			    _me.Distance2D(x) <= x.FindSpell("tiny_avalanche").GetCastRange()
+			    ||
+			    x.FindSpell("tusk_walrus_punch") != null && x.FindSpell("tusk_walrus_punch").Cooldown <= 0 &&
+			    _me.Distance2D(x) <= x.FindSpell("tusk_walrus_punch").GetCastRange()
+			    ||
+			    x.FindSpell("vengefulspirit_magic_missile") != null &&
+			    x.FindSpell("vengefulspirit_magic_missile").Cooldown <= 0 &&
+			    _me.Distance2D(x) <= x.FindSpell("vengefulspirit_magic_missile").GetCastRange()
+			    ||
+			    x.FindSpell("windrunner_shackleshot") != null && x.FindSpell("windrunner_shackleshot").Cooldown <= 0 &&
+			    _me.Distance2D(x) <= x.FindSpell("windrunner_shackleshot").GetCastRange()
+				)
+				return true;
+			return false;
+		}
 
-        public static bool InvUnit(Hero z)
-        {
-            return z.Modifiers.Any(
-                x =>
-                    x.Name == "modifier_bounty_hunter_wind_walk" ||
-                    x.Name == "modifier_riki_permanent_invisibility" ||
-                    x.Name == "modifier_mirana_moonlight_shadow" || x.Name == "modifier_treant_natures_guise" ||
-                    x.Name == "modifier_weaver_shukuchi" ||
-                    x.Name == "modifier_broodmother_spin_web_invisible_applier" ||
-                    x.Name == "modifier_item_invisibility_edge_windwalk" || x.Name == "modifier_rune_invis" ||
-                    x.Name == "modifier_clinkz_wind_walk" || x.Name == "modifier_item_shadow_amulet_fade" ||
-                    x.Name == "modifier_item_silver_edge_windwalk" ||
-                    x.Name == "modifier_item_edge_windwalk" ||
-                    x.Name == "modifier_nyx_assassin_vendetta" ||
-                    x.Name == "modifier_invisible" ||
-                    x.Name == "modifier_invoker_ghost_walk_enemy");
-        }
-
-        // ReSharper disable once InconsistentNaming
-        public static bool invUnit(Hero me)
-        {
-            return me.Modifiers.Any(
-                x =>
-                    x.Name == "modifier_bounty_hunter_wind_walk" ||
-                    x.Name == "modifier_riki_permanent_invisibility" ||
-                    x.Name == "modifier_mirana_moonlight_shadow" || x.Name == "modifier_treant_natures_guise" ||
-                    x.Name == "modifier_weaver_shukuchi" ||
-                    x.Name == "modifier_broodmother_spin_web_invisible_applier" ||
-                    x.Name == "modifier_item_invisibility_edge_windwalk" || x.Name == "modifier_rune_invis" ||
-                    x.Name == "modifier_clinkz_wind_walk" || x.Name == "modifier_item_shadow_amulet_fade" ||
-                    x.Name == "modifier_item_silver_edge_windwalk" ||
-                    x.Name == "modifier_item_edge_windwalk" ||
-                    x.Name == "modifier_nyx_assassin_vendetta" ||
-                    x.Name == "modifier_invisible" ||
-                    x.Name == "modifier_invoker_ghost_walk_enemy");
+		public static bool InvUnit(Hero z)
+		{
+		    return z.Modifiers.Any(
+		        x =>
+		            (x.Name == "modifier_bounty_hunter_wind_walk" ||
+		             x.Name == "modifier_riki_permanent_invisibility" ||
+		             x.Name == "modifier_mirana_moonlight_shadow" || x.Name == "modifier_treant_natures_guise" ||
+		             x.Name == "modifier_weaver_shukuchi" ||
+		             x.Name == "modifier_broodmother_spin_web_invisible_applier" ||
+		             x.Name == "modifier_item_invisibility_edge_windwalk" || x.Name == "modifier_rune_invis" ||
+		             x.Name == "modifier_clinkz_wind_walk" || x.Name == "modifier_item_shadow_amulet_fade" ||
+		             x.Name == "modifier_item_silver_edge_windwalk" ||
+		             x.Name == "modifier_item_edge_windwalk" ||
+		             x.Name == "modifier_nyx_assassin_vendetta" ||
+		             x.Name == "modifier_invisible" ||
+		             x.Name == "modifier_invoker_ghost_walk_enemy"));
+		}
+	    // ReSharper disable once InconsistentNaming
+	    public static bool invUnit(Hero me)
+	    {
+	        return me.Modifiers.Any(
+	            x =>
+	                (x.Name == "modifier_bounty_hunter_wind_walk" ||
+	                 x.Name == "modifier_riki_permanent_invisibility" ||
+	                 x.Name == "modifier_mirana_moonlight_shadow" || x.Name == "modifier_treant_natures_guise" ||
+	                 x.Name == "modifier_weaver_shukuchi" ||
+	                 x.Name == "modifier_broodmother_spin_web_invisible_applier" ||
+	                 x.Name == "modifier_item_invisibility_edge_windwalk" || x.Name == "modifier_rune_invis" ||
+	                 x.Name == "modifier_clinkz_wind_walk" || x.Name == "modifier_item_shadow_amulet_fade" ||
+	                 x.Name == "modifier_item_silver_edge_windwalk" ||
+	                 x.Name == "modifier_item_edge_windwalk" ||
+	                 x.Name == "modifier_nyx_assassin_vendetta" ||
+	                 x.Name == "modifier_invisible" ||
+	                 x.Name == "modifier_invoker_ghost_walk_enemy"));
         }
 
 
@@ -889,5 +876,8 @@
                      Utils.Sleep(390, "Move");
                  } // endif
              }*/
+
+
     }
 }
+

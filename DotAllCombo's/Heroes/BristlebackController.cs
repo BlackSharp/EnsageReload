@@ -2,12 +2,14 @@
 
 namespace DotaAllCombo.Heroes
 {
+
     using Service.Debug;
 
     internal class BristlebackController : Variables, IHeroController
     {
         public void Combo()
         {
+           
         } // Combo
 
         public void OnLoadEvent()
@@ -16,7 +18,7 @@ namespace DotaAllCombo.Heroes
 
             Print.LogMessage.Error("This hero not Supported!");
         }
-
+       
         public void OnCloseEvent()
         {
         }

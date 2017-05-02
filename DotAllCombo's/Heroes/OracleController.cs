@@ -2,22 +2,23 @@
 
 namespace DotaAllCombo.Heroes
 {
-    using Service.Debug;
+	using Service.Debug;
+	class OracleController : Variables, IHeroController
+	{
+		public void Combo()
+		{
 
-    class OracleController : Variables, IHeroController
-    {
-        public void Combo()
-        {
-        } // Combo
+		} // Combo
 
-        public void OnLoadEvent()
-        {
-            AssemblyExtensions.InitAssembly("TODO", "0");
-            Print.LogMessage.Error("This hero not Supported!");
+		public void OnLoadEvent()
+		{
+		AssemblyExtensions.InitAssembly("TODO", "0");
+		Print.LogMessage.Error("This hero not Supported!");
+		}
+
+		public void OnCloseEvent()
+		{
         }
-
-        public void OnCloseEvent()
-        {
-        }
-    }
+	}
 }
+ 

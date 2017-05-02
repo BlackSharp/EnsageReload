@@ -6,8 +6,7 @@ namespace DotaAllCombo.Addons
     {
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
         void Load();
-
-        void Unload();
-        void RunScript();
-    }
+		void Unload();
+		void RunScript();
+	}
 }
