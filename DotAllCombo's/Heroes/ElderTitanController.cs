@@ -3,14 +3,12 @@
 
 namespace DotaAllCombo.Heroes
 {
-
     using Service.Debug;
 
     internal class ElderTitanController : Variables, IHeroController
     {
         public void Combo()
         {
-           
         } // Combo
 
         public void OnLoadEvent()
@@ -18,7 +16,7 @@ namespace DotaAllCombo.Heroes
             AssemblyExtensions.InitAssembly("TODO", "0");
             Print.LogMessage.Error("This hero not Supported!");
         }
-       
+
         public void OnCloseEvent()
         {
         }

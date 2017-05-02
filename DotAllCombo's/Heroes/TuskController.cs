@@ -14,10 +14,22 @@ namespace DotaAllCombo.Heroes
 
     internal class TuskController : Variables, IHeroController
     {
-        
         private Ability _q, _w, _e, _r;
 
-        private Item _blink, _mjollnir, _medall, _urn, _mail, _bkb, _abyssal, _satanic, _halberd, _dagon, _shiva, _soul, _arcane, _mom;
+        private Item _blink,
+            _mjollnir,
+            _medall,
+            _urn,
+            _mail,
+            _bkb,
+            _abyssal,
+            _satanic,
+            _halberd,
+            _dagon,
+            _shiva,
+            _soul,
+            _arcane,
+            _mom;
 
         //private int[] qDmg = new int[4] {40, 80, 120, 160};
 
@@ -33,9 +45,9 @@ namespace DotaAllCombo.Heroes
             {
                 _q = Me.Spellbook.SpellQ;
 
-				_w = Me.Spellbook.SpellW ?? Me.FindSpell("tusk_launch_snowball");
+                _w = Me.Spellbook.SpellW ?? Me.FindSpell("tusk_launch_snowball");
 
-				_e = Me.Spellbook.SpellE;
+                _e = Me.Spellbook.SpellE;
 
                 _r = Me.Spellbook.SpellR;
 
@@ -78,19 +90,18 @@ namespace DotaAllCombo.Heroes
                     E.HasModifier("modifier_item_medallion_of_courage_armor_reduction") ||
                     E.HasModifier("modifier_item_solar_crest_armor_reduction");
 
-				
 
                 if (!Me.IsInvisible())
                 {
                     if ( // Q Skill
-                    _q != null
-                    && _q.CanBeCasted()
-                    && Me.CanCast()
-                    && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_q.Name)
-                    && modifW
-                    && !E.IsMagicImmune()
-                    && Me.Distance2D(E) <= 300
-                    && Utils.SleepCheck("Q")
+                        _q != null
+                        && _q.CanBeCasted()
+                        && Me.CanCast()
+                        && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_q.Name)
+                        && modifW
+                        && !E.IsMagicImmune()
+                        && Me.Distance2D(E) <= 300
+                        && Utils.SleepCheck("Q")
                     )
                     {
                         _q.UseAbility(E.Predict(400));
@@ -100,15 +111,15 @@ namespace DotaAllCombo.Heroes
                     if ( //R Skill
                         _r != null
                         && (medallModiff
-                        || E.IsMagicImmune()
-                        || _medall == null)
+                            || E.IsMagicImmune()
+                            || _medall == null)
                         && _r.CanBeCasted()
                         && Me.CanCast()
                         && !linkens
                         && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_r.Name)
                         && Me.Distance2D(E) <= 700
                         && Utils.SleepCheck("R")
-                        )
+                    )
                     {
                         _r.UseAbility(E);
                         Utils.Sleep(150, "R");
@@ -121,18 +132,19 @@ namespace DotaAllCombo.Heroes
                         _urn.UseAbility(E);
                         Utils.Sleep(240, "urn");
                     }
-                    float angle = Me.FindAngleBetween(E.Position, true);
-                    Vector3 pos = new Vector3((float)(E.Position.X + 30 * Math.Cos(angle)), (float)(E.Position.Y + 30 * Math.Sin(angle)), 0);
+                    var angle = Me.FindAngleBetween(E.Position, true);
+                    var pos = new Vector3((float) (E.Position.X + 30 * Math.Cos(angle)),
+                        (float) (E.Position.Y + 30 * Math.Sin(angle)), 0);
                     if (
                         _blink != null
                         && _q.CanBeCasted()
                         && Me.CanCast()
                         && _blink.CanBeCasted()
-                        && Me.Distance2D(pos) >= Me.GetAttackRange()+Me.HullRadius+24
+                        && Me.Distance2D(pos) >= Me.GetAttackRange() + Me.HullRadius + 24
                         && Me.Distance2D(pos) <= 1190
                         && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_blink.Name)
                         && Utils.SleepCheck("blink")
-                        )
+                    )
                     {
                         _blink.UseAbility(pos);
                         Utils.Sleep(250, "blink");
@@ -146,7 +158,7 @@ namespace DotaAllCombo.Heroes
                         && Utils.SleepCheck("abyssal")
                         && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_abyssal.Name)
                         && Me.Distance2D(E) <= 400
-                        )
+                    )
                     {
                         _abyssal.UseAbility(E);
                         Utils.Sleep(250, "abyssal");
@@ -160,7 +172,7 @@ namespace DotaAllCombo.Heroes
                         && !E.IsMagicImmune()
                         && Me.Distance2D(E) <= 500
                         && Utils.SleepCheck("E")
-                        )
+                    )
                     {
                         _e.UseAbility();
                         Utils.Sleep(350, "E");
@@ -170,7 +182,7 @@ namespace DotaAllCombo.Heroes
                         && Me.Mana <= _q.ManaCost
                         && _soul.CanBeCasted()
                         && Utils.SleepCheck("soul")
-                        )
+                    )
                     {
                         _soul.UseAbility();
                         Utils.Sleep(250, "soul");
@@ -181,7 +193,7 @@ namespace DotaAllCombo.Heroes
                         && Me.Mana <= _q.ManaCost
                         && _arcane.CanBeCasted()
                         && Utils.SleepCheck("arcane")
-                        )
+                    )
                     {
                         _arcane.UseAbility();
                         Utils.Sleep(250, "arcane");
@@ -195,7 +207,7 @@ namespace DotaAllCombo.Heroes
                         Utils.SleepCheck("shiva") &&
                         Me.Distance2D(E) <= 600
                         && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_shiva.Name)
-                        )
+                    )
                     {
                         _shiva.UseAbility();
                         Utils.Sleep(250, "shiva");
@@ -208,7 +220,7 @@ namespace DotaAllCombo.Heroes
                         && Me.CanCast()
                         && Utils.SleepCheck("mom")
                         && Me.Distance2D(E) <= 700
-                        )
+                    )
                     {
                         _mom.UseAbility();
                         Utils.Sleep(250, "mom");
@@ -221,7 +233,7 @@ namespace DotaAllCombo.Heroes
                         && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_medall.Name)
                         && Utils.SleepCheck("Medall")
                         && Me.Distance2D(E) <= 500
-                        )
+                    )
                     {
                         _medall.UseAbility(E);
                         Utils.Sleep(250, "Medall");
@@ -236,7 +248,7 @@ namespace DotaAllCombo.Heroes
                         && Utils.SleepCheck("halberd")
                         && Me.Distance2D(E) <= 700
                         && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_halberd.Name)
-                        )
+                    )
                     {
                         _halberd.UseAbility(E);
                         Utils.Sleep(250, "halberd");
@@ -250,7 +262,7 @@ namespace DotaAllCombo.Heroes
                         && Utils.SleepCheck("mjollnir")
                         && Me.Distance2D(E) <= 900
                         && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_mjollnir.Name)
-                        )
+                    )
                     {
                         _mjollnir.UseAbility(Me);
                         Utils.Sleep(250, "mjollnir");
@@ -262,7 +274,7 @@ namespace DotaAllCombo.Heroes
                         && Me.CanCast()
                         && !E.IsMagicImmune()
                         && Utils.SleepCheck("dagon")
-                        )
+                    )
                     {
                         _dagon.UseAbility(E);
                         Utils.Sleep(150, "dagon");
@@ -271,26 +283,26 @@ namespace DotaAllCombo.Heroes
 
                     if ( // Satanic 
                         _satanic != null
-                        && Me.Health <= (Me.MaximumHealth * 0.3)
+                        && Me.Health <= Me.MaximumHealth * 0.3
                         && _satanic.CanBeCasted()
                         && Me.Distance2D(E) <= 300
                         && Utils.SleepCheck("satanic")
                         && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_satanic.Name)
-                        )
+                    )
                     {
                         _satanic.UseAbility();
                         Utils.Sleep(150, "satanic");
                     } // Satanic Item end
 
-                    if (_mail != null && _mail.CanBeCasted() && (v.Count(x => x.Distance2D(Me) <= 650) >=
-                                                               (Menu.Item("Heelm").GetValue<Slider>().Value)) &&
+                    if (_mail != null && _mail.CanBeCasted() && v.Count(x => x.Distance2D(Me) <= 650) >=
+                        Menu.Item("Heelm").GetValue<Slider>().Value &&
                         Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_mail.Name) && Utils.SleepCheck("mail"))
                     {
                         _mail.UseAbility();
                         Utils.Sleep(100, "mail");
                     }
-                    if (_bkb != null && _bkb.CanBeCasted() && (v.Count(x => x.Distance2D(Me) <= 650) >=
-                                                             (Menu.Item("Heel").GetValue<Slider>().Value)) &&
+                    if (_bkb != null && _bkb.CanBeCasted() && v.Count(x => x.Distance2D(Me) <= 650) >=
+                        Menu.Item("Heel").GetValue<Slider>().Value &&
                         Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(_bkb.Name) && Utils.SleepCheck("bkb"))
                     {
                         _bkb.UseAbility();
@@ -304,20 +316,21 @@ namespace DotaAllCombo.Heroes
                         && !E.IsMagicImmune()
                         && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(_w.Name)
                         && Utils.SleepCheck("W")
-                        )
+                    )
                     {
                         _w.UseAbility(E);
                         _w.UseAbility();
                         Utils.Sleep(120, "W");
                     }
 
-                    var sigl = ObjectManager.GetEntities<Unit>().FirstOrDefault(x => (x.ClassId == ClassId.CDOTA_BaseNPC_Tusk_Sigil)
-                                                                        && x.IsAlive && x.IsControllable);
+                    var sigl = ObjectManager.GetEntities<Unit>()
+                        .FirstOrDefault(x => x.ClassId == ClassId.CDOTA_BaseNPC_Tusk_Sigil
+                                             && x.IsAlive && x.IsControllable);
 
                     if (Menu.Item("SiglControl").IsActive() && sigl != null)
                     {
                         if (E.Position.Distance2D(sigl.Position) < 1550 &&
-                                    Utils.SleepCheck(sigl.Handle.ToString()))
+                            Utils.SleepCheck(sigl.Handle.ToString()))
                         {
                             sigl.Move(Prediction.InFront(E, 350));
                             Utils.Sleep(350, sigl.Handle.ToString());
@@ -334,27 +347,30 @@ namespace DotaAllCombo.Heroes
                 var modifW = Me.HasModifier("modifier_tusk_snowball_movement");
                 if (modifW && Menu.Item("SnowBall").IsActive())
                 {
-
-                    var teamarm = ObjectManager.GetEntities<Hero>().Where(ally =>
-                        ally.Team == Me.Team && ally.IsAlive && Me.Distance2D(ally) <= 395
-                        && ally.Health >= (ally.MaximumHealth * 0.4)
-                        && !ally.HasModifier("modifier_tusk_snowball_movement_friendly")).ToList();
+                    var teamarm = ObjectManager.GetEntities<Hero>()
+                        .Where(ally =>
+                            ally.Team == Me.Team && ally.IsAlive && Me.Distance2D(ally) <= 395
+                            && ally.Health >= ally.MaximumHealth * 0.4
+                            && !ally.HasModifier("modifier_tusk_snowball_movement_friendly"))
+                        .ToList();
 
                     var unitToSnow =
-                        ObjectManager.GetEntities<Unit>().Where(x =>
-                        ((x.ClassId == ClassId.CDOTA_BaseNPC_Invoker_Forged_Spirit
-                        || x.ClassId == ClassId.CDOTA_Unit_SpiritBear
-                        || x.ClassId == ClassId.CDOTA_BaseNPC_Warlock_Golem
-                        || x.ClassId == ClassId.CDOTA_Unit_Broodmother_Spiderling
-                        || x.ClassId == ClassId.CDOTA_BaseNPC_Creep)
-                        && !x.IsAttackImmune() && !x.IsInvul() && x.IsVisible
-                        && x.IsAlive && Me.Distance2D(x) <= 395)
-                        && x.IsAlive && x.IsControllable
-                        && !x.HasModifier("modifier_tusk_snowball_movement_friendly")
-                        && !x.HasModifier("modifier_tusk_snowball_movement")).ToList();
+                        ObjectManager.GetEntities<Unit>()
+                            .Where(x =>
+                                (x.ClassId == ClassId.CDOTA_BaseNPC_Invoker_Forged_Spirit
+                                 || x.ClassId == ClassId.CDOTA_Unit_SpiritBear
+                                 || x.ClassId == ClassId.CDOTA_BaseNPC_Warlock_Golem
+                                 || x.ClassId == ClassId.CDOTA_Unit_Broodmother_Spiderling
+                                 || x.ClassId == ClassId.CDOTA_BaseNPC_Creep)
+                                && !x.IsAttackImmune() && !x.IsInvul() && x.IsVisible
+                                && x.IsAlive && Me.Distance2D(x) <= 395
+                                && x.IsAlive && x.IsControllable
+                                && !x.HasModifier("modifier_tusk_snowball_movement_friendly")
+                                && !x.HasModifier("modifier_tusk_snowball_movement"))
+                            .ToList();
                     if (teamarm != null)
                     {
-                        foreach (Hero v in teamarm)
+                        foreach (var v in teamarm)
                         {
                             if (modifW && v.Distance2D(Me) < 395 &&
                                 !v.HasModifier("modifier_tusk_snowball_movement_friendly") && !v.IsInvul() &&
@@ -367,7 +383,7 @@ namespace DotaAllCombo.Heroes
                     }
                     if (unitToSnow != null)
                     {
-                        foreach (Unit v in unitToSnow)
+                        foreach (var v in unitToSnow)
                         {
                             if (modifW && v.Distance2D(Me) < 395 &&
                                 !v.HasModifier("modifier_tusk_snowball_movement_friendly") && !v.IsInvul() &&
@@ -388,9 +404,9 @@ namespace DotaAllCombo.Heroes
 
             Print.LogMessage.Success("Who's ready for a fight? The first hit is free! Anyone? One-Punch Man! xD");
 
-			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
-			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
-			Menu.AddItem(new MenuItem("keyBind", "Combo key").SetValue(new KeyBind('D', KeyBindType.Press)));
+            Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
+            Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
+            Menu.AddItem(new MenuItem("keyBind", "Combo key").SetValue(new KeyBind('D', KeyBindType.Press)));
             Menu.AddItem(new MenuItem("SiglControl", "SiglControl").SetValue(true));
             Menu.AddItem(new MenuItem("SnowBall", "Pick up allies in SnowBall").SetValue(true));
             Menu.AddItem(
@@ -408,7 +424,7 @@ namespace DotaAllCombo.Heroes
                     {"item_blink", true},
                     {"item_heavens_halberd", true},
                     {"item_orchid", true},
-                    { "item_bloodthorn", true},
+                    {"item_bloodthorn", true},
                     {"item_urn_of_shadows", true},
                     {"item_veil_of_discord", true},
                     {"item_abyssal_blade", true},
@@ -425,7 +441,6 @@ namespace DotaAllCombo.Heroes
 
         public void OnCloseEvent()
         {
-
         }
     }
 }
