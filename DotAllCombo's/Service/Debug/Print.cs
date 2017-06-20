@@ -1,9 +1,10 @@
 ﻿namespace DotaAllCombo.Service.Debug
 {
 	using System;
+	using System.Reflection;
 	using Ensage;
 
-    internal class Print
+	class Print
 	{
 		public class LogMessage
 		{
@@ -47,6 +48,6 @@
 			{
 				Encolored(text, ConsoleColor.Yellow, arguments);
 			}
-		} 
-	} 
+		} // LogMessage class
+	} // Print class
 }

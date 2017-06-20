@@ -1,49 +1,72 @@
-﻿using System.Security.Permissions;
-namespace DotaAllCombo.Service
+﻿namespace DotaAllCombo.Service
 {
-	using Addons;
+    using System.Security.Permissions;
+    using System.Threading;
+    using Addons;
     [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
-    internal class AddonsManager
+    class AddonsManager
     {
         public static bool IsLoaded { get; private set; }
 		//private static AutoDodge autoDodge;
-		//private static AutoStack autoStack;
-		private static CreepControl _creepControl;
-        //private static LastHit lastHit;
-        private static OthersAddons _othersAddons;
-		public static void RunAddons()
-		{
-			if (!IsLoaded) return;
-
-			_creepControl.RunScript();
-            //autoStack.RunScript();
-            //autoDodge.RunScript();
-            //lastHit.RunScript();
-            _othersAddons.RunScript();
-		}
+		private static AutoStack autoStack;
+		private static CreepControl creepControl;
+        private static LastHit lastHit;
+        private static OthersAddons othersAddons;
+		
 
 		public static void Load()
 		{
 
-            //autoDodge = new AutoDodge();
-            //lastHit = new LastHit();
-			_creepControl = new CreepControl();
-			_othersAddons = new OthersAddons();
+            autoStack = new AutoStack();
+            creepControl = new CreepControl();
+            lastHit = new LastHit();
+			othersAddons = new OthersAddons();
 
-			_creepControl.Load();
-			//autoStack.Load();
+            lastHit.Load();
+            autoStack.Load();
+            creepControl.Load();
 			//autoDodge.Load();
-			_othersAddons.Load();
+			othersAddons.Load();
 			IsLoaded = true;
 		}
-
-		public static void Unload()
+        public static void RunAddons()
         {
-           // lastHit.Unload();
-            _othersAddons.Unload();
+            if (!IsLoaded) return;
+
+            /*
+            Thread autoStackThread = new Thread(autoStack.RunScript);
+            autoStackThread.Priority = ThreadPriority.BelowNormal;
+
+            Thread lastHitThread = new Thread(lastHit.RunScript);
+            lastHitThread.Priority = ThreadPriority.AboveNormal;
+
+            Thread creepControlThread = new Thread(creepControl.RunScript);
+            creepControlThread.Priority = ThreadPriority.BelowNormal;
+
+            Thread othersAddonsThread = new Thread(othersAddons.RunScript);
+            othersAddonsThread.Priority = ThreadPriority.Lowest;
+
+
+            autoStackThread.Start();
+            lastHitThread.Start();
+            creepControlThread.Start();
+            othersAddonsThread.Start();
+            
+            */
+            autoStack.RunScript();
+            creepControl.RunScript();
+            //autoDodge.RunScript();
+            lastHit.RunScript();
+            othersAddons.RunScript();
+
+        }
+        public static void Unload()
+        {
+            lastHit.Unload();
+            othersAddons.Unload();
 			//autoDodge.Unload();
-			//autoStack.Unload();
-			_creepControl.Unload();
+			autoStack.Unload();
+			creepControl.Unload();
 			IsLoaded = false;
 		}
 	}

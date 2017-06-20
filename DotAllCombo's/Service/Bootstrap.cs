@@ -4,8 +4,8 @@
 	using Ensage;
 	using Ensage.Common;
 	using Debug;
-
-    internal class Bootstrap
+	using System.Threading;
+	class Bootstrap
 	{
 		//private const uint LEN_THREADS = 2;
 
@@ -16,12 +16,31 @@
 			Events.OnLoad += OnLoadEvent;
 			Events.OnClose += OnCloseEvent;
 		}
+	    private static void OnLoadEvent(object sender, EventArgs e)
+	    {
+	        try
+	        {
+	            AddonsManager.Load();
+	            HeroSelector.Load();
+	            HeroSelector.ControllerLoadEvent();
+	            MainMenu.Load();
+	            Game.OnUpdate += OnUpdateEvent;
 
-		private static void OnUpdateEvent(EventArgs args)
+	        }
+	        catch (Exception)
+	        {
+	            // e.GetBaseException();
+	        }
+	    } // OnLoad
+        private static void OnUpdateEvent(EventArgs args)
 		{
 			try
 			{
-				AddonsManager.RunAddons();
+			    /*Thread addonsThread = new Thread(AddonsManager.RunAddons);
+			    addonsThread.Start();
+			    Thread comboThread = new Thread(HeroSelector.Combo);
+			    comboThread.Start();*/
+                AddonsManager.RunAddons();
 
 				HeroSelector.Combo();
 			}
@@ -31,22 +50,7 @@
 			}
 		}
 
-		private static void OnLoadEvent(object sender, EventArgs e)
-		{
-			try
-			{
-				AddonsManager.Load();
-				HeroSelector.Load();
-				HeroSelector.ControllerLoadEvent();
-				MainMenu.Load();
-				Game.OnUpdate += OnUpdateEvent;
-
-			}
-			catch (Exception)
-			{
-				// e.GetBaseException();
-			}
-		} // OnLoad
+		
 
 		private static void OnCloseEvent(object sender, EventArgs e)
 		{
@@ -54,11 +58,11 @@
 			{
 				Game.OnUpdate -= OnUpdateEvent;
 				HeroSelector.ControllerCloseEvent();
-				MainMenu.Unload();
+                // Выгрузка аддонов
+                AddonsManager.Unload();
+                MainMenu.Unload();
 				HeroSelector.Unload();
 
-				// Выгрузка аддонов
-				AddonsManager.Unload();
 
 				Print.ConsoleMessage.Info("> DotAllCombo's is waiting for the next game to start.");
 			}
