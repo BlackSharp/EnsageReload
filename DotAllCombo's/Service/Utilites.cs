@@ -3,13 +3,8 @@
 namespace DotaAllCombo.Service
 {
 	using System;
-	using Ensage;
-	using Ensage.Common;
-	using Ensage.Common.Extensions;
-	using Ensage.Common.Menu;
-	using SharpDX;
 
-	class Utilites
+    class Utilites
     {
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
         public static string GetHeroName(string Name)

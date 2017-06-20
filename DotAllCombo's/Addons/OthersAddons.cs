@@ -1,5 +1,3 @@
-using DotaAllCombo.Extensions;
-
 namespace DotaAllCombo.Addons
 {
 	using System.Security.Permissions;
@@ -18,7 +16,6 @@ namespace DotaAllCombo.Addons
 #pragma warning disable CS0414 // The field 'OthersAddons._load' is assigned but its value is never used
 		private static bool _load;
 		private static Font _text;
-		public static Line Line = new Line(Drawing.Direct3DDevice9);
 
 		public void Load()
 		{
@@ -39,7 +36,7 @@ namespace DotaAllCombo.Addons
 			Drawing.OnPostReset += Drawing_OnPostReset;
 			
 			OnLoadMessage();
-			Me = ObjectManager.LocalHero;
+			me = ObjectManager.LocalHero;
 		}
 
 		public void Unload()
@@ -50,8 +47,8 @@ namespace DotaAllCombo.Addons
 			Drawing.OnDraw -= Drawing_OnDraw;
 			_load = false;
 		}
-		private float _lastRange, _attackRange;
-		private ParticleEffect _rangeDisplay, _particleEffect;
+		private float _lastRange, AttackRange;
+		private ParticleEffect rangeDisplay, particleEffect;
 		/*
 		public static readonly List<TrackingProjectile> Projectiles = ObjectManager.TrackingProjectiles.Where(x=>
 						x.Source.ClassId == ClassId.CDOTA_Unit_Hero_ArcWarden
@@ -75,28 +72,28 @@ namespace DotaAllCombo.Addons
 						|| x.Source.ClassId == ClassId.CDOTA_Unit_Hero_DragonKnight).ToList(); */
 		public void RunScript()
 		{
-			if (!MainMenu.OthersMenu.Item("others").IsActive() || !Game.IsInGame || Me == null || Game.IsPaused || Game.IsWatchingGame) return;
+			if (!MainMenu.OthersMenu.Item("others").IsActive() || !Game.IsInGame || me == null || Game.IsPaused || Game.IsWatchingGame) return;
 
 
-            E = Toolset.ClosestToMouse(Me, 10000);
+            e = Toolset.ClosestToMouse(me, 10000);
             //TODO:UNAGRRO
             if (MainMenu.OthersMenu.Item("Auto Un Aggro").GetValue<bool>())
 			{
-				Toolset.UnAggro(Me);
+				Toolset.UnAggro(me);
 			}
 			//TODO:ESCAPE
 			/*
-	        if (MainMenu.OthersMenu.Item("EscapeAttack").GetValue<bool>() && Me.Level>= Menu.Item("minLVL").GetValue<Slider>().Value)
+	        if (MainMenu.OthersMenu.Item("EscapeAttack").GetValue<bool>() && me.Level>= Menu.Item("minLVL").GetValue<Slider>().Value)
 			{
 				
-				var meed = Toolset.IfITarget(Me, Projectiles);
+				var meed = Toolset.IfITarget(me, Projectiles);
 				var v =
 					 ObjectManager.GetEntities<Hero>()
-						 .Where(x => x.Team != Me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && x.ClassId == meed.Source.ClassId)
+						 .Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && x.ClassId == meed.Source.ClassId)
 						 .ToList();
 				foreach (var victim in v)
 				{
-					if (victim.Distance2D(Me) <= 1000 && Me.IsVisibleToEnemies && (victim.Handle!=e.Handle || Me.Health <= (Me.MaximumHealth * 0.4)))
+					if (victim.Distance2D(me) <= 1000 && me.IsVisibleToEnemies && (victim.Handle!=e.Handle || me.Health <= (me.MaximumHealth * 0.4)))
 					{
 						AutoDodge.qqNyx();
 						AutoDodge.qqTemplarRefraction();
@@ -121,101 +118,100 @@ namespace DotaAllCombo.Addons
 				}
 	        }*/
 		}
-
-	    private void Drawing_OnDraw(EventArgs args)
+		void Drawing_OnDraw(EventArgs args)
 		{
 
-			if (Me == null)
+			if (me == null)
 				return;
-			if (!MainMenu.OthersMenu.Item("others").IsActive() || !Game.IsInGame || Me == null || Game.IsPaused || Game.IsWatchingGame) return;
+			if (!MainMenu.OthersMenu.Item("others").IsActive() || !Game.IsInGame || me == null || Game.IsPaused || Game.IsWatchingGame) return;
 
 			//TODO:ATTACKRANGE
 			if (MainMenu.OthersMenu.Item("ShowAttakRange").GetValue<bool>())
 			{
-                Item item = Me.Inventory.Items.FirstOrDefault(x => x != null && x.IsValid && (x.Name.Contains("item_dragon_lance") || x.Name.Contains("item_hurricane_pike")));
+                Item item = me.Inventory.Items.FirstOrDefault(x => x != null && x.IsValid && (x.Name.Contains("item_dragon_lance") || x.Name.Contains("item_hurricane_pike")));
                 
-                if (Me.ClassId == ClassId.CDOTA_Unit_Hero_TrollWarlord && Me.HasModifier("modifier_troll_warlord_berserkers_rage"))
-			        _attackRange = 150 + Me.HullRadius+24;
-                   else if (Me.ClassId == ClassId.CDOTA_Unit_Hero_TrollWarlord && !Me.HasModifier("modifier_troll_warlord_berserkers_rage"))
-                    _attackRange = Me.GetAttackRange() + Me.HullRadius + 24;
+                if (me.ClassId == ClassId.CDOTA_Unit_Hero_TrollWarlord && me.HasModifier("modifier_troll_warlord_berserkers_rage"))
+			        AttackRange = 150 + me.HullRadius+24;
+                   else if (me.ClassId == ClassId.CDOTA_Unit_Hero_TrollWarlord && !me.HasModifier("modifier_troll_warlord_berserkers_rage"))
+                    AttackRange = me.GetAttackRange() + me.HullRadius + 24;
                 else
-                if (Me.ClassId == ClassId.CDOTA_Unit_Hero_TemplarAssassin)
-                    _attackRange = Me.GetAttackRange() + Me.HullRadius;
+                if (me.ClassId == ClassId.CDOTA_Unit_Hero_TemplarAssassin)
+                    AttackRange = me.GetAttackRange() + me.HullRadius;
                 else 
-                if (Me.ClassId == ClassId.CDOTA_Unit_Hero_DragonKnight && Me.HasModifier("modifier_dragon_knight_dragon_form"))
-                    _attackRange = Me.GetAttackRange() + Me.HullRadius+24;
+                if (me.ClassId == ClassId.CDOTA_Unit_Hero_DragonKnight && me.HasModifier("modifier_dragon_knight_dragon_form"))
+                    AttackRange = me.GetAttackRange() + me.HullRadius+24;
                 else
-                if(item == null && Me.IsRanged)
-                    _attackRange = Me.GetAttackRange() + Me.HullRadius + 24;
+                if(item == null && me.IsRanged)
+                    AttackRange = me.GetAttackRange() + me.HullRadius + 24;
                 else
-               if (item !=null && Me.IsRanged)
-                    _attackRange = Me.GetAttackRange() + Me.HullRadius + 24;
+               if (item !=null && me.IsRanged)
+                    AttackRange = me.GetAttackRange() + me.HullRadius + 24;
                 else
-                    _attackRange = Me.GetAttackRange() + Me.HullRadius;
-                if (_rangeDisplay == null)
+                    AttackRange = me.GetAttackRange() + me.HullRadius;
+                if (rangeDisplay == null)
 					{
-						if (Me.IsAlive)
+						if (me.IsAlive)
 						{
-							_rangeDisplay = Me.AddParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf");
-							_rangeDisplay.SetControlPoint(1, new Vector3(255, 0, 222));
-							_rangeDisplay.SetControlPoint(3, new Vector3(5, 0, 0));
-							_rangeDisplay.SetControlPoint(2, new Vector3(_lastRange, 255, 0));
+							rangeDisplay = me.AddParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf");
+							rangeDisplay.SetControlPoint(1, new Vector3(255, 0, 222));
+							rangeDisplay.SetControlPoint(3, new Vector3(5, 0, 0));
+							rangeDisplay.SetControlPoint(2, new Vector3(_lastRange, 255, 0));
 						}
 					}
 					else
 					{
-						if (!Me.IsAlive)
+						if (!me.IsAlive)
 						{
-							_rangeDisplay.Dispose();
-							_rangeDisplay = null;
+							rangeDisplay.Dispose();
+							rangeDisplay = null;
 						}
-						else if (_lastRange.Equals(_attackRange))
+						else if (_lastRange != AttackRange)
 						{
-							_rangeDisplay.Dispose();
-							_lastRange = _attackRange;
-							_rangeDisplay = Me.AddParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf");
-							_rangeDisplay.SetControlPoint(1, new Vector3(255, 0, 222));
-							_rangeDisplay.SetControlPoint(3, new Vector3(5, 0, 0));
-							_rangeDisplay.SetControlPoint(2, new Vector3(_lastRange, 255, 0));
+							rangeDisplay.Dispose();
+							_lastRange = AttackRange;
+							rangeDisplay = me.AddParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf");
+							rangeDisplay.SetControlPoint(1, new Vector3(255, 0, 222));
+							rangeDisplay.SetControlPoint(3, new Vector3(5, 0, 0));
+							rangeDisplay.SetControlPoint(2, new Vector3(_lastRange, 255, 0));
 						}
 					}
 				}
 				else
 				{
-					if (_rangeDisplay != null) _rangeDisplay.Dispose();
-					_rangeDisplay = null;
+					if (rangeDisplay != null) rangeDisplay.Dispose();
+					rangeDisplay = null;
 				}
 
 
             //TODO:TARGETMARKER
-            E = Toolset.ClosestToMouse(Me, 10000);
-            if (E != null && E.IsValid && !E.IsIllusion && E.IsAlive && E.IsVisible &&
+            e = Toolset.ClosestToMouse(me, 10000);
+            if (e != null && e.IsValid && !e.IsIllusion && e.IsAlive && e.IsVisible &&
 			    MainMenu.OthersMenu.Item("ShowTargetMarker").GetValue<bool>())
 			{
 				DrawTarget();
 			}
-			else if (_particleEffect != null)
+			else if (particleEffect != null)
 			{
-				_particleEffect.Dispose();
-				_particleEffect = null;
+				particleEffect.Dispose();
+				particleEffect = null;
 			}
 			// TY  splinterjke.:)
 		}
 
 		private void DrawTarget()
 	    {
-			if (_particleEffect == null)
+			if (particleEffect == null)
 			{
-				_particleEffect = new ParticleEffect(@"particles\ui_mouseactions\range_finder_tower_aoe.vpcf", E);    
-				_particleEffect.SetControlPoint(2, new Vector3(Me.Position.X, Me.Position.Y, Me.Position.Z));
-				_particleEffect.SetControlPoint(6, new Vector3(1, 0, 0)); 
-				_particleEffect.SetControlPoint(7, new Vector3(E.Position.X, E.Position.Y, E.Position.Z));
+				particleEffect = new ParticleEffect(@"particles\ui_mouseactions\range_finder_tower_aoe.vpcf", e);    
+				particleEffect.SetControlPoint(2, new Vector3(me.Position.X, me.Position.Y, me.Position.Z));
+				particleEffect.SetControlPoint(6, new Vector3(1, 0, 0)); 
+				particleEffect.SetControlPoint(7, new Vector3(e.Position.X, e.Position.Y, e.Position.Z));
 			}
 			else 
 			{
-				_particleEffect.SetControlPoint(2, new Vector3(Me.Position.X, Me.Position.Y, Me.Position.Z));
-				_particleEffect.SetControlPoint(6, new Vector3(1, 0, 0));
-				_particleEffect.SetControlPoint(7, new Vector3(E.Position.X, E.Position.Y, E.Position.Z));
+				particleEffect.SetControlPoint(2, new Vector3(me.Position.X, me.Position.Y, me.Position.Z));
+				particleEffect.SetControlPoint(6, new Vector3(1, 0, 0));
+				particleEffect.SetControlPoint(7, new Vector3(e.Position.X, e.Position.Y, e.Position.Z));
 			}
 		}
 		private static void Drawing_OnPostReset(EventArgs args)

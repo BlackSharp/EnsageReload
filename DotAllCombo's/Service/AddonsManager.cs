@@ -1,7 +1,6 @@
 ﻿namespace DotaAllCombo.Service
 {
     using System.Security.Permissions;
-    using System.Threading;
     using Addons;
     [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
     class AddonsManager

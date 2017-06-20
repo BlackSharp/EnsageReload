@@ -1,9 +1,6 @@
-﻿using DotaAllCombo.Extensions;
-
-
-namespace DotaAllCombo.Heroes
+﻿namespace DotaAllCombo.Heroes
 {
-
+    using Service;
     using Service.Debug;
 
     internal class DeathProphetController : Variables, IHeroController
